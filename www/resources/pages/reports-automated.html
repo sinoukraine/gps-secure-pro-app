@@ -1,0 +1,388 @@
+<!--suppress JSAnnotator -->
+<template>
+    <div class="page " data-name="reports-automated"> <!-- page-with-subnavbar -->
+        <!-- Top Navbar -->
+        <div class="navbar">
+            <div class="navbar-bg"></div>
+            <div class="navbar-inner">
+                <div class="left">
+                    <a href="#" class="link icon-only back" >
+                        <i class="if-not-ios f7-icons icon-header-arrow-back"></i>
+                        <i class="if-ios icon icon-back"></i>
+                    </a>
+                </div>
+                <div class="title sliding">
+                    {{PageTitle}}
+                </div>
+                <div class="right">
+                    <label for="submit-form" class="link icon-only">
+                        <i class="f7-icons icon-header-apply"></i>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <form class="page-content" name="page-form">
+            <input type="submit" id="submit-form" class="display-none" />
+
+            <!--<div class="block-title">{{@global.LANGUAGE.GEOFENCES_MSG04}}</div>-->
+            <div class="list no-hairline-bottom no-margin-top no-margin-bottom">
+                <ul>
+                    <li>
+                        <div class="item-content item-input">
+                            <div class="item-media text-color-lightgray">
+                                <i class="f7-icons icon-menu-reports"></i>
+                            </div>
+                            <div class="item-inner">
+                                <div class="item-title item-floating-label item-label">{{@global.LANGUAGE.COM_MSG113}}</div>
+                                <div class="item-input-wrap">
+                                    <input type="text" name="Type" placeholder="Report name" data-type-code="5" value="{{@global.LANGUAGE.REPORTS_MSG01}}" maxlength="200" readonly>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <a key="key-asset-list" class="item-link smart-select smart-select-init smart-select-asset-list custom-smart-select" data-open-in="popup" data-form-color-theme="green" data-searchbar="true" data-searchbar-placeholder="{{@global.LANGUAGE.COM_MSG002}}" data-append-searchbar-not-found="{{@global.LANGUAGE.PROMPT_MSG000}}" data-page-title = "{{@global.LANGUAGE.COM_MSG065}}" >
+                            <select name="Assets" multiple required validate>
+                                {{#AssetList}}
+                                    <option value="{{Id}}" {{#if Selected}}selected{{/if}}>{{Name}}</option>
+                                {{/AssetList}}
+                            </select>
+                            <div class="item-content item-input">
+                                <div class="item-media text-color-lightgray">
+                                    <i class="f7-icons icon-asset-name"></i>
+                                </div>
+                                <div class="item-inner">
+                                    <div class="item-title item-label ">{{@global.LANGUAGE.GEOFENCES_MSG02}}</div>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <div class="item-content item-input">
+                            <div class="item-media text-color-lightgray">
+                                <i class="f7-icons icon-report-overview"></i>
+                            </div>
+                            <div class="item-inner">
+                                <div class="item-title item-floating-label item-label">{{@global.LANGUAGE.GEOFENCES_MSG05}}</div>
+                                <div class="item-input-wrap">
+                                    <input type="text" name="Name" placeholder="Report name" value="{{Name}}" maxlength="200" required validate>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <a key="key-schedule-types" class="item-link smart-select smart-select-init smart-select-alarm-types" data-open-in="sheet" data-form-color-theme="green" data-close-on-select="true">
+                            <select name="ScheduleTypes" required validate>
+                                {{#each ScheduleOptions }}
+                                <option value="{{this.val}}" {{#if this.selected}} selected {{/if}}>{{this.name}}</option>
+                                {{/each}}
+                            </select>
+                            <div class="item-content">
+                                <div class="item-media text-color-lightgray">
+                                    <i class="f7-icons icon-header-refresh"></i>
+                                </div>
+                                <div class="item-inner">
+                                    <div class="item-title ">{{@global.LANGUAGE.REPORTS_MSG17}}</div>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                    {{#js_if "this.ScheduleSelected === 1"}}
+                    <li>
+                        <a key="key-weekdays-options" class="item-link smart-select smart-select-init smart-select-weekdays-options" data-open-in="sheet" data-form-color-theme="green" data-close-on-select="true">
+                            <select name="IntervalValue" required validate>
+                                {{#each WeekdayOptions }}
+                                <option value="{{this.val}}" {{#if this.selected}} selected {{/if}}>{{this.name}}</option>
+                                {{/each}}
+                            </select>
+                            <div class="item-content">
+                                <div class="item-media text-color-lightgray">
+                                    <i class="f7-icons icon-live-date"></i>
+                                </div>
+                                <div class="item-inner">
+                                    <div class="item-title ">{{@global.LANGUAGE.REPORTS_MSG18}}</div>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                    {{/js_if}}
+                    {{#js_if "this.ScheduleSelected === 3"}}
+                    <li>
+                        <a key="key-monthdays-options" class="item-link smart-select smart-select-init smart-select-monthdays-options" data-open-in="sheet" data-form-color-theme="green" data-close-on-select="true">
+                            <select name="IntervalValue" required validate>
+                                {{#each MonthdayOptions }}
+                                <option value="{{this.val}}" {{#if this.selected}} selected {{/if}}>{{this.name}}</option>
+                                {{/each}}
+                            </select>
+                            <div class="item-content">
+                                <div class="item-media text-color-lightgray">
+                                    <i class="f7-icons icon-live-date"></i>
+                                </div>
+                                <div class="item-inner">
+                                    <div class="item-title ">{{@global.LANGUAGE.REPORTS_MSG18}}</div>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                    {{/js_if}}
+                    <li >
+                        <a class="item-link smart-select smart-select-init smart-select-notify-list custom-smart-select" data-open-in="popup" data-searchbar="true" data-form-color-theme="green" data-searchbar-placeholder="{{@global.LANGUAGE.COM_MSG002}}" data-append-searchbar-not-found="{{@global.LANGUAGE.PROMPT_MSG000}}" data-page-title = "{{@global.LANGUAGE.GEOFENCES_MSG10}}">
+                            <select name="NotifyEmails" multiple  required validate >
+                                {{#ContactList}}
+                                {{#if EMail}}
+                                <option value="{{Code}}" {{#if Selected}}selected{{/if}} >{{EMail}}({{FullName}})</option>
+                                {{/if}}
+                                {{/ContactList}}
+                            </select>
+                            <div class="item-content item-input">
+                                <div class="item-media text-color-lightgray">
+                                    <i class="f7-icons icon-live-email"></i>
+                                </div>
+                                <div class="item-inner ">
+                                    <div class="item-title item-label">{{@global.LANGUAGE.GEOFENCES_MSG10}}</div>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                    {{#unless ContactList}}
+                    <li class="text-color-red block-footer">{{@global.LANGUAGE.PROMPT_MSG068}}</li>
+                    {{/unless}}
+                    <li class="item-divider">{{@global.LANGUAGE.PROMPT_MSG103}}</li>
+                    <li class="item-content item-input">
+                        <div class="item-media text-color-lightgray"><i class="f7-icons icon-live-email "></i></div>
+                        <div class="item-inner">
+                            <div class="item-title item-floating-label item-label">{{@global.LANGUAGE.COM_MSG101}}</div>
+                            <div class="item-input-wrap ">
+                                <input type="email" name="CustomEmail" value="" placeholder="{{@global.LANGUAGE.COM_MSG101}}" maxlength="200" validate>
+                            </div>
+                        </div>
+                        <div class="item-right-button">
+                            <a @click="addCustomEmail" href="#" class="link color-black"><i class="f7-icons icon-other-add size-18"></i></a>
+                        </div>
+                    </li>
+                    <li>
+                        <ul class="no-padding-left">
+                            {{#each CustomEmails}}
+                                {{#if this}}
+                                    <li class="item-content item-input" data-key="{{@index}}">
+                                        <div class="item-media text-color-lightgray"><i class="f7-icons icon-live-email "></i></div>
+                                        <div class="item-inner">
+                                            <div class="item-title item-label">{{@global.LANGUAGE.COM_MSG101}}</div>
+                                            <div class="item-input-wrap ">
+                                                <input type="email" name="CustomEmail" value="{{this}}" maxlength="200" readonly>
+                                            </div>
+                                        </div>
+                                        <div class="item-right-button">
+                                            <a @click="removeCustomEmail({{@index}})" href="#" class="link color-red "><i class="f7-icons icon-other-remove size-18"></i></a>
+                                        </div>
+                                    </li>
+                                {{/if}}
+                            {{/each}}
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="list no-hairline-bottom no-hairline-top no-margin-top">
+                <ul>
+                    <li class="item-content">
+                        <div class="item-inner">
+                            <div class="item-title text-transform-uppercase tooltip-init" data-tooltip="{{@global.LANGUAGE.PROMPT_MSG116}}">{{@global.LANGUAGE.GEOFENCES_MSG09}} <span class="badge color-lightblue">?</span></div>
+                            <div class="item-after">
+                                <label class="toggle toggle-ignore-between color-green">
+                                    <input type="checkbox" name="State" {{#if State}}checked="checked"{{/if}}>
+                                    <span class="toggle-icon"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+        </form>
+
+
+    </div>
+</template>
+
+
+<script>
+    // script must return component object
+    return {
+        data: function () {
+            let self = this;
+
+            let assetListObj = self.$app.methods.getFromStorage("assetList");
+            let keys = Object.keys(assetListObj);
+            let assetList = [];
+            for (const key of keys) {
+                if(assetListObj[key].SolutionType.toLowerCase() !== 'protect' && assetListObj[key].SolutionType.toLowerCase() !== 'qprotect' && assetListObj[key].SolutionType.toLowerCase() !== 'witiprotect' && assetListObj[key].SolutionType.toLowerCase() !== 'witiqprotect'){
+                    assetList.push(assetListObj[key]);
+                }
+            }
+            assetList.sort(function(a, b) {
+                if (a.Name < b.Name) return -1;
+                if (a.Name > b.Name) return 1;
+                return 0;
+            });
+
+            let contactList = self.$app.methods.getFromStorage('contactList');
+            let userInfo = self.$app.methods.getFromStorage('userInfo');
+            contactList.push({
+                EMail: userInfo.Email,
+                FirstName: userInfo.FirstName,
+                SubName: userInfo.SurName,
+                Code: self.$app.data.MajorToken,
+                CustomerCode: self.$app.data.MinorToken,
+            });
+            contactList = self.$app.methods.sortContactList(contactList);
+            let customEmails = [];
+
+            let report = false;
+            if(self.$route.query.code){
+                let reportList = self.$app.methods.getFromStorage('automatedReportList');
+                if(reportList && reportList.length){
+                    report = reportList.find( r => r.Code === self.$route.query.code);
+                }
+            }
+
+            if(report){
+                if(report.ContactList && report.ContactList.length && contactList && contactList.length){
+                    report.ContactList.forEach(function (el) {
+                        let contact = contactList.find( c => c.Code === el);
+                        if(contact) contact.Selected = true;
+                    })
+                }
+
+                if(report.AssetList && report.AssetList.length && assetList && assetList.length ){
+                    report.AssetList.forEach(function (el) {
+                        let asset = assetList.find( a => a.Id === el);
+                        if(asset) asset.Selected = true;
+                    })
+                }
+
+                if(report.Content){
+                    customEmails = report.Content.split('\r\n');
+                }
+            }
+
+            return {
+                PageTitle: self.$route.query.code ? LANGUAGE.REPORTS_MSG15 : LANGUAGE.REPORTS_MSG16,
+                Code: self.$route.query.code,
+                AssetList: assetList,
+                ContactList: contactList,
+                Name: report ? report.Name : '',
+                ScheduleOptions: Protocol.Helper.getScheduleOptions(report ? report.ExecuteType : false),
+                WeekdayOptions: Protocol.Helper.getDaysOffWeekArray(report && report.ExecuteType === 1 ? report.ExecuteDay : false),
+                MonthdayOptions: Protocol.Helper.getMonthdayOptions(report && report.ExecuteType === 3 ? report.ExecuteDay : false),
+                CustomEmails: customEmails,
+                State: report ? report.State : 1,
+                ScheduleSelected: report ? report.ExecuteType : 1,
+            };
+
+        },
+        methods: {
+
+            saveForm: function(data, url){
+                var self = this;
+
+                self.$app.preloader.show();
+                self.$app.request.promise.post(url, data, 'json')
+                    .then(function (result) {
+                        if(result.data.MajorCode === '000') {
+                            mainView.router.back({force: true, ignoreCache: true});
+                        }else{
+                            self.$app.dialog.alert(LANGUAGE.PROMPT_MSG023 + `<br>MajorCode: ${result.data.MajorCode}<br>MinorCode: ${result.data.MinorCode}<br>${result.data.Data}`);
+                        }
+                    })
+                    .finally(function () {
+                        self.$app.preloader.hide();
+                    })
+                    .catch(function (err) {
+                        console.log(err);
+                        if (err && err.status === 404){
+                            self.$app.dialog.alert(LANGUAGE.PROMPT_MSG002);
+                        }else{
+                            self.$app.dialog.alert(LANGUAGE.PROMPT_MSG003);
+                        }
+                    });
+            },
+            addCustomEmail(e){
+                let inputEl = $$(e.target).closest('.item-content').find('[name="CustomEmail"]');
+                if(!inputEl.val() || !this.$app.methods.validateEmail(inputEl.val())){
+                    this.$app.dialog.alert(LANGUAGE.PROMPT_MSG117);
+                    return
+                }
+                this.CustomEmails.unshift(inputEl.val());
+                this.$update(function (){
+                    inputEl.val('');
+                });
+            },
+            removeCustomEmail(index){
+                this.CustomEmails.splice(index, 1);
+                this.$update();
+            }
+        },
+
+        on: {
+            pageInit: function (e, page) {
+                let self = this;
+
+                let ScheduleTypesEl = page.$el.find('[name = "ScheduleTypes"]');
+                let formEl = page.$el.find('[name = "page-form"]');
+
+                ScheduleTypesEl.on('change', function () {
+                    self.$setState({ScheduleSelected : +this.value})
+                });
+
+
+
+                formEl.on('submit', function(e){
+                    e.preventDefault();
+
+                    let assets = formEl.find('[name="Assets"]').val();
+                    let contacts = formEl.find('[name="NotifyEmails"]').val();
+                    let intervalValue = formEl.find('[name="IntervalValue"]').val();
+                    let customEmails =  formEl.find('[name="CustomEmail"]');
+
+                    let data = {
+                        MinorToken: self.$app.data.MinorToken,
+                        MajorToken: self.$app.data.MajorToken,
+
+                        Type: formEl.find('[name="Type"]').data('type-code'),
+                        Name: formEl.find('[name="Name"]').val(),
+                        IntervalType: formEl.find('[name="ScheduleTypes"]').val(),
+                        IntervalValue: intervalValue ? intervalValue : '',
+                        State: formEl.find('[name="State"]').is(":checked") ? 1 : 0,
+                        Assets: Array.isArray(assets) ? assets.toString() : '',
+                        NotifyEmails: Array.isArray(contacts) ? contacts.toString() : '',
+                        Logo: self.$app.data.logoExternal,
+                    };
+                    if (self.$route.query.code) {
+                        data.Code = self.$route.query.code;
+                    }
+                    if(customEmails.length){
+                        data.Remark = '';
+                        customEmails.each(function (key, val) {
+                            if(val.value && self.$app.methods.validateEmail(val.value)){
+                                data.Remark += val.value+'\r\n';
+                            }
+                        })
+                    }
+                    console.log(data);
+
+                    self.saveForm(data, API_URL.AUTOMATED_REPORT_EDIT);
+
+                    return false;
+                });
+            },
+
+
+            pageBeforeRemove: function () {
+
+            }
+
+        }
+    };
+</script>

@@ -1,0 +1,388 @@
+<!--suppress JSAnnotator -->
+<template>
+    <div class="page " data-name="geofence-list"> <!-- page-with-subnavbar -->
+        <!-- Top Navbar -->
+        <div class="navbar">
+            <div class="navbar-bg"></div>
+            <div class="navbar-inner">
+                <div class="left">
+                    <!--<a href="#" class="link icon-only back" >
+                        <i class="if-not-ios f7-icons icon-header-arrow-back"></i>
+                        <i class="if-ios icon icon-back"></i>
+                    </a>-->
+                    <a href="/panel-left/" class="link icon-only " >
+                        <i class="if-not-ios f7-icons icon-header-menu"></i>
+                        <i class="if-ios icon material-icons">menu</i>
+                    </a>
+                </div>
+                <div class="title sliding">
+                    {{@global.LANGUAGE.MENU_MSG02}}
+                </div>
+                <div class="right">
+                    <a href="/geofence/" class="link icon-only ">
+                        <i class="f7-icons icon-header-added"></i>
+                    </a>
+
+                </div>
+                <div class="subnavbar">
+                    <form class="searchbar searchbar-geofences">
+                        <div class="searchbar-inner">
+                            <div class="searchbar-input-wrap">
+                                <input type="search" placeholder="{{@global.LANGUAGE.COM_MSG002}}" title="{{@global.LANGUAGE.COM_MSG002}}">
+                                <i class="searchbar-icon"></i>
+                                <span class="input-clear-button"></span>
+                            </div>
+                            <span class="searchbar-disable-button text-color-gray">{{@global.LANGUAGE.COM_MSG001}}</span>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="page-content">
+            <div class="searchbar-backdrop"></div>
+
+            <div class="block searchbar-not-found">
+                <div class="block-inner">{{@global.LANGUAGE.PROMPT_MSG000}}</div>
+            </div>
+
+            {{#unless DataLoaded}}
+            <div key="skeleton-virtual-list" class="list media-list no-hairlines no-chevron no-margin-top">
+                <ul>
+                    {{#each '123'}}
+                    <li>
+                        <a href="#" class="item-link item-content asset skeleton-text skeleton-effect-blink" >
+                            <div class="item-inner">
+                                <div class="item-title-row align-items-center">
+                                    <div class="item-title">
+                                        Geofence Name
+                                    </div>
+                                    <div class="item-after">
+                                        ic
+                                    </div>
+                                </div>
+                                <div class="item-text">
+                                    geofence address goes here, it can be very long, two lines.. some time it take 3 or even 4 lines
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                    {{/each}}
+                </ul>
+            </div>
+            {{else}}
+            <div key="hide-on-search-block" class="block searchbar-hide-on-search text-align-center">{{PageHeaderDescription}}</div>
+            {{/unless}}
+
+            <div class="list media-list virtual-list no-chevron no-margin-top no-hairline-bottom searchbar-found geofenceList" >
+                <!-- keep it empty -->
+            </div>
+
+        </div>
+
+    </div>
+</template>
+
+
+<script>
+    // script must return component object
+    return {
+        data: function () {
+            let self = this;
+
+            let ret = {
+                PageHeaderDescription: LANGUAGE.PROMPT_MSG043.format(LANGUAGE.PROMPT_MSG089)
+            };
+
+            return ret;
+        },
+        methods: {
+            initList: function (geofenceListObj) {
+                let self = this;
+
+
+                let geofenceList = [];
+                if (!self.$app.methods.isObjEmpty(geofenceListObj)){
+                    let keys = Object.keys(geofenceListObj);
+                    for (const key of keys) {
+                        geofenceList.push(geofenceListObj[key]);
+                    }
+                    geofenceList.sort(function(a, b) {
+                        if (a.Name < b.Name) return -1;
+                        if (a.Name > b.Name) return 1;
+                        return 0;
+                    });
+                }
+
+
+                let listEl = self.$el.find('.geofenceList');
+
+                self.VirtualList = self.$app.virtualList.create({
+                    el: listEl,
+                    items : geofenceList,
+                    //cache: false,
+                    searchAll: function (query, items) {
+                        let found = [];
+                        for (let i = 0; i < items.length; i++) {
+                            if (items[i].Name.toLowerCase().indexOf(query.toLowerCase()) >= 0 || query.trim() === '') found.push(i);
+                        }
+                        return found; //return array with mathced indexes
+                    },
+                    height: function (item){
+                        let ret = 73;
+
+                        if(item){
+                            if(!item.Address){
+                                ret = 53;
+                            }else if(item.Address.length > 55){
+                                ret = 93;
+                            }else if(item.Address.length > 95){
+                                ret = 113;
+                            }
+                        }
+                        return ret
+                    },
+                    renderItem: function (item, index) {
+                        let ret = `
+                            <li data-index="${index}" data-code="${item.Code}" data-state="${item.State}" data-name="${item.Name}">`;
+                        if (item.CustomerCode === self.$root.MajorToken){
+                            ret+=`  <a href="#" class="link color-custom ripple-color-red item-menu-button bigger-touch-area geofenceMenu">
+                                        <i class="f7-icons icon-header-menu2 size-18"></i>
+                                    </a>`;
+                        }
+                        ret+=`  <a href="/geofence/?code=${item.Code}" class="item-link item-content">
+                                    <div class="item-inner">
+                                        <div class="item-title-row">
+                                            <div class="item-title text-transform-uppercase">${item.Name}</div>
+                                            <div class="item-after"><i class="f7-icons icon-header-menu2 fake-icon"></i></div>
+                                        </div>
+                                        <div class="item-text">${item.Address}</div>
+                                    </div>
+                                </a>
+                            </li>`;
+                        return ret;
+                    },
+                    emptyTemplate: `<li class="item-content">${LANGUAGE.COM_MSG040}</li>`
+                });
+
+                self.$setState({
+                    DataLoaded: true
+                });
+                self.initSearchForm();
+            },
+            initSearchForm: function () {
+                let self = this;
+                self.$tick().then(() => {
+                    self.Searchbar = self.$app.searchbar.create({
+                        el: $$(self.$app.navbar.getElByPage(self.$el)).find('.searchbar-geofences'),
+                        searchContainer: self.$el.find('.geofenceList'),
+                        searchIn: '.item-title',
+                    });
+                })
+            },
+            changeGeofenceState: function(code, state){
+                let self = this;
+                let geofence = self.$app.methods.getFromStorage('geofenceList')[code];
+
+                let assetCodes = '';
+                if(geofence.SelectedAssetList && geofence.SelectedAssetList.length){
+                    for (let i = 0; i < geofence.SelectedAssetList.length; i++) {
+                        assetCodes +=geofence.SelectedAssetList[i].AsCode+',';
+                    }
+                    assetCodes = assetCodes.slice(0, -1);
+                }
+
+                let alertTypes = Protocol.Helper.getGoefenceAlarmTypes(geofence.Alerts);
+                let alerts = '';
+                for (let i = 0; i < alertTypes.length; i++) {
+                    if(alertTypes[i].State){
+                        alerts += alertTypes[i].Val+',';
+                    }
+                }
+                alerts = alerts.slice(0, -1);
+
+                let days = '';
+                if(geofence.Week && geofence.Week.length){
+                    for (let i = 0; i < geofence.Week.length; i++) {
+                        days += geofence.Week[i].Week+',';
+                    }
+                    days = days.slice(0, -1);
+                }
+
+                let contactCodes = '';
+                if(geofence.ContactList && geofence.ContactList.length){
+                    for (let i = 0; i < geofence.ContactList.length; i++) {
+                        contactCodes += geofence.ContactList[i].Code+',';
+                    }
+                    contactCodes = contactCodes.slice(0, -1);
+                }
+
+
+                let data = {
+                    MinorToken: self.$app.data.MinorToken,
+                    MajorToken: self.$app.data.MajorToken,
+                    Code: code,
+                    AlertConfigState: state ? 1 : 0,
+                    Name: geofence.Name,
+                    Lat: geofence.Lat ? geofence.Lat : 0,
+                    Lng: geofence.Lng ? geofence.Lng : 0,
+                    Radius: geofence.Radius ? geofence.Radius : 0,
+                    Address: geofence.Address ? geofence.Address : '',
+                    GeoPolygon: geofence.GeoPolygon ? geofence.GeoPolygon : false,
+                    Inverse: geofence.Inverse,
+                    Share: geofence.Share,
+                    GeoType: geofence.GeoType,
+                    CycleType: geofence.CycleType,
+                    DelayTime: 0,
+                    Days: days,
+                    BeginTime: geofence.Week && geofence.Week[0] && geofence.Week[0].BeginTime ? geofence.Week[0].BeginTime : '',
+                    EndTime: geofence.Week && geofence.Week[0] && geofence.Week[0].EndTime ? geofence.Week[0].EndTime : '',
+                    ContactCodes: contactCodes,
+                    AssetCodes: assetCodes,
+                    Alerts: alerts,
+                };
+
+                self.$app.preloader.show();
+                self.$app.request.promise.post(API_URL.GEOFENCE_EDIT, data, 'json')
+                    .then(function (result) {
+                        if(result.data.MajorCode === '000') {
+                            mainView.router.refreshPage();
+                        }else if(result.data.MajorCode === '100' && result.data.MinorCode === '1003'){
+                            self.$app.methods.customDialog({title: LANGUAGE.PROMPT_MSG039, text: LANGUAGE.PROMPT_MSG040});
+                        }else{
+                            self.$app.dialog.alert(LANGUAGE.PROMPT_MSG023 + `<br>MajorCode: ${result.data.MajorCode}<br>MinorCode: ${result.data.MinorCode}<br>${result.data.Data}`);
+                        }
+                    })
+                    .finally(function () {
+                        self.$app.preloader.hide();
+                    })
+                    .catch(function (err) {
+                        console.log(err);
+                        if (err && err.status === 404){
+                            self.$app.dialog.alert(LANGUAGE.PROMPT_MSG002);
+                        }else{
+                            self.$app.dialog.alert(LANGUAGE.PROMPT_MSG003);
+                        }
+                    });
+            },
+            deleteGeofence: function(code, name){
+                let self = this;
+                if (code) {
+                    let text = LANGUAGE.PROMPT_MSG049 +' '+ name +'.'+' '+LANGUAGE.PROMPT_MSG050;
+                    self.$app.dialog.confirm(text,
+                        function(){
+                            let data = {
+                                MinorToken: self.$app.data.MinorToken,
+                                MajorToken: self.$app.data.MajorToken,
+                                Code: code
+                            };
+
+                            self.$app.preloader.show();
+                            self.$app.request.promise.post(API_URL.GEOFENCE_DELETE, data, 'json')
+                                .then(function (result) {
+                                    if(result.data.MajorCode === '000') {
+                                        mainView.router.refreshPage();
+                                    }else if(result.data.MajorCode == '100' && result.data.MinorCode == '1003'){
+                                        self.$app.methods.customDialog({title: LANGUAGE.PROMPT_MSG039, text: LANGUAGE.PROMPT_MSG040});
+                                    }else{
+                                        self.$app.dialog.alert(LANGUAGE.PROMPT_MSG023 + `<br>MajorCode: ${result.data.MajorCode}<br>MinorCode: ${result.data.MinorCode}<br>${result.data.Data}`);
+                                    }
+                                })
+                                .finally(function () {
+                                    self.$app.preloader.hide();
+                                })
+                                .catch(function (err) {
+                                    console.log(err);
+                                    if (err && err.status === 404){
+                                        self.$app.dialog.alert(LANGUAGE.PROMPT_MSG002);
+                                    }else{
+                                        self.$app.dialog.alert(LANGUAGE.PROMPT_MSG003);
+                                    }
+                                });
+                        },
+                        function(){
+                            // cancel
+                        }
+                    );
+
+                }
+            },
+        },
+
+        on: {
+            pageInit: function (e, page) {
+                let self = this;
+
+                self.$app.methods.getGeofenceList(self.initList);
+
+                page.$el.find('.geofenceList').on('click', '.geofenceMenu', function () {
+                    let parentLi = $$(this).closest('li');
+                    let geofenceCode = parentLi.data('code');
+                    let geofenceName = parentLi.data('name');
+
+                    let state = false;
+                    if (parentLi.data('state') === '1') {
+                        state = true;
+                    }
+
+                    self.$app.actions.create({
+                        buttons: [
+                            {
+                                text: `<a href="/geofence/?code=${geofenceCode}" class="action_button_wrapper">
+                                    <div class="action_button_block action_button_media text-color-lightgray">
+                                        <i class="f7-icons icon-geofence-edit size-20"></i>
+                                    </div>
+                                    <div class="action_button_block action_button_text text-color-black">
+                                        ${ LANGUAGE.ASSET_EDIT_MSG00 }
+                                    </div>
+                                </a>`,
+                            },
+                            {
+                                text: `<div class="action_button_wrapper">
+                                    <div class="action_button_block action_button_media ${ state ? 'text-color-green' : 'text-color-lightgray' }">
+                                        <i class="f7-icons icon-geofence-active size-20"></i>
+                                    </div>
+                                    <div class="action_button_block action_button_text">
+                                        ${ LANGUAGE.COM_MSG059}
+                                    </div>
+                                    <div class="toggle color-green">
+                                        <input type="checkbox" name="checkbox-active" ${ state ? 'checked="checked"' : '' }>
+                                        <span class="toggle-icon"></span>
+                                    </div>
+                                </div>`,
+                                onClick: function() {
+                                    self.changeGeofenceState(geofenceCode, !state);
+                                }
+                            },
+                            {
+                                text: `<div class="action_button_wrapper">
+                                    <div class="action_button_block action_button_media text-color-red">
+                                        <i class="f7-icons icon-geofence-remove size-20"></i>
+                                    </div>
+                                    <div class="action_button_block action_button_text">
+                                        ${ LANGUAGE.COM_MSG064 }
+                                    </div>
+                                </div>`,
+                                color: 'red',
+                                onClick: function() {
+                                    self.deleteGeofence(geofenceCode, geofenceName);
+                                }
+                            },
+                        ]
+                    }).open();
+                })
+            },
+            pageBeforeRemove: function () {
+                if (this.Searchbar){
+                    this.Searchbar.destroy();
+                }
+                if (this.VirtualList){
+                    this.VirtualList.destroy();
+                }
+            }
+
+        }
+    };
+</script>

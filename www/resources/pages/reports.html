@@ -1,0 +1,119 @@
+<!--suppress JSAnnotator -->
+<template>
+<!-- Page, data-name contains page name which can be used in callbacks -->
+        <div class="page " data-name="reports"> <!-- page-with-subnavbar -->
+        <!-- Top Navbar -->
+            <div class="navbar">
+                <div class="navbar-bg"></div>
+                <div class="navbar-inner">
+                    <div class="left">
+                        <a href="/panel-left/" class="link icon-only " >
+                            <i class="if-not-ios f7-icons icon-header-menu"></i>
+                            <i class="if-ios icon material-icons">menu</i>
+                        </a>
+                    </div>
+                    <div class="title sliding">{{@global.LANGUAGE.MENU_MSG04}}</div>
+                    <div class="right">
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="toolbar toolbar-bottom ">
+                <div class="toolbar-inner ">
+                    <a href="/reports-automated-list/" class="link button width-100 color-white"><i class="f7-icons icon-live-date margin-right"></i> {{@global.LANGUAGE.REPORTS_MSG11}}</a>
+                </div>
+            </div>
+
+            <!-- Scrollable page content-->
+            <div class="page-content">
+                <div class="block text-align-center">{{PageHeaderDescription}}</div>
+                <div class="list">
+                    <ul>
+                        {{#ReportList}}
+                        <li class="{{#unless Type}}tooltip-init{{/unless}}" data-tooltip="{{@global.LANGUAGE.PROMPT_MSG096}}">
+                            <a href="{{#if Type}}/report-generate/?type={{Type}}{{else}}#{{/if}}" class="item-content item-link {{#unless Type}}disabled{{/unless}}" >
+                                <div class="item-media {{IconColor}}">
+                                    <i class="f7-icons {{Icon}}"></i>
+                                </div>
+                                <div class="item-inner">
+                                    <div class="item-title">{{Name}}</div>
+                                </div>
+                            </a>
+                        </li>
+                        {{/ReportList}}
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+</template>
+
+
+<script>
+  // script must return component object
+    return {
+        data: function () {
+            let self = this;
+
+            let ret = {
+                PageHeaderDescription: LANGUAGE.PROMPT_MSG043.format(LANGUAGE.PROMPT_MSG089),
+                ReportList: [
+                    {
+                        Icon: 'icon-report-stoplog',
+                        IconColor: 'text-color-red',
+                        Name: LANGUAGE.REPORTS_MSG00,
+                        Type: 2,
+                    },
+                    {
+                        Icon: 'icon-report-overview',
+                        IconColor: 'text-color-green',
+                        Name: LANGUAGE.REPORTS_MSG01,
+                        Type: 1,
+                    },
+                    {
+                        Icon: 'icon-report-alarm',
+                        IconColor: 'text-color-orange',
+                        Name: LANGUAGE.REPORTS_MSG02,
+                        Type: 3,
+                    },
+                    {
+                        Icon: 'icon-report-trip',
+                        IconColor: 'text-color-lightblue',
+                        Name: LANGUAGE.REPORTS_MSG03,
+                        Type: 4,
+                    },
+                    {
+                        Icon: 'icon-report-runtime',
+                        IconColor: 'text-color-purple',
+                        Name: LANGUAGE.REPORTS_MSG04,
+                        Type: 5,
+                    },
+                ]
+            };
+            ret.ReportList.sort(function(a, b) {
+                if (a.Name < b.Name) return -1;
+                if (a.Name > b.Name) return 1;
+                return 0;
+            });
+            return ret;
+        },
+        methods: {
+
+
+        },
+
+        on: {
+            pageInit: function (e, page) {
+                let self = this;
+
+
+
+            },
+            pageAfterOut: function () {
+
+            },
+
+        }
+    };
+</script>

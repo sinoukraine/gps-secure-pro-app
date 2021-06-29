@@ -1,0 +1,582 @@
+<!--suppress JSAnnotator -->
+<template>
+    <div class="page " data-name="asset-status-live"> <!-- page-with-subnavbar -->
+        <!-- Top Navbar -->
+        <div class="navbar">
+            <div class="navbar-bg"></div>
+            <div class="navbar-inner">
+                <div class="left">
+                    {{#if isLiveAsset}}
+                    <a href="/panel-left/" class="link icon-only " >
+                        <i class="if-not-ios f7-icons icon-header-menu"></i>
+                        <i class="if-ios icon material-icons">menu</i>
+                    </a>
+                    {{else}}
+                    <a href="#" class="link icon-only back" >
+                        <i class="if-not-ios f7-icons icon-header-arrow-back"></i>
+                        <i class="if-ios icon icon-back"></i>
+                    </a>
+                    {{/if}}
+                </div>
+                <div class="title sliding">
+                    {{Name}}
+                </div>
+                <div class="right">
+                    {{#if isLiveAsset}}
+                    <a href="/asset-edit/?imei={{IMEI}}" class="link icon-only ">
+                        <i class="f7-icons icon-header-edit"></i>
+                    </a>
+                    {{/if}}
+                </div>
+            </div>
+        </div>
+        {{#if Tabs}}
+        <div class="toolbar tabbar toolbar-top">
+            <div class="toolbar-inner">
+                <a href="#" class="tab-link tab-link-active">{{@global.LANGUAGE.ASSET_STATUS_LIVE_MSG00}}</a>
+                <a href="/asset-alarm/?imei={{IMEI}}&tabs=true" class="tab-link">{{@global.LANGUAGE.ASSET_ALARM_MSG00}}</a>
+                <a href="/asset-playback/?imei={{IMEI}}"  class="tab-link">{{@global.LANGUAGE.ASSET_PLAYBACK_MSG00}}</a>
+                <a href="/asset-track/?imei={{IMEI}}&tabs=true" class="tab-link">{{@global.LANGUAGE.ASSET_TRACK_MSG00}}</a>
+            </div>
+        </div>
+        {{/if}}
+        <div class="toolbar toolbar-bottom toolbar-buttons-custom no-border">
+            <div class="toolbar-inner row no-gap no-padding ">
+                {{#if isLiveAsset}}
+                    <a href="/report-theft/?imei={{IMEI}}" class="link button col bg-color-red color-white no-border-radius"><i class="f7-icons icon-live-report-thief"></i> {{@global.LANGUAGE.ASSET_STATUS_LIVE_MSG07}}</a>
+                    {{#if IsOBDDevice}}
+                    <a href="/asset-obd-data/?imei={{IMEI}}" class="link button col bg-color-darkgray text-color-white no-border-radius"><i class="f7-icons icon-live-hint"></i> {{@global.LANGUAGE.OBD_DATA_MSG000}}</a>
+                    {{/if}}
+                    {{#if IsDriverRatingSupported}}
+                        <a href="/asset-rating/?imei={{IMEI}}" class="link button col bg-color-green text-color-white no-border-radius"><i class="f7-icons icon-rating"></i> {{@global.LANGUAGE.ASSET_STATUS_LIVE_MSG10}}</a>
+                    {{/if}}
+                {{else}}
+                <a @click="requestStatus" href="#" class="link button width-100 color-white"><i class="f7-icons icon-header-refresh margin-right"></i> {{@global.LANGUAGE.COM_MSG057}}</a>
+                {{/if}}
+            </div>
+        </div>
+
+        <div class="page-content">
+            <div class="block">
+                <div class="row no-gap">
+                    <div class="col text-align-center">
+                        <i class="f7-icons icon-live-date text-color-lightgray"></i>
+                        <p class="text-color-gray no-margin-bottom">{{@global.LANGUAGE.ASSET_STATUS_LIVE_MSG01}}</p>
+                        <p class="text-color-black no-margin">{{PositionTime}}</p>
+                    </div>
+                    <div class="col text-align-center">
+                        <i class="f7-icons icon-status-speed text-color-lightgray"></i>
+                        <p class="text-color-gray no-margin-bottom">{{@global.LANGUAGE.ASSET_STATUS_LIVE_MSG02}}</p>
+                        <p class="text-color-black no-margin">{{Speed}}</p>
+                    </div>
+                    <div class="col text-align-center">
+                        <i class="f7-icons icon-live-mileage text-color-lightgray"></i>
+                        <p class="text-color-gray no-margin-bottom">{{@global.LANGUAGE.ASSET_STATUS_LIVE_MSG03}}</p>
+                        <p class="text-color-black no-margin">{{Mileage}}</p>
+                    </div>
+                </div>
+            </div>
+
+            {{#if isLiveAsset}}
+            <div class="list no-margin " >
+                <ul>
+                    <li class="item-content">
+                        <div class="item-media {{#if Geolock}} text-color-green {{else}} text-color-lightgray {{/if}}">
+                            <i class="f7-icons icon-live-geolock"></i>
+                        </div>
+                        <div class="item-inner">
+                            <div class="item-title tooltip-init" data-trigger="click" data-tooltip="{{@global.LANGUAGE.PROMPT_MSG004}}">{{@global.LANGUAGE.ASSET_STATUS_LIVE_MSG04}}  <span class="badge color-lightblue">?</span></div>
+                            <div class="item-after">
+                                <label class="toggle color-green toggle-Geolock">
+                                    <input type="checkbox" name="Geolock" {{#if Geolock}} checked {{/if}}>
+                                    <span class="toggle-icon"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </li>
+                    {{#if IsImmobilisationSupported}}
+                    <li class="item-content">
+                        <div class="item-media {{#if Immobilise}} text-color-red {{else}} text-color-lightgray {{/if}}">
+                            <i class="f7-icons icon-live-immobilisation"></i>
+                        </div>
+                        <div class="item-inner">
+                            <div class="item-title tooltip-init" data-trigger="click" data-tooltip="{{@global.LANGUAGE.PROMPT_MSG005}}">{{@global.LANGUAGE.ASSET_STATUS_LIVE_MSG05}}  <span class="badge color-lightblue">?</span></div>
+                            <div class="item-after">
+                                <label class="toggle color-green toggle-Immobilisation">
+                                    <input type="checkbox" name="Immobilise" {{#if Immobilise}} checked {{/if}}>
+                                    <span class="toggle-icon"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </li>
+                    {{/if}}
+                    {{#if IsLockDoorSupported}}
+                    <li class="item-content">
+                        <div class="item-media text-color-lightgray">
+                            <i class="f7-icons icon-live-lock-door"></i>
+                        </div>
+                        <div class="item-inner">
+                            <div class="item-title">{{@global.LANGUAGE.ASSET_STATUS_LIVE_MSG09}}</div>
+                            <div class="item-after min-width-122">
+                                <a href="#" class=" width-100 button button-fill color-darkgray" @click="unlockDoor">{{@global.LANGUAGE.COM_MSG114}}</a>
+                            </div>
+                        </div>
+                    </li>
+                    {{/if}}
+                </ul>
+            </div>
+            {{/if}}
+
+            <div class="list no-margin-top no-hairlines" >
+                <ul class="row no-gap">
+                    <li class="item-content col-100">
+                        <div class="item-media text-color-lightgray">
+                            <i class="f7-icons icon-live-address"></i>
+                        </div>
+                        <div class="item-inner">
+                            <div class="item-title white-space-normal">
+                                {{Address}}
+                                <div class="item-footer">
+                                    {{Coords}}
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    {{#if Acc}}
+                    <li class="item-content col-50 tooltip-init" data-trigger="click" data-tooltip="{{@global.LANGUAGE.PROMPT_MSG007}}">
+                        <div class="item-media {{#js_if 'this.Acc === "ON" '}} text-color-green {{else}} text-color-red {{/js_if}}">
+                            <i class="f7-icons icon-status-acc2"></i>
+                        </div>
+                        <div class="item-inner">
+                            <div class="item-title">{{Acc}}</div>
+                        </div>
+                    </li>
+                    {{/if Acc}}
+
+                    {{#if Acc2}}
+                    <li class="item-content col-50 tooltip-init" data-trigger="click" data-tooltip="{{@global.LANGUAGE.PROMPT_MSG008}}">
+                        <div class="item-media text-color-lightgray ">
+                            <i class="f7-icons icon-live-input"></i>
+                        </div>
+                        <div class="item-inner">
+                            <div class="item-title">{{Acc2}}</div>
+                        </div>
+                    </li>
+                    {{/if Acc2}}
+                    {{#if Fuel}}
+                    <li class="item-content col-50 tooltip-init" data-trigger="click" data-tooltip="{{@global.LANGUAGE.PROMPT_MSG016}}<br>{{Fuel}}">
+                        <div class="item-media text-color-lightgray ">
+                            <i class="f7-icons icon-live-fuel"></i>
+                        </div>
+                        <div class="item-inner">
+                            <div class="item-title">{{Fuel}}</div>
+                        </div>
+                    </li>
+                    {{/if Fuel}}
+                    {{#if Voltage}}
+                    <li class="item-content col-50 tooltip-init" data-trigger="click" data-tooltip="{{@global.LANGUAGE.PROMPT_MSG011}}<br>{{Voltage}}">
+                        <div class="item-media text-color-lightgray ">
+                            <i class="f7-icons icon-live-voltag"></i>
+                        </div>
+                        <div class="item-inner">
+                            <div class="item-title" >{{Voltage}}</div>
+                        </div>
+                    </li>
+                    {{/if Voltage}}
+                    {{#if Battery}}
+                    <li class="item-content col-50 tooltip-init" data-trigger="click" data-tooltip="{{@global.LANGUAGE.PROMPT_MSG010}}<br>{{Battery}}">
+                        <div class="item-media text-color-lightgray ">
+                            <i class="f7-icons icon-live-battery"></i>
+                        </div>
+                        <div class="item-inner">
+                            <div class="item-title ">{{Battery}}</div>
+                        </div>
+                    </li>
+                    {{/if Battery}}
+                    {{#if Heartrate}}
+                    <li class="item-content col-50 tooltip-init" data-trigger="click" data-tooltip="{{@global.LANGUAGE.PROMPT_MSG018}}<br>{{Heartrate}}">
+                        <div class="item-media text-color-lightgray ">
+                            <i class="f7-icons icon-live-hearth"></i>
+                        </div>
+                        <div class="item-inner">
+                            <div class="item-title" >{{Heartrate}}</div>
+                        </div>
+                    </li>
+                    {{/if Heartrate}}
+                    {{#if Temperature}}
+                    <li class="item-content col-50 tooltip-init" data-trigger="click" data-tooltip="{{@global.LANGUAGE.PROMPT_MSG019}}<br>{{Temperature}}">
+                        <div class="item-media text-color-lightgray ">
+                            <i class="f7-icons icon-live-temperature"></i>
+                        </div>
+                        <div class="item-inner">
+                            <div class="item-title" >{{Temperature}}</div>
+                        </div>
+                    </li>
+                    {{/if Temperature}}
+                    {{#if Direction}}
+                    <li class="item-content col-50 tooltip-init" data-trigger="click" data-tooltip="{{@global.LANGUAGE.PROMPT_MSG015}}<br>{{Direction}}">
+                        <div class="item-media text-color-lightgray ">
+                            <i class="f7-icons icon-live-direction"></i>
+                        </div>
+                        <div class="item-inner">
+                            <div class="item-title" >{{Direction}}</div>
+                        </div>
+                    </li>
+                    {{/if Direction}}
+                    {{#if Driver}}
+                    <li class="item-content col-50 tooltip-init" data-trigger="click" data-tooltip="{{@global.LANGUAGE.PROMPT_MSG130}}<br>{{Driver}}">
+                        <div class="item-media text-color-lightgray ">
+                            <i class="f7-icons icon-live-id"></i>
+                        </div>
+                        <div class="item-inner">
+                            <div class="item-title" >{{Driver}}</div>
+                        </div>
+                    </li>
+                    {{/if Direction}}
+                    {{#if EngineHours}}
+                    <li class="item-content col-50 tooltip-init" data-trigger="click" data-tooltip="{{@global.LANGUAGE.PROMPT_MSG020}}<br>{{EngineHours}}">
+                        <div class="item-media text-color-lightgray ">
+                            <i class="f7-icons icon-live-engine-hours"></i>
+                        </div>
+                        <div class="item-inner">
+                            <div class="item-title" >{{EngineHours}}</div>
+                        </div>
+                    </li>
+                    {{/if EngineHours}}
+                    {{#if StoppedDuration}}
+                    <li class="item-content col-50 tooltip-init" data-trigger="click" data-tooltip="{{@global.LANGUAGE.PROMPT_MSG021}}<br>{{StoppedDuration}}">
+                        <div class="item-media text-color-lightgray ">
+                            <i class="f7-icons icon-live-duration"></i>
+                        </div>
+                        <div class="item-inner">
+                            <div class="item-title" >{{StoppedDuration}}</div>
+                        </div>
+                    </li>
+                    {{/if StoppedDuration}}
+
+
+                </ul>
+            </div>
+        </div>
+    </div>
+</template>
+
+
+<script>
+    // script must return component object
+    return {
+        data: function () {
+            let self = this;
+            let imei = decodeURIComponent(self.$route.query.imei);
+            let tabsFlag = self.$route.query.tabs;
+            let asset = POSINFOASSETLIST[imei]; //self.$app.methods.getFromStorage('assetList')[imei];
+            let afs = Protocol.Helper.getAssetStateInfo(asset);
+            let contactList = self.$app.methods.getFromStorage('contactList');
+            let driver = null;
+            if(!!asset.DriverCode){
+                let index = contactList.findIndex((item) =>  item.Code === asset.DriverCode)
+                if (index !== -1){
+                    driver =  contactList[index].FirstName ? contactList[index].FirstName : contactList[index].SubName
+                }
+            }
+
+            let ret = {
+                Name: asset.Name,
+                IMEI: asset.IMEI,
+                IMSI: asset.IMSI,
+                Id: asset.Id,
+                isLiveAsset: asset.SolutionType.toLowerCase() !== 'protect' && asset.SolutionType.toLowerCase() !== 'loc8' && asset.SolutionType.toLowerCase() !== 'witiprotect' && asset.SolutionType.toLowerCase() !== 'qprotect' && asset.SolutionType.toLowerCase() !== 'witiqprotect',
+                Tabs: !!tabsFlag,
+
+                PositionTime: asset.posInfo.positionTime ? asset.posInfo.positionTime.format(window.COM_TIMEFORMAT) : LANGUAGE.COM_MSG031,
+                Speed: Protocol.Helper.getSpeedValue(asset.Unit, asset.posInfo.speed) + ' ' + Protocol.Helper.getSpeedUnit(asset.Unit),
+                Mileage: afs.mileage ? afs.mileage.value : LANGUAGE.COM_MSG031,
+                EngineHours: afs.mileage ? afs.engineHours.value : LANGUAGE.COM_MSG031,
+                Direction: Protocol.Helper.getDirectionCardinal(asset.posInfo.direct) + ' (' + asset.posInfo.direct + '&deg;)',
+
+                Geolock: afs.geolock ? afs.geolock.value : false,
+                Immobilise: afs.immob ? afs.immob.value : false,
+                LockDoor: afs.lockdoor ? afs.lockdoor.value : false,
+                StoppedDuration: afs.stopped ? afs.stopped.duration : false,
+                Temperature: afs.temperature ? afs.temperature.value : false,
+                Heartrate: afs.heartrate ? afs.heartrate.value : false,
+                Fuel: afs.fuel ? afs.fuel.value : false,
+                Battery: afs.battery ? afs.battery.value : false,
+                Voltage: afs.voltage ? afs.voltage.value : false,
+                Acc2: afs.acc2 ? afs.acc2.value : false,
+                Acc: afs.acc ? afs.acc.value : false,
+                Driver: driver,
+
+                Address: asset.lastQueryPosinfo && asset.lastQueryPosinfo.address ? asset.lastQueryPosinfo.address : LANGUAGE.COM_MSG004,
+                Coords: 'GPS: ' + Protocol.Helper.convertDMS(asset.posInfo.lat, asset.posInfo.lng),
+                ContactList: contactList,
+                //Coords: `GPS: ${parseFloat(asset.posInfo.lat).toFixed(5)}, ${parseFloat(asset.posInfo.lng).toFixed(5)}`,
+
+                IsImmobilisationSupported: (parseInt(asset._FIELD_INT2) & 1) > 0,
+                IsLockDoorSupported: (parseInt(asset._FIELD_INT2) & 512) > 0,
+                IsDriverRatingSupported: afs.istDriverRatingSupported,
+                IsOBDDevice: (Protocol.ProductFeatures.OBD & asset.PRDTFeatures) > 0
+            };
+            //console.log(afs.istDriverRatingSupported)
+            /*console.log(parseInt(asset._FIELD_INT2) & 512 )
+            console.log((parseInt(asset._FIELD_INT2) & 512) > 0)*/
+
+
+            return ret;
+        },
+        methods: {
+            UpdateData: function () {
+                let self = this;
+
+                let asset = POSINFOASSETLIST[self.IMEI];
+                let afs = Protocol.Helper.getAssetStateInfo(asset);
+
+                let driver = null;
+                if(!!asset.DriverCode){
+                    let index = this.ContactList.findIndex((item) =>  item.Code === asset.DriverCode)
+                    if (index !== -1){
+                        driver =  this.ContactList[index].FirstName ? this.ContactList[index].FirstName : this.ContactList[index].SubName
+                    }
+                }
+               // console.log((parseInt(asset._FIELD_INT2) & 512) > 0)
+                self.$setState({
+                    PositionTime: asset.posInfo.positionTime ? asset.posInfo.positionTime.format(window.COM_TIMEFORMAT) : LANGUAGE.COM_MSG031,
+                    Speed: Protocol.Helper.getSpeedValue(asset.Unit, asset.posInfo.speed) + ' ' + Protocol.Helper.getSpeedUnit(asset.Unit),
+                    Mileage: afs.mileage ? afs.mileage.value : LANGUAGE.COM_MSG031,
+                    EngineHours: afs.mileage ? afs.engineHours.value : LANGUAGE.COM_MSG031,
+                    Direction: Protocol.Helper.getDirectionCardinal(asset.posInfo.direct) + ' (' + asset.posInfo.direct + '&deg;)',
+
+                    Geolock: afs.geolock ? afs.geolock.value : false,
+                    Immobilise: afs.immob ? afs.immob.value : false,
+                    LockDoor: afs.lockdoor ? afs.lockdoor.value : false,
+                    StoppedDuration: afs.stopped ? afs.stopped.duration : false,
+                    Temperature: afs.temperature ? afs.temperature.value : false,
+                    Heartrate: afs.heartrate ? afs.heartrate.value : false,
+                    Fuel: afs.fuel ? afs.fuel.value : false,
+                    Battery: afs.battery ? afs.battery.value : false,
+                    Voltage: afs.voltage ? afs.voltage.value : false,
+                    Acc2: afs.acc2 ? afs.acc2.value : false,
+                    Acc: afs.acc ? afs.acc.value : false,
+                    Driver: driver,
+
+                    Address: asset.lastQueryPosinfo && asset.lastQueryPosinfo.address ? asset.lastQueryPosinfo.address : LANGUAGE.COM_MSG004,
+                    Coords: 'GPS: ' + Protocol.Helper.convertDMS(asset.posInfo.lat, asset.posInfo.lng),
+
+                    IsImmobilisationSupported: (parseInt(asset._FIELD_INT2) & 1) > 0,
+                    IsLockDoorSupported: (parseInt(asset._FIELD_INT2) & 512) > 0,
+                });
+
+                if ( !asset.lastQueryPosinfo ||
+                    Math.floor(asset.posInfo.lat * 10000) / 10000 !== asset.lastQueryPosinfo.lat ||
+                    Math.floor(asset.posInfo.lng * 10000) / 10000 !== asset.lastQueryPosinfo.lng )
+                {
+                    let latlng = {
+                        lat: asset.posInfo.lat,
+                        lng: asset.posInfo.lng
+                    };
+                    Protocol.Helper.getAddressByGeocoder(latlng, function(address) {
+                        asset.lastQueryPosinfo = { lat: Math.floor(latlng.lat * 10000) / 10000, lng: Math.floor(latlng.lng * 10000) / 10000, address: address };
+                        self.$setState({Address: address})
+                    });
+                }
+            },
+            requestStatus: function () {
+                let self = this;
+                let data = {
+                    url: API_URL.SEND_COM_STATUS,
+                    imsi: self.IMSI,
+                    imei: self.IMEI,
+                    type: 'status',
+                    timeStamp: moment().format(window.COM_TIMEFORMAT)
+                }
+                self.$app.methods.precheckSendCommand(data);
+                //self.$app.methods.sendCommand(API_URL.SEND_COM_STATUS, self.IMSI);
+            },
+            changeState: function (params){
+                let self = this;
+                if (params && params.id) {
+                    let url = API_URL.SET_GEOLOCK;
+                    if (params.name === 'Immobilise') {
+                        if(self.isLiveAsset){
+                            url = API_URL.SET_IMMOBILISATION_NO_PAY;
+                        }else{
+                            url = API_URL.SET_IMMOBILISATION;
+                        }
+                    }else if(params.name === 'LockDoor'){
+                        url = API_URL.SET_DOORLOCK;
+                    }
+
+                    let data = {
+                        MajorToken: self.$root.MajorToken,
+                        MinorToken: self.$root.MinorToken,
+                        code: params.id,
+                    };
+                    if (params.name === 'LockDoor') {
+                        data.state = params.state ? 'lock' : 'unlock';
+                    }else{
+                        data.state = params.state ? 'on' : 'off';
+                    }
+                    self.$app.progressbar.show('custom');
+                    self.$app.request.promise.get(url, data, 'json')
+                        .then(function (result) {
+                            if (result.data && result.data.MajorCode === '000') {
+                                self.$app.methods.setStatusNewState({
+                                    asset: params.imei,
+                                    forAlarm: params.name,
+                                    state: params.state
+                                });
+                                self.$setState({ [params.name]: params.state });
+                                self.$app.methods.checkBalance();
+
+                            }else if(result.data && result.data.MajorCode === '200' && result.data.MinorCode === '1003'){
+                                params.state = !params.state;
+                                self.changeSwitcherState(params);
+                                self.$app.methods.customDialog({title: LANGUAGE.PROMPT_MSG039, text: LANGUAGE.PROMPT_MSG040});
+
+                            }else if(result.data && result.data.MajorCode === '100' && result.data.MinorCode === '1003'){
+                                params.state = !params.state;
+                                self.changeSwitcherState(params);
+                                self.$app.methods.customDialog({title: LANGUAGE.PROMPT_MSG039, text: LANGUAGE.PROMPT_MSG040});
+
+                            }else if(result.data && result.data.MajorCode === '100' && result.data.MinorCode === '0000'){
+                                params.state = !params.state;
+                                self.changeSwitcherState(params);
+                                self.$app.methods.customDialog({title: params.imei, text: LANGUAGE.PROMPT_MSG085});
+
+                            }else{
+                                params.state = !params.state;
+                                self.changeSwitcherState(params);
+                                self.$app.dialog.alert(LANGUAGE.PROMPT_MSG023 + `<br>MajorCode: ${result.data.MajorCode}<br>MinorCode: ${result.data.MinorCode}<br>${result.data.Data}`);
+                            }
+                        })
+                        .finally(function () {
+                            self.$app.utils.nextFrame(()=>{
+                                self.$app.progressbar.hide();
+                            });
+                        })
+                        .catch(function (err) {
+                            console.log(err);
+                            params.state = !params.state;
+                            self.changeSwitcherState(params);
+                            if (err && err.status === 404){
+                                self.$app.dialog.alert(LANGUAGE.PROMPT_MSG002);
+                            }else{
+                                self.$app.dialog.alert(LANGUAGE.PROMPT_MSG003);
+                            }
+                        });
+                }
+            },
+            changeSwitcherState: function(params){
+                let self = this;
+                if (params.name) {
+                    let input = self.$el.find('input[name='+params.name+']');
+                    if (input && input.length) {
+                        input.prop('checked', params.state);
+                    }
+                }
+            },
+            unlockDoor: function(e){
+                let self = this;
+                let $el = $$(e.target);
+                let data = {
+                    MajorToken: self.$root.MajorToken,
+                    MinorToken: self.$root.MinorToken,
+                    code: self.Id,
+                    state: 'unlock', //'lock';
+                };
+
+                $el.addClass('disabled');
+                self.$app.progressbar.show('custom');
+                self.$app.request.promise.get( API_URL.SET_DOORLOCK, data, 'json')
+                  .then(function (result) {
+                      if (result.data && result.data.MajorCode === '000') {
+                          self.$app.methods.customNotification({text: LANGUAGE.PROMPT_MSG126});
+                          self.$app.methods.checkBalance();
+
+                      }else if(result.data && result.data.MajorCode === '200' && result.data.MinorCode === '1003'){
+                          self.$app.methods.customDialog({title: LANGUAGE.PROMPT_MSG039, text: LANGUAGE.PROMPT_MSG040});
+
+                      }else if(result.data && result.data.MajorCode === '100' && result.data.MinorCode === '1003'){
+                          self.$app.methods.customDialog({title: LANGUAGE.PROMPT_MSG039, text: LANGUAGE.PROMPT_MSG040});
+
+                      }else if(result.data && result.data.MajorCode === '100' && result.data.MinorCode === '0000'){
+                          self.$app.methods.customDialog({title: params.imei, text: LANGUAGE.PROMPT_MSG085});
+
+                      }else{
+                          self.$app.dialog.alert(LANGUAGE.PROMPT_MSG023 + `<br>MajorCode: ${result.data.MajorCode}<br>MinorCode: ${result.data.MinorCode}<br>${result.data.Data}`);
+                      }
+                  })
+                  .finally(function () {
+                      self.$app.utils.nextFrame(()=>{
+                          $el.removeClass('disabled');
+                          self.$app.progressbar.hide();
+                      });
+                  })
+                  .catch(function (err) {
+                      console.log(err);
+                      if (err && err.status === 404){
+                          self.$app.dialog.alert(LANGUAGE.PROMPT_MSG002);
+                      }else{
+                          self.$app.dialog.alert(LANGUAGE.PROMPT_MSG003);
+                      }
+                  });
+            }
+
+        },
+
+        on: {
+            pageInit: function (e, page) {
+                let self = this;
+
+                let asset = POSINFOASSETLIST[self.IMEI];
+                let geolockEl = page.$el.find('input[name = "Geolock"]');
+                let immobiliseEl = page.$el.find('input[name = "Immobilise"]');
+                let doorlockEl = page.$el.find('input[name = "LockDoor"]');
+
+                let latlng = {
+                    lat: asset.posInfo.lat,
+                    lng: asset.posInfo.lng
+                };
+                Protocol.Helper.getAddressByGeocoder(latlng, function(address) {
+                    asset.lastQueryPosinfo = { lat: Math.floor(latlng.lat * 10000) / 10000, lng: Math.floor(latlng.lng * 10000) / 10000, address: address };
+                    self.$setState({Address: address})
+                });
+
+                geolockEl.on('change', function(){
+                    self.changeState({id: self.Id, imei: self.IMEI, state: this.checked, name: this.attributes.name.value});
+                });
+                immobiliseEl.on('change', function(){
+                    if (POSINFOASSETLIST[self.IMEI]) {
+                        if ((parseInt(POSINFOASSETLIST[self.IMEI]._FIELD_INT2) & 1) > 0) { // check if asset support immobilise feature
+                            self.changeState({id: self.Id, imei: self.IMEI, state: this.checked, name: this.attributes.name.value});
+                        } else{
+                            self.changeSwitcherState({state: !this.checked, name: this.attributes.name.value});
+                            self.$app.methods.customDialog({title: POSINFOASSETLIST[self.IMEI].Name, text: LANGUAGE.PROMPT_MSG085});
+                        }
+                    }else{
+                        self.changeState({id: self.Id, imei: self.IMEI, state: this.checked, name: this.attributes.name.value});
+                    }
+                });
+                doorlockEl.on('change', function(){
+                    if (POSINFOASSETLIST[self.IMEI]) {
+                        self.changeState({id: self.Id, imei: self.IMEI, state: this.checked, name: this.attributes.name.value});
+                    }else{
+                        if ((parseInt(POSINFOASSETLIST[self.IMEI]._FIELD_INT2) & 512) > 0) { // check if asset support immobilise feature
+                            self.changeState({id: self.Id, imei: self.IMEI, state: this.checked, name: this.attributes.name.value});
+                        } else{
+                            self.changeSwitcherState({state: !this.checked, name: this.attributes.name.value});
+                            self.$app.methods.customDialog({title: POSINFOASSETLIST[self.IMEI].Name, text: LANGUAGE.PROMPT_MSG085});
+                        }
+                    }
+                });
+
+                AssetUpdateEvents.on('updateReceived', self.UpdateData);
+            },
+
+            pageBeforeRemove: function () {
+                AssetUpdateEvents.off('updateReceived', this.UpdateData);
+            }
+
+        }
+    };
+</script>

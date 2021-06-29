@@ -1,0 +1,271 @@
+<!--suppress JSAnnotator -->
+<template>
+<!-- Page, data-name contains page name which can be used in callbacks -->
+        <div class="page " data-name="report-alarm-log-show"> <!-- page-with-subnavbar -->
+        <!-- Top Navbar -->
+            <div class="navbar">
+                <div class="navbar-bg"></div>
+                <div class="navbar-inner">
+                    <div class="left">
+                        <a href="#" class="link icon-only back">
+                            <i class="if-not-ios f7-icons icon-header-arrow-back"></i>
+                            <i class="if-ios icon icon-back"></i>
+                        </a>
+                    </div>
+                    <div class="title sliding">{{PageTitle}}</div>
+                    <div class="right">
+                        <a @click="openSortingModal" href="#" class="link icon-only ">
+                            <i class="f7-icons icon-header-filter"></i>
+                        </a>
+                    </div>
+                    
+                </div>
+            </div>
+
+
+
+            <div class="page-content" >
+
+                <!-- Searchbar backdrop -->
+                <div class="searchbar-backdrop"></div>
+
+
+                <!-- Nothing found message -->
+                <div class="block searchbar-not-found">
+                    <div class="block-inner">{{@global.LANGUAGE.PROMPT_MSG000}}</div>
+                </div>
+
+                <div class="treeview list media-list virtual-list no-margin no-hairlines no-chevron searchbar-found alarmLogList" >
+                </div>                     
+                
+            </div>
+        </div>
+</template>
+
+
+<script>
+  // script must return component object
+    return {
+        data: function () {
+            let self = this;
+            //console.log(self.$route.context);
+            //console.log(self.$route.query);
+            let geofenceList = self.$app.methods.getFromStorage('geofenceList');
+            let reportData = self.$route.context.ReportRawData;
+            //console.log(reportData)
+            for (let i = 0; i < reportData.length; i++) {
+                reportData[i].PositionTimeLocal = moment(reportData[i].PositionTime,window.COM_TIMEFORMAT).add(self.$app.data.UTCOFFSET,'minutes').format(window.COM_TIMEFORMAT);
+                reportData[i].PositionTimeUnix = moment(reportData[i].PositionTime,window.COM_TIMEFORMAT).unix();
+                reportData[i].PositionTimeDate = moment(reportData[i].PositionTimeLocal,window.COM_TIMEFORMAT).format(window.COM_TIMEFORMAT4);
+                reportData[i].Id = self.$app.utils.id();
+                reportData[i].AlertName = Protocol.Helper.getAletTypeName(reportData[i].AlertID);
+                if (reportData[i].AlertID === 8 || reportData[i].AlertID === 16) {
+                    reportData[i].GeofenceName = geofenceList[reportData[i].AlertCode] ? geofenceList[reportData[i].AlertCode].Name : LANGUAGE.COM_MSG094;
+                }
+            }
+
+            let ret = {
+                PageTitle: LANGUAGE.ALARM_LOG_MSG00,
+                ReportData: reportData,
+                VirtualList: false,
+                GroupBy: self.$route.query.groupBy,
+            };
+            
+            return ret;
+        },
+        methods: {
+            updateHeight: function (itemEl) {
+                let self = this;
+                let height = $$(itemEl).height(); //Вычисляем высоту
+                let id = $$(itemEl).data('id'); //Берем ID, чтобы найти нужный элемент в items
+                self.VirtualList.items.find(c => c.Id === id).height = height; //Записываем настоящую высоту*/
+                self.VirtualList.update();
+            },
+            groupBy: function(list, keyGetter) {
+                const map = new Map();
+                list.forEach((item) => {
+                    const key = keyGetter(item);
+                    const collection = map.get(key);
+                    if (!collection) {
+                        map.set(key, [item]);
+                    } else {
+                        collection.push(item);
+                    }
+                });
+                return map;
+            },
+            getVLData: function (groupBy = 'date') {
+                let self = this;
+                let grouped;
+                if(groupBy === 'asset'){
+                    grouped = self.groupBy(self.ReportData, item => item.AssetName);
+                }else if(groupBy === 'alert'){
+                    grouped = self.groupBy(self.ReportData, item => item.AlertName);
+                }else{
+                    grouped = self.groupBy(self.ReportData, item => item.PositionTimeDate);
+                }
+                let arr = Array.from(grouped);
+                let newArr = [];
+                for (let i = 0; i < arr.length; i++) {
+                    arr[i][1] = self.$app.methods.sortArrayByObjProps(arr[i][1], [
+                        {
+                            prop: 'PositionTimeUnix',
+                            direction: -1
+                        }
+                    ]);
+                    newArr.push({
+                        Key: arr[i][0],
+                        Data: arr[i][1],
+                        Id: self.$app.utils.id()
+                    })
+                }
+                newArr = self.$app.methods.sortArrayByObjProps(newArr, [
+                    {
+                        prop: 'Key',
+                        direction: groupBy === 'date' ? -1 : 1
+                    }
+                ]);
+                return newArr;
+            },
+            openSortingModal: function (e) {
+                let self = this;
+                let content =   `<div class="popover menu-popover" >
+                                        <div class="popover-inner">
+                                            <div class="list filterMenuList no-hairlines no-hairlines-between">
+                                                <ul>
+                                                    <li class="item-divider">${ LANGUAGE.COM_MSG095 }</li>
+                                                    <li>
+                                                        <label class="item-radio color-green item-content popover-close" >
+                                                            <input type="radio" name="radio-group-by" value="alert" ${ self.GroupBy === 'alert' ? 'checked' : '' } />
+                                                            <i class="icon icon-radio"></i>
+                                                            <div class="item-inner">
+                                                                <div class="item-title">${ LANGUAGE.COM_MSG098 }</div>
+                                                            </div>
+                                                        </label>
+                                                    </li>
+                                                    <li>
+                                                        <label class="item-radio color-green item-content popover-close" >
+                                                            <input type="radio" name="radio-group-by" value="asset" ${ self.GroupBy === 'asset' ? 'checked' : '' } />
+                                                            <i class="icon icon-radio"></i>
+                                                            <div class="item-inner">
+                                                                <div class="item-title">${ LANGUAGE.COM_MSG096 }</div>
+                                                            </div>
+                                                        </label>
+                                                    </li>
+                                                    <li>
+                                                        <label class="item-radio color-green item-content popover-close" >
+                                                            <input type="radio" name="radio-group-by" value="date" ${ self.GroupBy === 'date' ? 'checked' : '' } />
+                                                            <i class="icon icon-radio"></i>
+                                                            <div class="item-inner">
+                                                                <div class="item-title">${ LANGUAGE.COM_MSG097 }</div>
+                                                            </div>
+                                                        </label>
+                                                    </li>
+
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>`;
+                self.$app.popover.create({
+                    backdrop: true,
+                    closeByOutsideClick: true,
+                    targetEl: e.target,
+                    content: content,
+                    on: {
+                        opened: function(popover){
+                            let groupByEl = popover.$el.find('input[name="radio-group-by"]');
+                            groupByEl.on('click', function (){
+                                if(self.GroupBy !== this.value){
+                                    self.$setState({
+                                        GroupBy: this.value
+                                    });
+                                    self.VirtualList.replaceAllItems(self.getVLData(this.value));
+                                }
+                            });
+                        },
+                        closed: function(popover){
+                            popover.destroy();
+                        }
+                    }
+                }).open();
+            }
+        },
+        on: {
+            pageInit: function (e, page) { 
+                let self = this;
+
+                let virtualListEl = page.$el.find('.alarmLogList');
+                let virtualListData = self.getVLData(self.GroupBy);
+
+                self.VirtualList = self.$app.virtualList.create({
+                    el: virtualListEl,
+
+                    //List of array items
+                    items: virtualListData,
+                    height : function(item) {
+                        return typeof item.height === 'undefined' ? 48 : item.height;
+                    },
+                    //emptyTemplate: `<li class="item-content"><div class="item-inner"><div class="item-title">${LANGUAGE.COM_MSG031}</div></div></li>`,
+
+                    // Display the each item using Template7 template parameter
+                    renderItem: function (item, index) {
+                        //console.log(item);
+                        let ret = '';
+                        let title = item.Key;//item[0];
+                        let list = item.Data;//[1];
+
+                        ret +=`
+                        <li class="treeview-item" data-id="${item.Id}" >
+                            <div class="item-content treeview-item-root treeview-item-toggle">
+                                <div class="treeview-toggle"></div>
+                                <div class="item-inner">
+                                    <div class="item-title">${ title }<span class="text-color-red">(${ list.length })</span></div>
+                                </div>
+                            </div>
+                            <ul class="treeview-item-children ">`;
+
+                        for (let i = 0; i < list.length; i++) {
+                            ret +=`
+                             <li class="item-content item-link alertLink" data-id="${ list[i].Id }">
+                                <div class="item-inner">
+                                    <div class="item-title-row">
+                                        <div class="item-title text-color-red size-14">${ list[i].GeofenceName ? list[i].GeofenceName + ' - ' + list[i].AlertName : list[i].AlertName }</div>
+                                        <div class="item-after text-color-gray">
+                                            ${ list[i].PositionTimeLocal }
+                                        </div>
+                                    </div>
+                                    <div class="item-subtitle text-color-black size-16">
+                                        ${ list[i].AssetName }
+                                    </div>
+                                </div>
+                             </li> `;
+                        }
+
+                        ret +=`</ul>
+                        </li>`;
+                        return ret;
+                    },
+                });
+
+                virtualListEl.on('click', '.alertLink', function(){
+                    let id = $$(this).data('id');
+                    mainView.router.navigate('/notification/',{context: { AlertData: self.ReportData.find(c => c.Id === id) } });
+                });
+
+                self.$app.on('treeviewOpen', self.updateHeight);
+                self.$app.on('treeviewClose', self.updateHeight);
+                
+            },
+            pageAfterIn:function(){
+                let self = this;
+
+
+            },
+            pageBeforeRemove: function () {
+                let self = this;
+                self.$app.off('treeviewOpen', self.updateHeight);
+                self.$app.off('treeviewClose', self.updateHeight);
+            }
+        }
+    };
+</script>

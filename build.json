@@ -1,0 +1,18 @@
+{
+    "android": {
+        "debug": {
+            "keystore": "D:/Work/app/HBuilder/new/gpssecure.jks",
+            "storePassword": "quiktrak",
+            "alias": "quiktrak",
+            "password" : "quiktrak",
+            "keystoreType": "jks"
+        },
+        "release": {
+            "keystore": "D:/Work/app/HBuilder/new/gpssecure.jks",
+            "storePassword": "quiktrak",
+            "alias": "quiktrak",
+            "password" : "quiktrak",
+            "keystoreType": "jks"
+        }
+    }
+}

@@ -1,0 +1,158 @@
+<!--suppress JSAnnotator -->
+<template>
+<!-- Page, data-name contains page name which can be used in callbacks -->
+        <div class="page " data-name="contact-edit"> <!-- page-with-subnavbar -->
+        <!-- Top Navbar -->
+            <div class="navbar">
+                <div class="navbar-bg"></div>
+                <div class="navbar-inner">
+                    <div class="left">
+                        <a href="#" class="link icon-only back" >
+                            <i class="if-not-ios f7-icons icon-header-arrow-back"></i>
+                            <i class="if-ios icon icon-back"></i>
+                        </a>
+                    </div>
+                    <div class="title sliding">{{PageTitle}}</div>
+                    <div class="right">
+                        <label for="submit-form-user-edit" class="link icon-only">
+                            <i class="f7-icons icon-header-apply"></i>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        
+            <!-- Scrollable page content-->
+            <form name="UsersEditForm" class="page-content">                
+                <!--<input type="hidden" name="Code" value="{{Code}}">-->
+                <input type="submit" id="submit-form-user-edit" class="display-none" />
+                
+                <div class="list no-margin no-hairlines ">
+                    <ul> 
+                        <li class="item-content item-input ">
+                            <div class="item-media text-color-lightgray"><i class="f7-icons icon-live-name "></i></div>
+                            <div class="item-inner">
+                                <div class="item-title item-floating-label item-label">{{@global.LANGUAGE.ACCOUNT_SETTINGS_MSG02}}</div>
+                                <div class="item-input-wrap ">
+                                    <input type="text" name="FirstName" value="{{FirstName}}" placeholder="{{@global.LANGUAGE.ACCOUNT_SETTINGS_MSG02}}" maxlength="200" required validate>
+                                </div>
+                            </div>
+                        </li>    
+                        <li class="item-content item-input ">
+                            <div class="item-media text-color-lightgray"><!-- <i class="f7-icons icon-profile-name "></i> --></div>
+                            <div class="item-inner">
+                                <div class="item-title item-floating-label item-label">{{@global.LANGUAGE.ACCOUNT_SETTINGS_MSG03}}</div>
+                                <div class="item-input-wrap ">
+                                    <input type="text" name="SubName" value="{{SubName}}" placeholder="{{@global.LANGUAGE.ACCOUNT_SETTINGS_MSG03}}" maxlength="200" required validate>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="item-content item-input ">
+                            <div class="item-media text-color-lightgray"><i class="f7-icons icon-live-email "></i></div>
+                            <div class="item-inner">
+                                <div class="item-title item-floating-label item-label">{{@global.LANGUAGE.ACCOUNT_SETTINGS_MSG04}}</div>
+                                <div class="item-input-wrap ">
+                                    <input type="email" name="Email" value="{{EMail}}" maxlength="200" placeholder="{{@global.LANGUAGE.ACCOUNT_SETTINGS_MSG04}}" required validate>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="item-content item-input ">
+                            <div class="item-media text-color-lightgray"><i class="f7-icons icon-live-mobile "></i></div>
+                            <div class="item-inner">
+                                <div class="item-title item-floating-label item-label">{{@global.LANGUAGE.ACCOUNT_SETTINGS_MSG14}}</div>
+                                <div class="item-input-wrap ">
+                                    <input type="tel" name="Mobile" value="{{Mobile}}" maxlength="200" placeholder="Enter mobile number" pattern="[0-9]*" data-error-message="Only numbers please!">
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                
+            </form>
+        </div>
+</template>
+
+
+<script>
+  // script must return component object
+    return {
+        data: function () {
+            let self = this;
+            
+            let ret = {
+                PageTitle: LANGUAGE.CONTACT_LIST_MSG04,
+            };
+
+            if(self.$route.query.code){
+                let contactList = self.$app.methods.getFromStorage('contactList');
+                ret = contactList.find(obj => obj.Code === self.$route.query.code);
+                ret.PageTitle =  LANGUAGE.CONTACT_LIST_MSG03;
+            }
+
+            return ret;
+        },
+        methods: {
+            
+            saveUser: function(data, url){
+                let self = this;
+
+                self.$app.preloader.show();
+                self.$app.request.promise.post(url, data, 'json')
+                    .then(function (result) {
+                        if(result.data.MajorCode === '000') {
+                            mainView.router.back({force: true, ignoreCache: true});
+                        }else if(result.data.MajorCode === '100' && result.data.MinorCode === '1005'){
+                            self.$app.methods.customDialog({title: data.EMail, text: LANGUAGE.PROMPT_MSG059});
+                        }else{
+                            self.$app.dialog.alert(LANGUAGE.PROMPT_MSG023 + `<br>MajorCode: ${result.data.MajorCode}<br>MinorCode: ${result.data.MinorCode}<br>${result.data.Data}`);
+                        }
+                    })
+                    .finally(function () {
+                        self.$app.preloader.hide();
+                    })
+                    .catch(function (err) {
+                        console.log(err);
+                        if (err && err.status === 404){
+                            self.$app.dialog.alert(LANGUAGE.PROMPT_MSG002);
+                        }else{
+                            self.$app.dialog.alert(LANGUAGE.PROMPT_MSG003);
+                        }
+                    });
+            },
+        },
+       
+        on: {
+            pageInit: function (e, page) { 
+                let self = this;
+                
+                let form = page.$el.find('[name = "UsersEditForm"]');
+                $$(form).on('submit', function(e){
+                    e.preventDefault();
+
+                    let url = API_URL.CONTACT_USER_ADD;
+                    let data = {
+                        MajorToken: self.$app.data.MajorToken,
+
+                        FirstName: page.$el.find('input[name="FirstName"]').val(),                          
+                        SubName: page.$el.find('input[name="SubName"]').val(),
+                        EMail: page.$el.find('input[name="Email"]').val(),
+                        Mobile: page.$el.find('input[name="Mobile"]').val(),
+                        Phone: page.$el.find('input[name="Phone"]').val(),                        
+                    };     
+                    if (self.$route.query.code) {
+                        url = API_URL.CONTACT_USER_EDIT;
+                        data.MinorToken =  self.$route.query.code;
+                    }                 
+
+                    self.saveUser(data, url);
+
+                    return false;
+                });         
+                
+            },   
+            pageAfterOut: function () {
+                
+            },  
+
+        }
+    };
+</script>

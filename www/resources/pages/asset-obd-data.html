@@ -1,0 +1,580 @@
+<!--suppress JSAnnotator -->
+<template>
+<!-- Page, data-name contains page name which can be used in callbacks -->
+        <div class="page " data-name="asset-obd-data"> <!-- page-with-subnavbar -->
+        <!-- Top Navbar -->
+            <div class="navbar">
+                <div class="navbar-bg"></div>
+                <div class="navbar-inner">
+                    <div class="left">
+                        <a href="#" class="link icon-only back" >
+                            <i class="if-not-ios f7-icons icon-header-arrow-back"></i>
+                            <i class="if-ios icon icon-back"></i>
+                        </a>
+                    </div>
+                    <div class="title sliding">{{@global.LANGUAGE.OBD_DATA_MSG000}}</div>
+                    <div class="right">
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scrollable page content-->
+            <div class="page-content">
+                <div class="block">
+                    <div class="row no-gap">
+                        <div class="col text-align-center">
+                            <div class="block-title no-margin-top no-margin-bottom">{{@global.LANGUAGE.OBD_DATA_MSG013}}</div>
+                            <div id="container-rpm" class="speedometer-container"></div>
+                        </div>
+                        <div class="col text-align-center">
+                            <div class="block-title no-margin-top no-margin-bottom">{{@global.LANGUAGE.NOTIFICATIONS_MSG16}}</div>
+                            <div id="container-speed" class="speedometer-container"></div>
+                        </div>
+
+                    </div>
+                </div>
+                {{#if isLoading}}
+                    <div key="skeleton-per-day" class="list no-hairline-bottom no-hairline-top no-margin-top skeleton-text skeleton-effect-blink">
+                        <ul class="row no-gap">
+                            {{#each '1234'}}
+                            <li class="item-content col-50 ">
+                                <div class="item-media text-color-lightgray">
+                                    <div class="skeleton-block" style="width: 25px; height: 25px;"></div>
+                                </div>
+                                <div class="item-inner">
+                                    <div class="item-title" >
+                                        <div class="item-header text-color-gray">
+                                            some name
+                                        </div>
+                                        and value
+                                    </div>
+                                </div>
+                            </li>
+                            {{/each}}
+                        </ul>
+                    </div>
+                {{else}}
+                    {{#if isNoData}}
+                        <div class="block">
+                            <p>{{@global.LANGUAGE.COM_MSG076}}</p>
+                        </div>
+                    {{else}}
+                        <div key="obd-list" class="list no-margin-top " >
+                            <ul class="row no-gap">
+                                {{#OBDList}}
+                                <li class="item-content col-50" >
+                                    <div class="item-media text-color-lightgray ">
+                                        <i class="f7-icons {{icon}} {{color}}"></i>
+                                    </div>
+                                    <div class="item-inner">
+                                        <div class="item-title" >
+                                            <div class="item-header text-color-gray">
+                                                {{name}}
+                                            </div>
+                                            {{value}} {{units}}
+                                        </div>
+                                    </div>
+                                </li>
+                                {{/OBDList}}
+                            </ul>
+                        </div>
+                    {{/if}}
+                {{/if}}
+
+
+            </div>
+        </div>
+</template>
+
+
+<script>
+  // script must return component object
+    return {
+        data: function () {
+            let self = this;
+
+
+            let ret = {
+                isLoading: false,
+                isNoData: false,
+                speedChart: null,
+                OBDList: [],
+                asset: self.$app.methods.getFromStorage('assetList')[self.$route.query.imei]
+            };
+
+            return ret;
+        },
+        methods: {
+            createSpeedChart(){
+                this.speedChart = Highcharts.chart('container-speed', {
+
+                    chart: {
+                        type: 'gauge',
+                        plotBackgroundColor: null,
+                        plotBackgroundImage: null,
+                        plotBorderWidth: 0,
+                        plotShadow: false,
+                        spacing: [0,0,0,0],
+                    },
+
+                    title: {
+                        text: '',
+                        floating: true
+                    },
+
+
+                    pane: {
+                        startAngle: -150,
+                        endAngle: 150,
+                        background: [{
+                            backgroundColor: {
+                                linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                                stops: [
+                                    [0, '#FFF'],
+                                    [1, '#333']
+                                ]
+                            },
+                            borderWidth: 0,
+                            outerRadius: '109%'
+                        }, {
+                            backgroundColor: {
+                                linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                                stops: [
+                                    [0, '#333'],
+                                    [1, '#FFF']
+                                ]
+                            },
+                            borderWidth: 1,
+                            outerRadius: '107%'
+                        }, {
+                            // default background
+                        }, {
+                            backgroundColor: '#DDD',
+                            borderWidth: 0,
+                            outerRadius: '105%',
+                            innerRadius: '103%'
+                        }]
+                    },
+
+                    // the value axis
+                    yAxis: {
+                        min: 0,
+                        max: 200,
+
+                        minorTickInterval: 'auto',
+                        minorTickWidth: 1,
+                        minorTickLength: 10,
+                        minorTickPosition: 'inside',
+                        minorTickColor: '#666',
+
+                        tickPixelInterval: 30,
+                        tickWidth: 2,
+                        tickPosition: 'inside',
+                        tickLength: 10,
+                        tickColor: '#666',
+                        labels: {
+                            step: 2,
+                            rotation: 'auto'
+                        },
+                        title: {
+                            text: Protocol.Helper.getSpeedUnit(this.asset.Unit), //'km/h'
+                        },
+                        plotBands: [{
+                            from: 0,
+                            to: 120,
+                            color: '#55BF3B' // green
+                        }, {
+                            from: 120,
+                            to: 160,
+                            color: '#DDDF0D' // yellow
+                        }, {
+                            from: 160,
+                            to: 200,
+                            color: '#DF5353' // red
+                        }]
+                    },
+
+                    series: [{
+                        name: 'Speed',
+                        data: [0],
+                        tooltip: {
+                            valueSuffix: ' ' + Protocol.Helper.getSpeedUnit(this.asset.Unit) //' km/h'
+                        }
+                    }]
+
+                });
+
+                /* setInterval( () => {
+                    var point = this.speedChart.series[0].points[0],
+                      newVal,
+                      inc = Math.round((Math.random() - 0.5) * 20);
+
+                    newVal = point.y + inc;
+                    if (newVal < 0 || newVal > 200) {
+                        newVal = point.y - inc;
+                    }
+
+                    point.update(newVal);
+
+                }, 3000);*/
+            },
+            createRPMChart(){
+                this.rpmChart = Highcharts.chart('container-rpm', {
+
+                    chart: {
+                        type: 'gauge',
+                        plotBackgroundColor: null,
+                        plotBackgroundImage: null,
+                        plotBorderWidth: 0,
+                        plotShadow: false,
+                        spacing: [0,0,0,0],
+                    },
+
+                    title: {
+                        text: '',
+                        floating: true
+                    },
+
+
+                    pane: {
+                        startAngle: -150,
+                        endAngle: 150,
+                        background: [{
+                            backgroundColor: {
+                                linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                                stops: [
+                                    [0, '#FFF'],
+                                    [1, '#333']
+                                ]
+                            },
+                            borderWidth: 0,
+                            outerRadius: '109%'
+                        }, {
+                            backgroundColor: {
+                                linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                                stops: [
+                                    [0, '#333'],
+                                    [1, '#FFF']
+                                ]
+                            },
+                            borderWidth: 1,
+                            outerRadius: '107%'
+                        }, {
+                            // default background
+                        }, {
+                            backgroundColor: '#DDD',
+                            borderWidth: 0,
+                            outerRadius: '105%',
+                            innerRadius: '103%'
+                        }]
+                    },
+
+                    // the value axis
+                    yAxis: {
+                        min: 0,
+                        max: 8,
+
+                        minorTickInterval: 'auto',
+                        minorTickWidth: 1,
+                        minorTickLength: 10,
+                        minorTickPosition: 'inside',
+                        minorTickColor: '#666',
+
+                        tickPixelInterval: 30,
+                        tickWidth: 2,
+                        tickPosition: 'inside',
+                        tickLength: 10,
+                        tickColor: '#666',
+                        labels: {
+                            step: 2,
+                            rotation: 'auto'
+                        },
+                        title: {
+                            text: 'x1000'
+                        },
+                        plotBands: [ {
+                            from: 6,
+                            to: 8,
+                            color: '#DF5353' // red
+                        }]
+                    },
+
+                    series: [{
+                        name: 'RPM',
+                        data: [0],
+                        tooltip: {
+                            valueSuffix: ' x1000'
+                        }
+                    }]
+
+                });
+
+                /* setInterval( () => {
+                    var point = this.speedChart.series[0].points[0],
+                      newVal,
+                      inc = Math.round((Math.random() - 0.5) * 20);
+
+                    newVal = point.y + inc;
+                    if (newVal < 0 || newVal > 200) {
+                        newVal = point.y - inc;
+                    }
+
+                    point.update(newVal);
+
+                }, 3000);*/
+            },
+            getOBDInfo(showLoader = false){
+                let self = this;
+                let data = {
+                    MinorToken: self.$app.data.MinorToken,
+                    MajorToken: self.$app.data.MajorToken,
+
+                    code: self.asset.Id,
+                }
+                if (showLoader){
+                    self.$setState({
+                        isLoading: true
+                    })
+                }
+
+                self.$app.request.promise.get(API_URL.GET_OBD_INFO, data, 'json')
+                  .then(function (result) {
+                      self.$setState({
+                          isLoading: false
+                      })
+
+                      if (result.data.MajorCode === '000'){
+                          let parsedData = self.parseOBDInfo(result.data.Data)
+                          if(!parsedData.length){
+                              return
+                          }
+                          let rpmIdx = parsedData.findIndex(itm => itm.name === 'rpm')
+                          if(rpmIdx !== -1){
+                              let rpmArr = parsedData.splice(rpmIdx, 1)
+                              self.rpmChart.series[0].points[0].update(rpmArr[0].value / 1000)
+                          }
+
+                          self.speedChart.series[0].points[0].update(Protocol.Helper.getSpeedValue(self.asset.Unit, POSINFOASSETLIST[self.asset.IMEI].posInfo.speed))
+
+                          self.$setState({
+                              OBDList: parsedData
+                          })
+
+                      }else{
+                          if (showLoader){
+                              self.$setState({
+                                  isLoading: false,
+                                  isNoData: true
+                              })
+                          }
+                          self.$app.dialog.alert(LANGUAGE.PROMPT_MSG003);
+                      }
+                  })
+                  .catch(function (err) {
+                      console.log(err);
+                     // self.loadingStopped();
+                      self.$setState({
+                          isLoading: false,
+                          isNoData: true
+                      })
+                      if (err && err.status === 404){
+                          self.$app.dialog.alert(LANGUAGE.PROMPT_MSG002);
+                      }else{
+                          self.$app.dialog.alert(LANGUAGE.PROMPT_MSG003);
+                      }
+                  })
+                /*let parramsList = [
+                    {
+                        name: LANGUAGE.OBD_DATA_MSG001,
+                        value: '12 V',
+                        icon: 'icomoon icon-voltage-01',
+                        color: 'text-color-csm1'
+                    },
+                    {
+                        name: LANGUAGE.OBD_DATA_MSG002,
+                        value: '12 V',
+                        icon: 'icomoon icon-engine-01',
+                        color: 'text-color-csm2'
+                    },
+                    {
+                        name: LANGUAGE.OBD_DATA_MSG003,
+                        value: '12 V',
+                        icon: 'icomoon icon-cooltemp-01',
+                        color: 'text-color-csm3'
+                    },
+                    {
+                        name: LANGUAGE.OBD_DATA_MSG004,
+                        value: '12 V',
+                        icon: 'icomoon icon-fuel-01',
+                        color: 'text-color-csm4'
+                    },
+                    {
+                        name: LANGUAGE.OBD_DATA_MSG005,
+                        value: '12 V',
+                        icon: 'icomoon icon-airtemp-01',
+                        color: 'text-color-csm5'
+                    },
+                    {
+                        name: LANGUAGE.OBD_DATA_MSG006,
+                        value: '12 V',
+                        icon: 'icomoon icon-air-01',
+                        color: 'text-color-csm6'
+                    },
+                    {
+                        name: LANGUAGE.OBD_DATA_MSG007,
+                        value: '12 V',
+                        icon: 'icomoon icon-air-01',
+                        color: 'text-color-csm7'
+                    },
+                    {
+                        name: LANGUAGE.OBD_DATA_MSG008,
+                        value: '12 V',
+                        icon: 'icomoon icon-throttle-01',
+                        color: 'text-color-csm8'
+                    },
+                    {
+                        name: LANGUAGE.OBD_DATA_MSG009,
+                        value: '12 V',
+                        icon: 'icomoon icon-fuel-01',
+                        color: 'text-color-csm9'
+                    },
+                    {
+                        name: LANGUAGE.OBD_DATA_MSG010,
+                        value: '12 V',
+                        icon: 'icomoon icon-vin-01',
+                        color: 'text-color-csm10'
+                    },
+                    {
+                        name: LANGUAGE.OBD_DATA_MSG011,
+                        value: '12 V',
+                        icon: 'icomoon icon-mileage-01',
+                        color: 'text-color-csm11'
+                    },
+                    {
+                        name: LANGUAGE.OBD_DATA_MSG012,
+                        value: '12 V',
+                        icon: 'icomoon icon-mileage-01',
+                        color: 'text-color-csm12'
+                    },
+                ]
+
+                self.$setState({
+                    OBDList: parramsList
+                })*/
+            },
+            parseOBDInfo(rawData){
+                let ret = []
+                if(!rawData){
+                    return ret
+                }
+
+                let data = JSON.parse(rawData)
+
+                if(!data || !data.PIDs){
+                    return ret
+                }
+
+                let pids = JSON.parse(data.PIDs)
+                if(!pids || this.$app.methods.isObjEmpty(pids)){
+                    return ret
+                }
+                let keys = Object.keys(pids)
+                let pidDetailsByName = {
+                    PID0C: {
+                        id: 'rpm',
+                        name: 'rpm',
+                        units: 'rpm',
+                    },
+                    PID42: {
+                        id: 'voltage',
+                        name: LANGUAGE.OBD_DATA_MSG001,
+                        units: 'V',
+                        icon: 'icomoon icon-voltage-01',
+                        color: 'text-color-csm1'
+                    },
+                    PID04: {
+                        id: 'engineLoad',
+                        name: LANGUAGE.OBD_DATA_MSG002,
+                        units: '%',
+                        icon: 'icomoon icon-engine-01',
+                        color: 'text-color-csm2'
+                    },
+                    PID05: {
+                        id: 'coolantTemperature',
+                        name: LANGUAGE.OBD_DATA_MSG003,
+                        units: '°C',
+                        icon: 'icomoon icon-cooltemp-01',
+                        color: 'text-color-csm3'
+                    },
+                    PID10: {
+                        id: 'airFlowRate',
+                        name: LANGUAGE.OBD_DATA_MSG006,
+                        units: 'grams/sec',
+                        icon: 'icomoon icon-air-01',
+                        color: 'text-color-csm6'
+                    },
+                    PID0F: {
+                        id: 'intakeAirTemperature',
+                        name: LANGUAGE.OBD_DATA_MSG005,
+                        units: '°C',
+                        icon: 'icomoon icon-airtemp-01',
+                        color: 'text-color-csm5'
+                    },
+                    PID11: {
+                        id: 'throttlePosition',
+                        name: LANGUAGE.OBD_DATA_MSG008,
+                        units: '%',
+                        icon: 'icomoon icon-throttle-01',
+                        color: 'text-color-csm8'
+                    },
+                    PID0A: {
+                        id: 'fuelPressure',
+                        name: LANGUAGE.OBD_DATA_MSG009,
+                        units: 'kPa',
+                        icon: 'icomoon icon-fuel-01',
+                        color: 'text-color-csm9'
+                    },
+                    //'PID0902': '',
+                    //'PIDA6-1': '',
+                }
+                for (const key of keys) {
+                    if(pidDetailsByName[key]){
+                        ret.push({
+                            ...pidDetailsByName[key],
+                            value: pids[key],
+                        })
+                    }
+                }
+                return ret
+            },
+            UpdateData(){
+                this.getOBDInfo()
+            }
+        },
+
+        on: {
+            pageInit: function (e, page) {
+                let self = this;
+
+                this.createSpeedChart()
+                this.createRPMChart()
+
+                this.getOBDInfo(true)
+
+                AssetUpdateEvents.on('updateReceived', this.UpdateData);
+
+            },
+            pageAfterOut: function () {
+
+            },
+            pageBeforeRemove: function () {
+                if(this.speedChart) this.speedChart.destroy();
+                if(this.rpmChart) this.rpmChart.destroy();
+                AssetUpdateEvents.off('updateReceived', this.UpdateData);
+
+            }
+
+        }
+    };
+</script>

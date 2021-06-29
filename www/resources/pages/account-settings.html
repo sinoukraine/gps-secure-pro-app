@@ -1,0 +1,355 @@
+<!--suppress JSAnnotator -->
+<template>
+<!-- Page, data-name contains page name which can be used in callbacks -->
+    <div class="page " data-name="account-settings"> <!-- page-with-subnavbar -->
+    <!-- Top Navbar -->
+        <div class="navbar">
+            <div class="navbar-bg"></div>
+            <div class="navbar-inner">
+                <div class="left">
+                    <!--<a href="#" class="link icon-only back" >
+                        <i class="if-not-ios f7-icons icon-header-arrow-back"></i>
+                        <i class="if-ios icon icon-back"></i>
+                    </a>-->
+                    <a href="/panel-left/" class="link icon-only " >
+                        <i class="if-not-ios f7-icons icon-header-menu"></i>
+                        <i class="if-ios icon material-icons">menu</i>
+                    </a>
+                </div>
+                <div class="title sliding">{{@global.LANGUAGE.MENU_MSG01}}</div>
+                <div class="right">
+                    <label for="{{CurrentFormButtonSubmit}}" class="link icon-only">
+                        <i class="f7-icons icon-header-apply"></i>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="toolbar tabbar toolbar-top">
+            <div class="toolbar-inner">              
+                <a href="#user-profile" class="tab-link tab-link-active">
+                    {{@global.LANGUAGE.ACCOUNT_SETTINGS_MSG00}}
+                </a>
+                <a href="#user-password" class="tab-link">
+                    {{@global.LANGUAGE.ACCOUNT_SETTINGS_MSG01}}
+                </a>              
+            </div>
+        </div>
+
+        <!--<div class="bottom-section-wrapper bottom-section-button-wrapper bg-color-white">
+            <div class="row">
+                <label for="{{CurrentFormButtonSubmit}}" class="col button button-fill color-green elevation-2" tabindex="0">{{@global.LANGUAGE.COM_MSG06}}</label>                    
+            </div>
+        </div> -->
+        
+        <div class="tabs-animated-wrap">
+            <div class="tabs">
+                <form name="user-profile-form" class="page-content tab tab-active" id="user-profile">
+                    <input type="submit" id="submit-form-user" class="display-none" />            
+                    <div class="list no-margin-top no-hairline-bottom">
+                        <ul> 
+                            <li class="item-content item-input ">
+                                <div class="item-media text-color-lightgray"><i class="f7-icons icon-live-name "></i></div>
+                                <div class="item-inner">
+                                    <div class="item-title item-floating-label item-label">{{@global.LANGUAGE.ACCOUNT_SETTINGS_MSG02}}</div>
+                                    <div class="item-input-wrap ">
+                                        <input type="text" name="FirstName" value="{{FirstName}}" maxlength="200" required validate>
+                                    </div>
+                                </div>
+                            </li>    
+                            <li class="item-content item-input ">
+                                <div class="item-media text-color-lightgray"><!-- <i class="f7-icons icon-profile-name "></i> --></div>
+                                <div class="item-inner">
+                                    <div class="item-title item-floating-label item-label">{{@global.LANGUAGE.ACCOUNT_SETTINGS_MSG03}}</div>
+                                    <div class="item-input-wrap ">
+                                        <input type="text" name="SurName" value="{{SurName}}" maxlength="200" required validate>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="item-content item-input ">
+                                <div class="item-media text-color-lightgray"><i class="f7-icons icon-live-email "></i></div>
+                                <div class="item-inner">
+                                    <div class="item-title item-floating-label item-label">{{@global.LANGUAGE.ACCOUNT_SETTINGS_MSG04}}</div>
+                                    <div class="item-input-wrap ">
+                                        <input type="email" name="Email" value="{{Email}}" maxlength="200" required validate>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="item-content item-input ">
+                                <div class="item-media text-color-lightgray"><i class="f7-icons icon-live-mobile "></i></div>
+                                <div class="item-inner">
+                                    <div class="item-title item-floating-label item-label">{{@global.LANGUAGE.ACCOUNT_SETTINGS_MSG05}}</div>
+                                    <div class="item-input-wrap ">
+                                        <input type="tel" name="Mobile" value="{{Mobile}}" maxlength="200" placeholder="Enter phone number" pattern="[0-9]*" data-error-message="{{@global.LANGUAGE.PROMPT_MSG106}}" required validate>
+                                    </div>
+                                </div>
+                            </li>
+                           
+                        </ul>                        
+                    </div>
+                    <div class="list no-hairline-bottom">
+                        <ul>
+                        	
+                            <li class="item-content item-input ">
+                                <div class="item-media text-color-lightgray"><i class="f7-icons icon-live-address "></i></div>
+                                <div class="item-inner">
+                                    <div class="item-title item-floating-label item-label">{{@global.LANGUAGE.ACCOUNT_SETTINGS_MSG09}}</div>
+                                    <div class="item-input-wrap ">
+                                        <input type="text" name="Address0" value="{{Address0}}" maxlength="200" >
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="item-content item-input ">
+                                <div class="item-media text-color-lightgray"><!-- <i class="f7-icons icon-profile-name "></i> --></div>
+                                <div class="item-inner">
+                                    <div class="item-title item-floating-label item-label">{{@global.LANGUAGE.ACCOUNT_SETTINGS_MSG10}}</div>
+                                    <div class="item-input-wrap ">
+                                        <input type="text" name="Address1" value="{{Address1}}"  maxlength="200" >
+                                    </div>
+                                </div>
+                            </li>
+                            <li >
+								<a class="item-link smart-select smart-select-init custom-smart-select custom-smart-select-assets" data-open-in="popup" data-searchbar="true" data-searchbar-placeholder="{{@global.LANGUAGE.COM_MSG002}}" data-append-searchbar-not-found="{{@global.LANGUAGE.PROMPT_MSG000}}" data-form-color-theme="green">
+									<select name="TimeZone" required validate >
+										{{#TimeZoneList}}
+											<option value="{{Value}}" {{#if State }}selected{{/if}}>{{Name}}</option>
+										{{/TimeZoneList}}  
+									</select>
+									<div class="item-content  item-input">
+										<div class="item-media text-color-lightgray">
+											<!-- <i class="f7-icons icon-name"></i> -->
+										</div>
+										<div class="item-inner">
+											<div class="item-title item-label">{{@global.LANGUAGE.ACCOUNT_SETTINGS_MSG25}}</div>
+										</div>
+									</div>
+								</a>
+							</li>
+                            <li class="item-content item-input ">
+                                <div class="item-media text-color-lightgray"><!-- <i class="f7-icons icon-profile-name "></i> --></div>
+                                <div class="item-inner">
+                                    <div class="item-title item-floating-label item-label">{{@global.LANGUAGE.ACCOUNT_SETTINGS_MSG11}}</div>
+                                    <div class="item-input-wrap ">
+                                        <input type="text" name="Address2" value="{{Address2}}"  maxlength="200" >
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="item-content item-input ">
+                                <div class="item-media text-color-lightgray"><!-- <i class="f7-icons icon-profile-name "></i> --></div>
+                                <div class="item-inner">
+                                    <div class="item-title item-floating-label item-label">{{@global.LANGUAGE.ACCOUNT_SETTINGS_MSG12}}</div>
+                                    <div class="item-input-wrap ">
+                                        <input type="text" name="Address3" value="{{Address3}}"  maxlength="200" >
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="item-content item-input ">
+                                <div class="item-media text-color-lightgray"><!-- <i class="f7-icons icon-profile-name "></i> --></div>
+                                <div class="item-inner">
+                                    <div class="item-title item-floating-label item-label">{{@global.LANGUAGE.ACCOUNT_SETTINGS_MSG13}}</div>
+                                    <div class="item-input-wrap ">
+                                        <input type="text" name="Address4" value="{{Address4}}"  maxlength="200" >
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+
+                <form name="user-password-form" class="page-content tab" id="user-password">
+                    <input type="submit" id="submit-form-password" class="display-none" />
+                    <div class="block-title tooltip-init" data-tooltip="{{@global.LANGUAGE.PROMPT_MSG052}}">{{@global.LANGUAGE.ACCOUNT_SETTINGS_MSG26}} <span class="badge color-lightblue">?</span></div>
+                    <div class="list no-margin-top no-hairline-bottom ">
+                        <ul>                            
+                            <li class="item-content item-input ">
+                                <div class="item-media text-color-lightgray"><i class="f7-icons icon-live-password "></i></div>
+                                <div class="item-inner">
+                                    <div class="item-title item-floating-label item-label">{{@global.LANGUAGE.ACCOUNT_SETTINGS_MSG06}}</div>
+                                    <div class="item-input-wrap ">
+                                        <input type="password" value="" name = "oldpwd" placeholder="******" maxlength="200" required validate>
+                                    </div>
+                                </div>
+                            </li>    
+                            <li class="item-content item-input ">
+                                <div class="item-media text-color-lightgray"><!-- <i class="f7-icons icon-profile-name "></i> --></div>
+                                <div class="item-inner">
+                                    <div class="item-title item-floating-label item-label">{{@global.LANGUAGE.ACCOUNT_SETTINGS_MSG07}}</div>
+                                    <div class="item-input-wrap ">
+                                        <input type="password" value="" pattern="^\\S+\\w{4,32}\\S{1,}" name = "newpwd" placeholder="******" maxlength="200" required validate>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="item-content item-input ">
+                                <div class="item-media text-color-lightgray"><!-- <i class="f7-icons icon-profile-email "></i> --></div>
+                                <div class="item-inner">
+                                    <div class="item-title item-floating-label item-label">{{@global.LANGUAGE.ACCOUNT_SETTINGS_MSG08}}</div>
+                                    <div class="item-input-wrap ">
+                                        <input type="password" value="" name = "confirmpwd" placeholder="******" maxlength="200" required validate>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>                        
+                    </div>
+                </form>
+
+
+            </div>
+        </div>
+            
+    </div>
+
+
+        
+</template>
+
+
+<script>
+  // script must return component object
+    return { 
+        data: function () {
+            var self = this;
+
+            var ret = {};            
+
+            ret = self.$app.methods.getFromStorage('userInfo');
+            ret.TimeZoneList = Protocol.Helper.getTimezoneList(ret.TimeZone);
+            ret.CurrentFormButtonSubmit = 'submit-form-user';
+
+            return ret;
+        },
+
+        methods: { 
+            saveUserDetails: function(data){
+                var self = this;
+
+                self.$app.preloader.show();
+                self.$app.request.promise.get(API_URL.EDIT_ACCOUNT, data, 'json')
+                    .then(function (result) {
+                        if(result.data.MajorCode === '000') {
+                            var userInfo = self.$app.methods.getFromStorage('userInfo');
+                            self.$app.utils.extend(userInfo, data);
+                            self.$app.methods.setInStorage({name:'userInfo', data: userInfo });
+                            mainView.router.back();
+                        }else if(result.data.MajorCode === '100' && result.data.MinorCode === '1002'){
+                            self.$app.dialog.alert(LANGUAGE.PROMPT_MSG114);
+                        }else{
+                            self.$app.dialog.alert(LANGUAGE.PROMPT_MSG023 + `<br>MajorCode: ${result.data.MajorCode}<br>MinorCode: ${result.data.MinorCode}<br>${result.data.Data}`);
+                        }
+
+                    })
+                    .finally(function () {
+                        self.$app.preloader.hide();
+                    })
+                    .catch(function (err) {
+                        console.log(err);
+                        if (err && err.status === 404){
+                            self.$app.dialog.alert(LANGUAGE.PROMPT_MSG002);
+                        }else{
+                            self.$app.dialog.alert(LANGUAGE.PROMPT_MSG003);
+                        }
+                    });
+            },
+            saveNewPassword: function(data){
+                var self = this;
+
+                self.$app.preloader.show();
+                self.$app.request.promise.get(API_URL.RESET_PASSWORD, data, 'json')
+                    .then(function (result) {
+                        if(result.data.MajorCode === '000') {
+                            self.$app.dialog.alert(LANGUAGE.PROMPT_MSG055, function(){
+                                self.$app.methods.logout();
+                                mainView.router.back();
+                            });
+                        }else if(result.data.MajorCode === '100' && result.data.MinorCode === '1004'){
+                            self.$app.dialog.alert(LANGUAGE.PROMPT_MSG056);
+                        }else{
+                            self.$app.dialog.alert(LANGUAGE.PROMPT_MSG023 + `<br>MajorCode: ${result.data.MajorCode}<br>MinorCode: ${result.data.MinorCode}<br>${result.data.Data}`);
+                        }
+                    })
+                    .finally(function () {
+                        self.$app.preloader.hide();
+                    })
+                    .catch(function (err) {
+                        console.log(err);
+                        if (err && err.status === 404){
+                            self.$app.dialog.alert(LANGUAGE.PROMPT_MSG002);
+                        }else{
+                            self.$app.dialog.alert(LANGUAGE.PROMPT_MSG003);
+                        }
+                    });
+            },
+
+        },
+
+        on: {
+            pageInit: function (e, page) { 
+                var self = this;   
+                var profileForm = page.$pageEl.find('[name = "user-profile-form"]');
+                var passwordForm = page.$pageEl.find('[name = "user-password-form"]');
+                var tabs = page.$pageEl.find('.tab');
+
+                tabs.on('tab:show', function(){                   
+                    if (this.name === 'user-password-form') {
+                        self.$setState({
+                            CurrentFormButtonSubmit: 'submit-form-password'
+                        });
+                    }else{
+                        self.$setState({
+                            CurrentFormButtonSubmit: 'submit-form-user'
+                        });
+                    }
+                });
+
+                profileForm.on('submit', function (e) {
+                    e.preventDefault();
+
+                    var data = {
+                        MajorToken: self.$app.data.MajorToken,
+                        MinorToken: self.$app.data.MinorToken,
+                        FirstName: page.$el.find('input[name="FirstName"]').val(),
+                        SurName: page.$el.find('input[name="SurName"]').val(),
+                        Mobile: page.$el.find('input[name="Mobile"]').val(),
+                        Email: page.$el.find('input[name="Email"]').val(),                                                
+                        Address0: page.$el.find('input[name="Address0"]').val(),
+                        Address1: page.$el.find('input[name="Address1"]').val(),
+                        Address2: page.$el.find('input[name="Address2"]').val(),            
+                        Address3: page.$el.find('input[name="Address3"]').val(),
+                        Address4: page.$el.find('input[name="Address4"]').val(),
+                        TimeZone: page.$el.find('[name="TimeZone"]').val(),  
+                                                                  
+                    }; 
+                   // console.log(data);
+                    self.saveUserDetails(data);
+
+                    return false;
+                });
+
+                passwordForm.on('submit', function (e) {
+                    e.preventDefault();  
+                   // var userInfo = self.$app.methods.getFromStorage('userInfo');
+                    var data = {
+                        MinorToken: self.$app.data.MinorToken,
+                        oldpwd: page.$el.find('input[name="oldpwd"]').val(),
+                        newpwd: page.$el.find('input[name="newpwd"]').val(),
+                    }; 
+                    var confirmpwd = page.$el.find('input[name="confirmpwd"]').val();
+
+                    if (data.newpwd.length < 6) {
+                        self.$app.dialog.alert(LANGUAGE.PROMPT_MSG054);
+                        return false;
+                    }
+                    if (data.newpwd !== confirmpwd) {
+                        self.$app.dialog.alert(LANGUAGE.PROMPT_MSG053);
+                        return false;
+                    }
+
+                    self.saveNewPassword(data);
+
+                    return false;
+                });
+                
+            },   
+        }
+    };
+</script>
+    

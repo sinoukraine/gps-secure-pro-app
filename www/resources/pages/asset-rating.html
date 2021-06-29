@@ -1,0 +1,429 @@
+<!--suppress JSAnnotator -->
+<template>
+<!-- Page, data-name contains page name which can be used in callbacks -->
+    <div class="page " data-name="asset-rating"> <!-- page-with-subnavbar -->
+    <!-- Top Navbar -->
+        <div class="navbar">
+            <div class="navbar-bg"></div>
+            <div class="navbar-inner">
+                <div class="left">
+                    <a href="#" class="link icon-only back">
+                        <i class="if-not-ios f7-icons icon-header-arrow-back"></i>
+                        <i class="if-ios icon icon-back"></i>
+                    </a>
+                </div>
+                <div class="title sliding">{{@global.LANGUAGE.ASSET_STATUS_LIVE_MSG10}}</div>
+
+            </div>
+        </div>
+
+        <div class="toolbar tabbar toolbar-top">
+            <div class="toolbar-inner">
+                <a href="#tab-per-day" class="tab-link tab-link-active">
+                    {{@global.LANGUAGE.ASSET_RATING_MSG00}}
+                </a>
+                <a href="#tab-per-week" class="tab-link">
+                    {{@global.LANGUAGE.ASSET_RATING_MSG01}}
+                </a>
+            </div>
+        </div>
+
+
+        <div class="tabs-animated-wrap">
+            <div class="tabs">
+                <div class="page-content tab tab-active" id="tab-per-day">
+                    {{#unless SummaryPerDayLoaded}}
+                    <div class="progressbar-infinite color-custom"></div>
+                    <div key="key-skeleton-per-day">
+                        <div class="block skeleton-text skeleton-effect-blink">
+                        <div class="skeleton-block" style="width: 200px; height: 100px; margin: auto; border-radius: 100px 100px 0 0"></div>
+                        </div>
+                        <div class="block-title text-align-center skeleton-text skeleton-effect-blink">
+                            some title here
+                        </div>
+                        <div class="block text-align-center skeleton-text skeleton-effect-blink">
+                            stars template here
+                        </div>
+                        <div key="skeleton-per-day" class="list no-hairline-bottom no-hairline-top no-margin-top">
+                            <ul>
+                                {{#each '123'}}
+                                <li class="item-content skeleton-text skeleton-effect-blink">
+                                    <div class="item-media text-color-lightgray">
+                                        <div class="skeleton-block" style="width: 25px; height: 25px;"></div>
+                                    </div>
+                                    <div class="item-inner">
+                                        <div class="item-title">object name</div>
+                                        <div class="item-after">obj val</div>
+                                    </div>
+                                </li>
+                                {{/each}}
+                            </ul>
+                        </div>
+                    </div>
+
+                    {{else}}
+
+                    <div key="key-gauge-wrapper-per-day" class="block">
+                        <div class="row">
+                            <div class="col text-align-center">
+                                <div
+                                  class="gauge gauge-init"
+                                  data-type="semicircle"
+                                  data-value="{{PerDayGauge.value}}"
+                                  data-value-text="{{PerDayGauge.valueText}}"
+                                  data-value-text-color="#333"
+                                  data-border-color="{{PerDayGauge.borderColor}}"
+                                  data-border-width="15"
+                                  data-label-text="{{@global.LANGUAGE.ASSET_RATING_MSG06}}"
+                                  data-label-text-color="#8e8e93"
+                                ></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="block-title text-align-center text-transform-uppercase">
+                        {{@global.LANGUAGE.ASSET_STATUS_LIVE_MSG10}}
+                    </div>
+                    <div class="block text-align-center">
+                        {{PerDayStars.template}}
+                    </div>
+                    <div class="list list-custom no-hairlines no-margin-top">
+                        <ul>
+                            {{#SummaryPerDay}}
+                            <li>
+                                <div class="item-content">
+                                    <div class="item-media text-color-lightgray">{{#if Icon}}<i class="f7-icons {{Icon}}"></i>{{/Icon}}</div>
+                                    <div class="item-inner">
+                                        <div class="item-title">{{Name}}</div>
+                                        <div class="item-after">{{Value}}</div>
+                                    </div>
+                                </div>
+                            </li>
+                            {{else}}
+                            <li>
+                                <div class="item-content">
+                                    <div class="item-inner">
+                                        <div class="item-title">{{@gloabl.LANGUAGE.PROMPT_MSG072}}</div>
+                                    </div>
+                                </div>
+                            </li>
+                            {{/SummaryPerDay}}
+                        </ul>
+                    </div>
+                    {{/unless}}
+                </div>
+
+                <div class="page-content tab" id="tab-per-week">
+                    {{#unless SummaryPerWeekLoaded}}
+                    <div class="progressbar-infinite color-custom"></div>
+                    <div key="key-skeleton-per-week">
+                        <div class="block skeleton-text skeleton-effect-blink">
+                            <div class="skeleton-block" style="width: 200px; height: 100px; margin: auto; border-radius: 100px 100px 0 0"></div>
+                        </div>
+                        <div class="block-title text-align-center skeleton-text skeleton-effect-blink">
+                            some title here
+                        </div>
+                        <div class="block text-align-center skeleton-text skeleton-effect-blink">
+                            stars template here
+                        </div>
+                        <div class="list no-hairline-bottom no-hairline-top no-margin-top">
+                            <ul>
+                                {{#each '123'}}
+                                <li class="item-content skeleton-text skeleton-effect-blink">
+                                    <div class="item-media text-color-lightgray">
+                                        <div class="skeleton-block" style="width: 25px; height: 25px;"></div>
+                                    </div>
+                                    <div class="item-inner">
+                                        <div class="item-title">object name</div>
+                                        <div class="item-after">obj val</div>
+                                    </div>
+                                </li>
+                                {{/each}}
+                            </ul>
+                        </div>
+                    </div>
+
+                    {{else}}
+
+                    <div key="key-gauge-wrapper-per-week" class="block">
+                        <div class="row">
+                            <div class="col text-align-center">
+                                <div
+                                  class="gauge gauge-init"
+                                  data-type="semicircle"
+                                  data-value="{{PerWeekGauge.value}}"
+                                  data-value-text="{{PerWeekGauge.valueText}}"
+                                  data-value-text-color="#333"
+                                  data-border-color="{{PerWeekGauge.borderColor}}"
+                                  data-border-width="15"
+                                  data-label-text="{{@global.LANGUAGE.ASSET_RATING_MSG06}}"
+                                  data-label-text-color="#8e8e93"
+                                ></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="block-title text-align-center text-transform-uppercase">
+                        {{@global.LANGUAGE.ASSET_STATUS_LIVE_MSG10}}
+                    </div>
+                    <div class="block text-align-center">
+                        {{PerWeekStars.template}}
+                    </div>
+                    <div key="summary-list-per-week" class="list list-custom no-hairlines no-margin-top">
+                        <ul>
+                            {{#SummaryPerWeek}}
+                            <li>
+                                <div class="item-content">
+                                    <div class="item-media text-color-lightgray">{{#if Icon}}<i class="f7-icons {{Icon}}"></i>{{/Icon}}</div>
+                                    <div class="item-inner">
+                                        <div class="item-title">{{Name}}</div>
+                                        <div class="item-after">{{Value}}</div>
+                                    </div>
+                                </div>
+                            </li>
+                            {{else}}
+                            <li>
+                                <div class="item-content">
+                                    <div class="item-inner">
+                                        <div class="item-title">{{@gloabl.LANGUAGE.PROMPT_MSG072}}</div>
+                                    </div>
+                                </div>
+                            </li>
+                            {{/SummaryPerWeek}}
+                        </ul>
+                    </div>
+                    {{/unless}}
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+
+
+</template>
+
+
+<script>
+  // script must return component object
+    return {
+        data: function () {
+            var self = this;
+
+            var ret = {
+                SummaryPerDayLoaded: false,
+                SummaryPerWeekLoaded: false,
+            };
+
+            /*ret = self.$app.methods.getFromStorage('userInfo');
+            ret.TimeZoneList = Protocol.Helper.getTimezoneList(ret.TimeZone);
+            ret.CurrentFormButtonSubmit = 'submit-form-user';*/
+
+            return ret;
+        },
+
+        methods: {
+            getDriverBehavior: function (imei){
+                let self = this;
+
+                self.$app.request.promise.get(API_URL.GET_ASSET_RAITING, {imei: imei}, 'json')
+                  .then(function (result) {
+
+                      if(result.data && result.data.MajorCode === '000' ) {
+                          if (!result.data.Data) {
+                              self.loadingStopped();
+                              self.$app.dialog.alert('No Data to display')
+                              return;
+                          }
+                          self.$setState({
+                              SummaryPerDayLoaded: true,
+                              SummaryPerDay: [
+                                  {
+                                      Icon: 'icon-asset-name',
+                                      Name: LANGUAGE.ASSET_TRACK_MSG01,
+                                      Value: result.data.Data.Name ? result.data.Data.Name : LANGUAGE.COM_MSG083,
+                                  },{
+                                      Icon: 'icon-status-imei',
+                                      Name: 'IMEI',
+                                      Value: result.data.Data.IMEI ? result.data.Data.IMEI : LANGUAGE.COM_MSG083,
+                                  },{
+                                      Icon: 'icon-braking',
+                                      Name: LANGUAGE.ASSET_RATING_MSG02,
+                                      Value: result.data.Data.today && result.data.Data.today.HarshBracking && result.data.Data.today.HarshBracking > 0 ? result.data.Data.today.HarshBracking : 0,
+                                  },{
+                                      Icon: 'icon-live-speed',
+                                      Name: LANGUAGE.ASSET_RATING_MSG03,
+                                      Value: result.data.Data.today && result.data.Data.today.HarshAcceleration && result.data.Data.today.HarshAcceleration > 0 ? result.data.Data.today.HarshAcceleration : 0,
+                                  },{
+                                      Icon: 'icon-live-duration',
+                                      Name: LANGUAGE.ASSET_RATING_MSG04,
+                                      Value: result.data.Data.today && result.data.Data.today.ExcessiveIdling && result.data.Data.today.ExcessiveIdling > 0 ? result.data.Data.today.ExcessiveIdling : 0,
+                                  },{
+                                      Icon: 'icon-live-distance',
+                                      Name: LANGUAGE.ASSET_RATING_MSG05,
+                                      Value: result.data.Data.today && result.data.Data.today.Speeding && result.data.Data.today.Speeding > 0 ? result.data.Data.today.Speeding : 0,
+                                  },{
+                                      Icon: 'icon-status-mileage',
+                                      Name: LANGUAGE.ASSET_TRACK_MSG04,
+                                      Value: result.data.Data.today && result.data.Data.today.Mileage && result.data.Data.today.Mileage > 0 ? Protocol.Helper.getMileageValue(POSINFOASSETLIST[result.data.Data.IMEI].Unit, result.data.Data.today.Mileage) + '&nbsp;' + Protocol.Helper.getMileageUnit(POSINFOASSETLIST[result.data.Data.IMEI].Unit) : 0,
+                                  },{
+                                      Icon: 'icon-live-engine-hours',
+                                      Name: LANGUAGE.ASSET_PLAYBACK_MSG22,
+                                      Value: result.data.Data.today && result.data.Data.today.Duration && result.data.Data.today.Duration > 0 ? TimeSpan(parseFloat(result.data.Data.today.Duration) * 60000 * 60).format("^hh:mm:ss") : 0,
+                                  },
+                              ],
+                              PerDayGauge: self.getGaugeRaitingDetails(result.data.Data.today && result.data.Data.today.points && result.data.Data.today.points > 0 ? result.data.Data.today.points : 0),
+                              PerDayStars: self.getStars(result.data.Data.today && result.data.Data.today.points && result.data.Data.today.points > 0 ? result.data.Data.today.points : 0),
+
+                              SummaryPerWeekLoaded: true,
+                              SummaryPerWeek: [
+                                  {
+                                      Icon: 'icon-asset-name',
+                                      Name: LANGUAGE.ASSET_TRACK_MSG01,
+                                      Value: result.data.Data.Name ? result.data.Data.Name : LANGUAGE.COM_MSG083,
+                                  },{
+                                      Icon: 'icon-status-imei',
+                                      Name: 'IMEI',
+                                      Value: result.data.Data.IMEI ? result.data.Data.IMEI : LANGUAGE.COM_MSG083,
+                                  },{
+                                      Icon: 'icon-braking',
+                                      Name: LANGUAGE.ASSET_RATING_MSG02,
+                                      Value: result.data.Data.week && result.data.Data.week.HarshBracking && result.data.Data.week.HarshBracking > 0 ? result.data.Data.week.HarshBracking : 0,
+                                  },{
+                                      Icon: 'icon-live-speed',
+                                      Name: LANGUAGE.ASSET_RATING_MSG03,
+                                      Value: result.data.Data.week && result.data.Data.week.HarshAcceleration && result.data.Data.week.HarshAcceleration > 0 ? result.data.Data.week.HarshAcceleration : 0,
+                                  },{
+                                      Icon: 'icon-live-duration',
+                                      Name: LANGUAGE.ASSET_RATING_MSG04,
+                                      Value: result.data.Data.week && result.data.Data.week.ExcessiveIdling && result.data.Data.week.ExcessiveIdling > 0 ? result.data.Data.week.ExcessiveIdling : 0,
+                                  },{
+                                      Icon: 'icon-live-distance',
+                                      Name: LANGUAGE.ASSET_RATING_MSG05,
+                                      Value: result.data.Data.week && result.data.Data.week.Speeding && result.data.Data.week.Speeding > 0 ? result.data.Data.week.Speeding : 0,
+                                  },{
+                                      Icon: 'icon-status-mileage',
+                                      Name: LANGUAGE.ASSET_TRACK_MSG04,
+                                      Value: result.data.Data.week && result.data.Data.week.Mileage && result.data.Data.week.Mileage > 0 ? Protocol.Helper.getMileageValue(POSINFOASSETLIST[result.data.Data.IMEI].Unit, result.data.Data.week.Mileage) + '&nbsp;' + Protocol.Helper.getMileageUnit(POSINFOASSETLIST[result.data.Data.IMEI].Unit) : 0,
+                                  },{
+                                      Icon: 'icon-live-engine-hours',
+                                      Name: LANGUAGE.ASSET_PLAYBACK_MSG22,
+                                      Value: result.data.Data.week && result.data.Data.week.Duration && result.data.Data.week.Duration > 0 ? TimeSpan(parseFloat(result.data.Data.week.Duration) * 60000 * 60).format("^hh:mm:ss") : 0,
+                                  },
+                              ],
+                              PerWeekGauge: self.getGaugeRaitingDetails(result.data.Data.week && result.data.Data.week.points && result.data.Data.week.points > 0 ? result.data.Data.week.points : 0),
+                              PerWeekStars: self.getStars(result.data.Data.week && result.data.Data.week.points && result.data.Data.week.points > 0 ? result.data.Data.week.points : 0),
+                          })
+                      }else{
+                          self.$app.dialog.alert(LANGUAGE.PROMPT_MSG003);
+                      }
+                  })
+                  .catch(function (err) {
+                      console.log(err);
+                      self.loadingStopped();
+                      if (err && err.status === 404){
+                          self.$app.dialog.alert(LANGUAGE.PROMPT_MSG002);
+                      }else{
+                          self.$app.dialog.alert(LANGUAGE.PROMPT_MSG003);
+                      }
+                  })
+            },
+            loadingStopped(){
+                this.$setState({
+                    PerDayGauge: this.getGaugeRaitingDetails(0),
+                    PerDayStars: this.getStars(0),
+                    PerWeekGauge: this.getGaugeRaitingDetails(0),
+                    PerWeekStars: this.getStars(0),
+                    SummaryPerDayLoaded: true,
+                    SummaryPerDay: [{
+                        Icon: 'icon-status-imei',
+                        Name: 'IMEI',
+                        Value: this.$route.query.imei ? this.$route.query.imei : 'n/a',
+                    }],
+                    SummaryPerWeekLoaded: true,
+                    SummaryPerWeek: [{
+                        Icon: 'icon-status-imei',
+                        Name: 'IMEI',
+                        Value: this.$route.query.imei ? this.$route.query.imei : 'n/a',
+                    }],
+                });
+            },
+            getGaugeRaitingDetails: function(raiting){
+                raiting = parseInt(raiting);
+                var ret = {
+                    value: 0,
+                    borderColor: '#BC2132',
+                    valueText: 0,
+                };
+
+                ret.valueText = raiting;
+                ret.value = raiting / 100;
+                switch(true) {
+                    case ( ret.value >= 0.75 ):
+                        ret.borderColor = '#39B54A';
+                        break;
+
+                    case ( ret.value >= 0.5 ):
+                        ret.borderColor = '#F7931E';
+                        break;
+                }
+
+                return ret;
+            },
+            getStars: function (raiting){
+                raiting = parseInt(raiting);
+                var ret = {
+                    value: 0,
+                    template: '',
+                    color: '',
+                };
+                let raitingVal = raiting / 100;
+                switch(true) {
+                    case ( raitingVal >= 0.9 ):
+                        ret.value = 5;
+                        ret.color = 'text-color-green';
+                        break;
+
+                    case ( raitingVal >= 0.7 ):
+                        ret.value = 4;
+                        ret.color = 'text-color-green';
+                        break;
+
+                    case ( raitingVal >= 0.5 ):
+                        ret.value = 3;
+                        ret.color = 'text-color-orange';
+                        break;
+
+                    case ( raitingVal >= 0.3 ):
+                        ret.value = 2;
+                        ret.color = 'text-color-red';
+                        break;
+
+                    default:
+                        ret.value = 1;
+                        ret.color = 'text-color-red';
+                }
+
+                for (var i = 1; i <= 5; i++) {
+                    if (i <= ret.value) {
+                        ret.template += `<i class="f7-icons icon-rating margin-horizontal-half ${ ret.color }"></i>`;
+                    }else{
+                        ret.template += '<i class="f7-icons icon-rating margin-horizontal-half text-color-gray"></i>';
+                    }
+                }
+
+                return ret;
+            },
+
+        },
+
+        on: {
+            pageInit: function (e, page) {
+                var self = this;
+
+                this.getDriverBehavior(this.$route.query.imei)
+
+
+            },
+        }
+    };
+</script>

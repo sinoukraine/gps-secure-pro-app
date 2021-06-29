@@ -1,0 +1,200 @@
+<!--suppress JSAnnotator -->
+<template>
+<!-- Page, data-name contains page name which can be used in callbacks -->
+        <div class="page " data-name="notifications"> <!-- page-with-subnavbar -->
+        <!-- Top Navbar -->
+            <div class="navbar">
+                <div class="navbar-bg"></div>
+                <div class="navbar-inner">
+                    <div class="left">
+                        <a href="#" class="link icon-only back" >
+                            <i class="if-not-ios f7-icons icon-header-arrow-back"></i>
+                            <i class="if-ios icon icon-back"></i>
+                        </a>
+                    </div>
+                    <div class="title sliding">{{@global.LANGUAGE.NOTIFICATIONS_MSG00}}</div>
+                    <div class="right">
+                        <a href="/report-alarm-log/" class="link">
+                            <i class="f7-icons icon-live-date "></i>
+                        </a>
+                        <a href="#" class="link deleteAll">
+                            <i class="f7-icons icon-header-delete "></i>
+                        </a>                    
+                    </div>
+
+                    <div class="subnavbar">
+                        <form data-search-container=".notificationList" data-search-item="li" data-search-in=".item-content" class="searchbar searchbar-init">
+                            <div class="searchbar-inner">
+                                <div class="searchbar-input-wrap">
+                                    <input type="search" placeholder="{{@global.LANGUAGE.COM_MSG002}}">
+                                    <i class="searchbar-icon"></i>
+                                    <span class="input-clear-button"></span>
+                                </div>
+                                <span class="searchbar-disable-button">{{@global.LANGUAGE.COM_MSG001}}</span>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    
+                </div>
+            </div>          
+            
+            <!-- Scrollable page content-->
+            <div class="page-content ptr-content ptr-content-notifications" data-ptr-distance="55"> 
+                <!-- Default pull to refresh preloader-->
+                <div class="ptr-preloader">
+                    <div class="preloader"></div>
+                    <div class="ptr-arrow"></div>
+                </div>      
+
+                <div class="list media-list virtual-list no-hairlines no-margin no-chevron  notificationList">
+                </div>                     
+                
+            </div>
+        </div>
+</template>
+
+
+<script>
+  // script must return component object
+    return {
+        data: function () {
+            let self = this;
+            let ret = {};
+           
+            //let MinorToken = self.$app.methods.getFromStorage('userInfo').MinorToken;
+           
+
+            return ret;
+        },
+        methods: {
+            
+        },
+        on: {
+            pageInit: function (e, page) { 
+                let self = this;
+               
+                let list = page.$el.find('.notificationList');
+                let user = localStorage.ACCOUNT;
+                let notifications = self.$app.methods.getFromStorage('notifications');
+                let ptrContent = page.$el.find('.ptr-content-notifications');
+                let deleteAllEl = page.$el.find('.deleteAll');
+
+                let notificationsList = [];
+                if (notifications[user]) {
+                    notificationsList = notifications[user];
+                }                
+
+                self.VirtualList = self.$app.virtualList.create({
+                    el: list, 
+                    // search item by item
+                    searchAll: function (query, items) {
+                        let found = [];
+                        for (let i = 0; i < items.length; i++) {
+                            query = query.toLowerCase();
+                            if (items[i].alarm && items[i].alarm.toLowerCase().indexOf(query) >= 0
+                                || items[i].AssetName && items[i].AssetName.toLowerCase().indexOf(query) >= 0
+                                || items[i].name && items[i].name.toLowerCase().indexOf(query) >= 0
+                                || query.trim() === '')
+                            {
+                                found.push(i);
+                            }
+                        }
+                        return found; //return array with mathced indexes
+                      },
+                    //List of array items
+                    items: notificationsList,
+                    height: 70,
+                    emptyTemplate: `<div class="block">${LANGUAGE.PROMPT_MSG090}</div>`,
+                    // Display the each item using Template7 template parameter
+                    renderItem: function (item, index) {                  
+                        let ret = '';
+                        //console.log(item);
+                        if (typeof item == 'object') {
+                            if (!item.alarm && item.title && typeof(item.title) == "string") {
+                                item.alarm = self.$app.methods.capitalize(item.title);
+                            }else if (item.alarm && typeof(item.alarm) == "string"){
+                                item.alarm = self.$app.methods.capitalize(item.alarm);
+                            }else{
+                                item.alarm = 'Alarm';
+                            }
+                            let alertName = Protocol.Helper.getAlertNameByType(item.type);
+
+                            ret = `<li class="swipeout" data-id="${ item.UniqueId }" data-alarm="${ item.alarm }" data-lat="${ item.Lat }" data-lng="${ item.Lng }" data-touch-move-stop-propagation="false">` +
+                                    '<div class="swipeout-content">' +
+                                        '<a href="#" class="item-link item-content ">' +
+                                            '<div class="item-inner">' +
+                                                '<div class="item-title-row">' +
+                                                    `<div class="item-title text-color-red size-14">${ alertName ? alertName + ' - ' + item.alarm : item.alarm }</div>` +
+                                                    `<div class="item-after text-color-gray">${ item.CreateDateTime ? item.CreateDateTime : item.time }</div>` +
+                                                '</div>' +
+                                                `<div class="item-subtitle text-color-black size-16">${ item.AssetName ? item.AssetName : item.name }</div>` +
+                                            '</div>' +
+                                        '</a>' +
+                                    '</div>' +                      
+                                    '<div class="swipeout-actions-left">' +  
+                                        '<a href="#" class="swipeout-delete swipeout-overswipe link" data-confirm="'+LANGUAGE.PROMPT_MSG074+'" data-confirm-title="'+LANGUAGE.PROMPT_MSG075+'" data-close-on-cancel="true">'+LANGUAGE.COM_MSG089+'</a>' +
+                                        '<a href="/notification/'+item.UniqueId+'/" class="open-more-actions color-green link">'+LANGUAGE.COM_MSG090+'</a>' +
+                                    '</div>' +
+                                '</li>';                           
+                        }
+
+                        return ret;
+                    },
+                });
+                
+                list.on('click', 'li', function(e){
+                    //console.log('clicked');
+
+                     if ( !$$(this).hasClass('swipeout-opened') ) {
+                        let alarmType = $$(this).data('alarm');
+                        if (alarmType) {
+                            alarmType = alarmType.toLowerCase();
+                        }
+                        let id = $$(this).data('id');
+                        let lat = $$(this).data('lat');
+                        let lng = $$(this).data('lng');
+                        if (alarmType == 'status' || alarmType == 'config' || parseFloat(lat) && parseFloat(lng)) {
+                            mainView.router.navigate('/notification/?id='+id);
+                        }else{
+                            self.$app.methods.customNotification({text: LANGUAGE.PROMPT_MSG098});
+                        }
+                    }
+                });
+
+                list.on('swipeout:deleted', '.swipeout', function () {                   
+                    let id = $$(this).data('id');
+                    self.$app.methods.deleteNotifications([id]);                   
+                }); 
+
+                deleteAllEl.on('click', function(){
+                    let text = LANGUAGE.COM_MSG092 +'.'+' '+LANGUAGE.PROMPT_MSG050;
+                    self.$app.dialog.confirm(text, 
+                        function(){
+                            self.$app.methods.deleteNotifications(false, true);                       
+                        }                       
+                    );                     
+                });
+
+                ptrContent.on('ptr:refresh', function(e){
+                    self.$app.methods.getNewNotifications({}, function () {
+                        self.$app.ptr.get('.ptr-content-notifications').done();
+                        self.$app.methods.showToast(LANGUAGE.PROMPT_MSG041);
+                    });
+                });
+
+
+                NotificationEvents.on('updatePage', function () {
+                    let list = self.$app.methods.getFromStorage('notifications')[user];
+                    self.VirtualList.replaceAllItems(list);
+                });
+                localStorage.NewNotificationsCounter = 0;
+                NotificationEvents.emit('newNotificationsCounterChanged', 0);
+                
+            },
+            pageBeforeRemove: function (e, page) {
+                NotificationEvents.off('updatePage');
+            }
+        }
+    };
+</script>

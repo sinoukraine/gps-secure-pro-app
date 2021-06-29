@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#E3072B">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+
+    <!--<meta http-equiv="Content-Security-Policy" content="default-src * 'self' 'unsafe-inline' 'unsafe-eval' data: gap:">-->
+    <meta http-equiv="Content-Security-Policy" content="default-src * gap://ready file:; font-src 'self' data:; media-src *; img-src * 'self' data:; style-src 'self' http://* https://* 'unsafe-inline' *; script-src 'self' http://* https://* 'unsafe-inline' 'unsafe-eval' *" />
+
+
+    <title>GPS Secure</title>
+
+    <link rel="shortcut icon" href="resources/images/favicon.png" type="image/x-icon">
+    <link rel="apple-touch-icon" href="resources/images/icon-square.png">
+
+    <link rel="stylesheet" href="resources/libraries/framework7/normalize.min.css">
+    <!--<link rel="stylesheet" href="resources/libraries/framework7/framework7.bundle.min.css">-->
+    <link rel="stylesheet" href="resources/libraries/framework7/framework7.bundle.css">
+    <link rel="stylesheet" href="resources/libraries/leaflet/leaflet.css">
+
+    <!-- MarkerCluster -->
+    <link rel="stylesheet" href="resources/plugins/leaflet.markercluster/css/MarkerCluster.css">
+    <link rel="stylesheet" href="resources/plugins/leaflet.markercluster/css/MarkerCluster.Default.css">
+
+    <!--Full Screen Map -->
+    <link rel="stylesheet" href="resources/plugins/leaflet.fullscreen/leaflet.fullscreen.css">
+    <!-- Drawning plugin for polygons etc -->
+    <link rel="stylesheet" href="resources/plugins/leaflet.draw/leaflet.draw.css">
+    <!-- GeoSearch -->
+    <link rel="stylesheet" href="resources/plugins/leaflet.geosearch/geosearch.css">
+
+
+    <link rel="stylesheet" href="resources/plugins/cropper/cropper.min.css">
+
+    <link rel="stylesheet" href="resources/app/framework7-icons.css">
+    <link rel="stylesheet" href="resources/app/icons.css">
+    <link rel="stylesheet" href="resources/fonts/fontastic/styles.css?v=1.1" />
+    <link rel="stylesheet" href="resources/fonts/icomoon/style.css?v=1.1" />
+
+    <link rel="stylesheet" href="resources/fonts/asset-icons/styles.css?v=1.1" />
+    <link rel="stylesheet" href="resources/plugins/highcharts/css/speedometer.css" />
+    <link rel="stylesheet" href="resources/app/app.css">
+
+</head>
+<body class="color-theme-custom">
+<div id="app">
+
+    <!-- Your main view, should have "view-main" class -->
+    <div class="view view-main safe-areas" >
+
+    </div>
+
+    <script id="loginScreenTemplate" type="text/template7">
+        <div class="login-screen">
+            <!--<div class="view">-->
+                <div class="page">
+                    <div class="page-content login-screen-content ">
+                        <div class="login-screen-title padding-horizontal logo">
+                            <img src="{{ Logo }}" alt="">
+                        </div>
+                        <form name="login-form">
+                            <div class="list color-green" >
+                                <ul>
+                                    <li class="item-content item-input item-input-outline">
+                                        <div class="item-inner">
+                                            <div class="item-input-wrap">
+                                                <input type="text" name="username" placeholder="{{@global.LANGUAGE.LOGIN_MSG00}}" required validate>
+                                                <span class="input-clear-button"></span>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="item-content item-input item-input-outline">
+                                        <div class="item-inner">
+                                            <div class="item-input-wrap">
+                                                <input type="password" name="password" placeholder="{{@global.LANGUAGE.LOGIN_MSG01}}" required validate>
+                                                <span class="input-clear-button password-clear-button"></span>
+                                                <span class="password-toggle text-color-gray"><i class="f7-icons icon-other-view-password "></i></span>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="list">
+                                <ul>
+                                    <li class="padding-horizontal">
+                                        <button type="submit" class="button button-fill button-large color-custom">{{@global.LANGUAGE.LOGIN_MSG02}}</button>
+                                    </li>
+                                    <li class="text-align-center pt-20">
+                                        <a href="/forgot-password/" class="text-color-darkgray text-decoration-underline">{{@global.LANGUAGE.LOGIN_MSG03}}</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            <!--</div>-->
+        </div>
+    </script>
+
+</div>
+
+<script type="text/javascript" src="cordova.js"></script>
+<script>
+    if (!Object.assign) {
+        Object.defineProperty(Object, 'assign', {
+            enumerable: false,
+            configurable: true,
+            writable: true,
+            value: function(target, firstSource) {
+                'use strict';
+                if (target === undefined || target === null) {
+                    throw new TypeError('Cannot convert first argument to object');
+                }
+
+                var to = Object(target);
+                for (var i = 1; i < arguments.length; i++) {
+                    var nextSource = arguments[i];
+                    if (nextSource === undefined || nextSource === null) {
+                        continue;
+                    }
+
+                    var keysArray = Object.keys(Object(nextSource));
+                    for (var nextIndex = 0, len = keysArray.length; nextIndex < len; nextIndex++) {
+                        var nextKey = keysArray[nextIndex];
+                        var desc = Object.getOwnPropertyDescriptor(nextSource, nextKey);
+                        if (desc !== undefined && desc.enumerable) {
+                            to[nextKey] = nextSource[nextKey];
+                        }
+                    }
+                }
+                return to;
+            }
+        });
+    }
+</script>
+<script src="resources/libraries/framework7/framework7.bundle.min.js"></script>
+<!--<script src="resources/libraries/framework7/framework7.bundle.js"></script>-->
+<script type="text/javascript" src="resources/libraries/jquery/jquery-3.4.1.min.js"></script>
+<!-- Path to leaflet Library JS-->
+<script type="text/javascript" src="resources/libraries/leaflet/leaflet.js"></script>
+<!-- Moment -->
+<script type="text/javascript" src="resources/libraries/moment/moment.min.js" ></script>
+<script type="text/javascript" src="resources/libraries/moment/moment-duration-format.js" ></script>
+<script type="text/javascript" src="resources/libraries/moment/moment-timezone-with-data-10-year-range.min.js" ></script>
+<!-- TimeSpan -->
+<script type="text/javascript" src="resources/libraries/TimeSpan.min.js"></script>
+<!-- Cropper Camera -->
+<script type="text/javascript" src="resources/plugins/cropper/cropper.min.js"></script>
+<!-- MarkerCluster -->
+<script type="text/javascript" src="resources/plugins/leaflet.markercluster/js/leaflet.markercluster.js"></script>
+<!-- Marker Cluster Sub Group -->
+<script type="text/javascript" src="resources/plugins/leaflet.subgroup/leaflet.featuregroup.subgroup.js"></script>
+<!-- Coordinates grid -->
+<script type="text/javascript" src="resources/plugins/leaflet.grid/leaflet.latlng-graticule.js"></script>
+<!-- Full screen map button -->
+<script type="text/javascript" src="resources/plugins/leaflet.fullscreen/Leaflet.fullscreen.min.js"></script>
+<!-- Drawning plugin for polygons etc -->
+<script type="text/javascript" src="resources/plugins/leaflet.draw/leaflet.draw.js"></script>
+<script type="text/javascript" src="resources/plugins/leaflet.draw/leaflet.draw.drag.js"></script>
+<!-- GeoSearch plugin -->
+<script type="text/javascript" src="resources/plugins/leaflet.geosearch/bundle.min.js"></script>
+<!-- speedometer -->
+<script src="resources/plugins/highcharts/js/highcharts.js"></script>
+<script src="resources/plugins/highcharts/js/highcharts-more.js"></script>
+
+<!-- google api for street view -->
+<script async="async" defer="defer" src="https://maps.google.com/maps/api/js?v=weekly&key=AIzaSyC6eQHreVzeV0sGqzKLcNKzp6HfVcNTutI"></script>
+
+<!-- jClass -->
+<script src="resources/libraries/jClass.mini.js"></script>
+<script src="resources/app/languages.js?v=1.1"></script>
+<script src="resources/app/helper.js?version=0.5" ></script>
+<script src="resources/app/ProtocolHelpers.js?version=0.5" ></script>
+<script src="resources/app/routes.js"></script>
+<script src="resources/app/app.js"></script>
+</body>
+</html>

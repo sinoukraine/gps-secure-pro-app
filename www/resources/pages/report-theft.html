@@ -1,0 +1,89 @@
+<!--suppress JSAnnotator -->
+<template>
+<!-- Page, data-name contains page name which can be used in callbacks -->
+        <div class="page " data-name="report-theft"> <!-- page-with-subnavbar -->
+        <!-- Top Navbar -->
+            <div class="navbar">
+                <div class="navbar-bg"></div>
+                <div class="navbar-inner">
+                    <div class="left">
+                        <a href="#" class="link icon-only back" >
+                            <i class="if-not-ios f7-icons icon-header-arrow-back"></i>
+                            <i class="if-ios icon icon-back"></i>
+                        </a>
+                    </div>
+                    <div class="title sliding">{{@global.LANGUAGE.ASSET_STATUS_LIVE_MSG07}}</div>
+                    <div class="right">
+
+                    </div>
+                </div>
+            </div>
+            <div class="toolbar toolbar-bottom ">
+                <div class="toolbar-inner ">
+                    <a href="{{url}}" target="_blank" class="link button width-100 color-white external">{{@global.LANGUAGE.REPORT_THEFT_MSG04}}</a>
+                </div>
+            </div>
+            <!-- Scrollable page content-->
+            <div class="page-content">
+                <div class="block-header">{{@global.LANGUAGE.REPORT_THEFT_MSG00}}</div>
+                <div class="block block-strong">
+                    <!--<div class="block-header">{{@global.LANGUAGE.REPORT_THEFT_MSG00}}</div>-->
+                    <p>{{@global.LANGUAGE.REPORT_THEFT_MSG01}}</p>
+                    <p>{{@global.LANGUAGE.REPORT_THEFT_MSG02}}</p>
+                    <p>{{PWithLink}}</p>
+                </div>
+                
+            </div>
+        </div>
+</template>
+
+
+<script>
+  // script must return component object
+    return {
+        data: function () {
+            let self = this;
+
+            let ret = {};
+            let param = {};
+
+            if(self.$route.query.imei){
+                let asset = self.$app.methods.getFromStorage('assetList')[self.$route.query.imei];
+
+                param.imei = encodeURIComponent(self.$route.query.imei);
+                if (localStorage.ACCOUNT) {
+                    param.loginName = encodeURIComponent(localStorage.ACCOUNT.trim());
+                }
+                if (asset.Describe1) {
+                    param.make = encodeURIComponent(asset.Describe1.trim());
+                }
+                if (asset.Describe2) {
+                    param.model = encodeURIComponent(asset.Describe2.trim());
+                }
+                if (asset.Registration) {
+                    param.registration = encodeURIComponent(asset.Registration.trim());
+                }
+            }
+            ret.url = API_URL.URL_REPORT_THEFT + '?' + self.$app.utils.serializeObject(param);
+            ret.PWithLink = LANGUAGE.REPORT_THEFT_MSG03.format(ret.url);
+            return ret;
+        },
+        methods: {
+            
+
+        },
+       
+        on: {
+            pageInit: function (e, page) { 
+                let self = this;
+                
+
+                
+            },   
+            pageAfterOut: function () {
+                
+            },  
+
+        }
+    };
+</script>

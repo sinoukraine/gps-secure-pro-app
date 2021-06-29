@@ -1,0 +1,282 @@
+<!--suppress JSAnnotator -->
+<template>
+<!-- Page, data-name contains page name which can be used in callbacks -->
+        <div class="page " data-name="report-alarm-log"> <!-- page-with-subnavbar -->
+        <!-- Top Navbar -->
+            <div class="navbar">
+                <div class="navbar-bg"></div>
+                <div class="navbar-inner">
+                    <div class="left">
+                        <a href="#" class="link icon-only back">
+                            <i class="if-not-ios f7-icons icon-header-arrow-back"></i>
+                            <i class="if-ios icon icon-back"></i>
+                        </a>
+                    </div>
+                    <div class="title sliding">{{PageTitle}}</div>
+                    <div class="right">
+                        <label for="submit-form-alarm-log" class="link icon-only">
+                            <i class="f7-icons icon-header-apply"></i>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <form class="page-content" name="AlarmLogForm">
+                <input type="submit" id="submit-form-alarm-log" class="display-none" />
+
+                <div class="block searchbar-hide-on-search text-align-center">{{PageHeaderDescription}}</div>
+                <div class="block searchbar-hide-on-search">{{@global.LANGUAGE.PROMPT_MSG086}}</div>
+                <div class="list no-margin-top no-hairline-bottom">
+                    <ul>
+                        <li>
+                            <div class="item-content item-input">
+                                <div class="item-media text-color-lightgray">
+                                    <i class="f7-icons icon-live-date"></i>
+                                </div>
+                                <div class="item-inner">
+                                    <div class="item-title item-floating-label item-label">{{@global.LANGUAGE.ASSET_PLAYBACK_MSG03}}</div>
+                                    <div class="item-input-wrap">
+                                        <input type="text" placeholder="Select date and time" readonly="readonly" name="StartDateTime" />
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content item-input">
+                                <div class="item-media text-color-lightgray">
+                                    <i class="f7-icons icon-live-date"></i>
+                                </div>
+                                <div class="item-inner">
+                                    <div class="item-title item-floating-label item-label">{{@global.LANGUAGE.ASSET_PLAYBACK_MSG04}}</div>
+                                    <div class="item-input-wrap">
+                                        <input type="text" placeholder="Select date and time" readonly="readonly" name="EndDateTime" />
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <a key="key-asset-list" class="item-link smart-select smart-select-init smart-select-asset-list custom-smart-select" data-open-in="popup" data-form-color-theme="green" data-searchbar="true" data-searchbar-placeholder="{{@global.LANGUAGE.COM_MSG002}}" data-append-searchbar-not-found="{{@global.LANGUAGE.PROMPT_MSG000}}" data-page-title = "{{@global.LANGUAGE.COM_MSG065}}" >
+                                <select name="Assets" multiple required validate>
+                                    {{#AssetList}}
+                                    <option value="{{Id}}" selected>{{Name}}</option>
+                                    {{/AssetList}}
+                                </select>
+                                <div class="item-content item-input">
+                                    <div class="item-media text-color-lightgray">
+                                        <i class="f7-icons icon-asset-name"></i>
+                                    </div>
+                                    <div class="item-inner">
+                                        <div class="item-title item-label">{{@global.LANGUAGE.GEOFENCES_MSG02}}</div>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                        {{#if AlertListShow}}
+                        <li key="key-alert-list-list">
+                            <a class="item-link smart-select smart-select-init custom-smart-select  custom-smart-select-alert-list {{#unless AlertList}}disabled tooltip-init{{/unless}}" data-open-in="popup" data-searchbar="true" data-searchbar-placeholder="{{@global.LANGUAGE.COM_MSG002}}" data-append-searchbar-not-found="{{@global.LANGUAGE.PROMPT_MSG000}}" data-form-color-theme="green" data-tooltip="{{@global.LANGUAGE.PROMPT_MSG093}}">
+                                <select name="AlertList" multiple >
+                                    {{#AlertList}}
+                                    {{#if CustomName}}
+                                    <option value="{{AlertId}}" selected>{{CustomName}}</option>
+                                    {{/if}}
+                                    {{/AlertList}}
+                                </select>
+                                <div class="item-content item-input">
+                                    <div class="item-media text-color-lightgray">
+                                        <i class="f7-icons icon-header-alarm"></i>
+                                    </div>
+                                    <div class="item-inner">
+                                        <div class="item-title item-label">{{@global.LANGUAGE.REPORTS_MSG07}}</div>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                        {{else}}
+                        <li key="key-preloader-alert-list" class="item-link item-content asset skeleton-text skeleton-effect-blink">
+                            <div class="item-media text-color-lightgray">
+                                <div class="skeleton-block" style="width: 32px; height: 32px;"></div>
+                            </div>
+                            <div class="item-inner">
+                                <div class="item-title">
+                                    Alerts
+                                </div>
+                                <div class="item-after">
+                                    some selected alerts
+                                </div>
+                            </div>
+                        </li>
+                        {{/if}}
+                        <li>
+                            <a class="item-link smart-select smart-select-init" data-open-in="sheet" data-close-on-select="true" data-form-color-theme="green" data-sheet-push="true">
+                                <select name="GroupBy" >
+                                    <option value="alert">{{@global.LANGUAGE.COM_MSG098}}</option>
+                                    <option value="asset" selected>{{@global.LANGUAGE.COM_MSG096}}</option>
+                                    <option value="date">{{@global.LANGUAGE.COM_MSG097}}</option>
+                                </select>
+                                <div class="item-content">
+                                    <div class="item-media text-color-lightgray">
+                                        <i class="f7-icons icon-live-hint"></i>
+                                    </div>
+                                    <div class="item-inner">
+                                        <div class="item-title ">{{@global.LANGUAGE.COM_MSG095}}</div>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+            </form>
+        </div>
+</template>
+
+
+<script>
+  // script must return component object
+    return {
+        data: function () {
+            let self = this;
+            let assetListObj = self.$app.methods.getFromStorage('assetList');
+            let newAssetlist = [];
+            const keys = Object.keys(assetListObj);
+            for (const key of keys) {
+                if(assetListObj[key].SolutionType.toLowerCase() !== 'protect' && assetListObj[key].SolutionType.toLowerCase() !== 'qprotect' && assetListObj[key].SolutionType.toLowerCase() !== 'witiprotect' && assetListObj[key].SolutionType.toLowerCase() !== 'witiqprotect'){
+                    newAssetlist.push(assetListObj[key]);
+                }
+            }
+            newAssetlist.sort(function(a,b){
+                if(a.Name < b.Name) return -1;
+                if(a.Name > b.Name) return 1;
+                return 0;
+            });
+
+            let ret = {
+                PageTitle: LANGUAGE.ALARM_LOG_MSG00,
+                AssetList: newAssetlist,
+
+                VirtualAssetList: false,
+                ToggleAllAssets: false,
+                PageHeaderDescription: LANGUAGE.PROMPT_MSG043.format(LANGUAGE.PROMPT_MSG089)
+
+            };
+
+
+            return ret;
+        },
+        methods: {
+            submitForm: function(data, additionalData){
+                let self = this;
+                self.$app.preloader.show();
+                self.$app.request.promise.post(API_URL.GET_REPORT_BY_ALERT, data, 'json')
+                    .then(function (result) {
+                        //console.log(result);
+                        if(result.data.MajorCode === '000') {
+                            if(!result.data.Data || !result.data.Data.length){
+                                self.$app.methods.customDialog({title: self.PageTitle, text: LANGUAGE.COM_MSG076});
+                            }else{
+                                self.$app.progressbar.show('custom');
+                                self.$app.methods.getGeofenceList(function () {
+                                    self.$app.utils.nextFrame(()=>{
+                                        self.$app.progressbar.hide();
+                                    });
+                                    mainView.router.navigate('/report-alarm-log-show/?'+self.$app.utils.serializeObject(additionalData),{context: { ReportRawData: result.data.Data } });
+                                });
+
+                            }
+
+                        }else{
+                            self.$app.dialog.alert(LANGUAGE.PROMPT_MSG023 + `<br>MajorCode: ${result.data.MajorCode}<br>MinorCode: ${result.data.MinorCode}<br>${result.data.Data}`);
+                        }
+                    })
+                    .finally(function () {
+                        self.$app.preloader.hide();
+                    })
+                    .catch(function (err) {
+                        console.log(err);
+                        if (err && err.status === 404){
+                            self.$app.dialog.alert(LANGUAGE.PROMPT_MSG002);
+                        }else{
+                            self.$app.dialog.alert(LANGUAGE.PROMPT_MSG003);
+                        }
+                    });
+            },
+            initAlertsSelect: function (list=[]) {
+                let self = this;
+
+                self.$setState({
+                    AlertList: list,
+                    AlertListShow: true,
+                })
+            },
+        },
+        on: {
+            pageInit: function (e, page) {
+                let self = this;
+                let toggleAllEl = page.$el.find('.toggle-all-assets');
+                let assetListEl = page.$el.find('.alarmLogAssetListSelect');
+                let form = page.$el.find('[name="AlarmLogForm"]');
+                let startDateTimeEl = page.$el.find('[name="StartDateTime"]');
+                let endDateTimeEl = page.$el.find('[name="EndDateTime"]');
+
+                self.CalendarStartDateTime = self.$app.calendar.create({
+                    inputEl: startDateTimeEl,
+                    timePicker: true,
+                    dateFormat: 'MM dd yyyy, HH::mm',
+                    value: [moment().subtract(1, 'days').format('MMMM DD YYYY, HH:mm')],
+                    maxDate: new Date(),
+                });
+                self.CalendarEndDateTime = self.$app.calendar.create({
+                    inputEl: endDateTimeEl,
+                    timePicker: true,
+                    dateFormat: 'MM dd yyyy, HH::mm',
+                    value: [moment().format('MMMM DD YYYY, HH:mm')],
+                    maxDate: new Date(),
+                });
+                self.$app.methods.getAlertList(self.initAlertsSelect);
+
+                assetListEl.on('change', 'input[name="checkbox-asset"]', function(){
+                    let index = $$(this).closest('li').data('index');
+                    if (self.Type === 'multiple') {
+                        self.VirtualAssetList.items[index].Selected = !!this.checked;
+                    }else{
+                        for (let i = self.VirtualAssetList.items.length - 1; i >= 0; i--) {
+                            self.VirtualAssetList.items[i].Selected = false;
+                        }
+                        self.VirtualAssetList.items[index].Selected = true;
+                    }
+                });
+
+                form.on('submit', function(e){
+                    e.preventDefault();
+                    let alertsEl = page.$el.find('[name = "AlertList"]');
+                    let assetsEl = page.$el.find('[name = "Assets"]');
+                    let groupByEl = page.$el.find('[name = "GroupBy"]');
+
+                    let data = {
+                        MinorToken: self.$app.data.MinorToken,
+                        MajorToken: self.$app.data.MajorToken,
+                        DateFrom: moment.utc(self.CalendarStartDateTime.getValue()[0]).format(window.COM_TIMEFORMAT),
+                        DateTo: moment.utc(self.CalendarEndDateTime.getValue()[0]).format(window.COM_TIMEFORMAT),
+                        AsIds: assetsEl.val(),
+                        AlertIds: alertsEl.val()
+                    };
+                    let additionalData = {
+                        groupBy: groupByEl.val()
+                    };
+                    self.submitForm(data, additionalData);
+                    return false;
+                });
+
+            },
+            pageBeforeRemove: function () {
+                let self = this;
+                if (self.CalendarStartDateTime) {
+                    self.CalendarStartDateTime.destroy();
+                }
+                if (self.CalendarEndDateTime) {
+                    self.CalendarEndDateTime.destroy();
+                }
+            }
+        }
+    };
+</script>

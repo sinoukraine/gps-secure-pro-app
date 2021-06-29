@@ -1,0 +1,189 @@
+<!--suppress JSAnnotator -->
+<template>
+<!-- Page, data-name contains page name which can be used in callbacks -->
+        <div class="page " data-name="recharge-credits"> <!-- page-with-subnavbar -->
+        <!-- Top Navbar -->
+            <div class="navbar">
+                <div class="navbar-bg"></div>
+                <div class="navbar-inner">
+                    <div class="left">
+                        <!--<a href="#" class="link icon-only back" >
+                            <i class="if-not-ios f7-icons icon-header-arrow-back"></i>
+                            <i class="if-ios icon icon-back"></i>
+                        </a>-->
+                        <a href="/panel-left/" class="link icon-only " >
+                            <i class="if-not-ios f7-icons icon-header-menu"></i>
+                            <i class="if-ios icon material-icons">menu</i>
+                        </a>
+                    </div>
+                    <div class="title sliding">{{@global.LANGUAGE.MENU_MSG05}}</div>
+                    <div class="right">
+                        <!-- <a href="#" class="link">
+                                                 <i class="f7-icons icon-notification"></i>
+                                             </a>    -->
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Scrollable page content-->
+            <div class="page-content">
+
+                <div class="block-title text-color-darkgray">{{@global.LANGUAGE.CREDIT_RECHARGE_MSG00}}</div>
+                <div class="block">
+                    <p>{{@global.LANGUAGE.PROMPT_MSG061}}</p>
+                </div>
+                <div class="row no-gap ">
+                    {{#Cards}}
+                    <div class="col-100 small-33">
+                        <div class="card elevation-6 elevation-hover-9 elevation-transition overflow-hidden margin">
+                            <div class="card-content card-content-padding {{BgColor}} text-color-white text-align-center">
+                                <p class="margin-bottom-half">{{Amount}}</p>
+                                <div class="card-content-divider"></div>
+                                <p class="size-16 margin-top-half">{{Price}}</p>
+                            </div>
+                            <div class="card-footer">
+                                <a href="{{Link}}" target="_blank" class="width-100 button button-fill color-green external elevation-2">{{@global.LANGUAGE.COM_MSG066}}</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{/Cards}}
+                </div>
+            </div>
+        </div>
+</template>
+
+
+<script>
+  // script must return component object
+    return {
+        data: function () {
+            var self = this;
+            var ret = {};
+
+            var CountryCode = self.$app.methods.getFromStorage('userInfo').CountryCode;
+            //mark
+            let buttons = {
+                button10: 'AMZXU82SZ795C',
+                button10Price: '$ 3.00 ',
+                button50: 'LGPBRHAY673Y6',
+                button50Price: '$ 10.00 ',
+                button100: 'DH5S8642H6QRJ',
+                button100Price: '$ 18.00 ',
+                currency: 'USD'
+            };
+            /*let buttons = {
+                button10: 'MG7CPLQNTS7XC',
+                button10Price: '$ 6.00 ',
+                button50: '753D2B3XS9ZTN',
+                button50Price: '$ 20.00 ',
+                button100: 'V64MM92HYLVU6',
+                button100Price: '$ 36.00 ',
+                currency: 'USD'
+            };*/
+
+            switch (CountryCode){
+                //mark
+                /*case 'AUS':
+                    buttons.button10  = 'GAYAKX44K4D9Y';
+                    buttons.button10Price  = '$ 3.00 ';
+                    buttons.button50  = 'MXPVUCHNGPSXC';
+                    buttons.button50Price  = '$ 10.00 ';
+                    buttons.button100 = '9TZRDPHXLQEV6';
+                    buttons.button100Price = '$ 18.00 ';
+                    buttons.currency = 'AUD';
+                    break;*/
+
+                //simon
+                case 'AUS':
+                    buttons.button10  = '97J7E6KUCUPX6';
+                    buttons.button10Price  = '$ 3.00 ';
+                    buttons.button50  = '7ZEWKNDDBKM4N';
+                    buttons.button50Price  = '$ 10.00 ';
+                    buttons.button100 = 'PR2R7T9AA3STY';
+                    buttons.button100Price = '$ 18.00 ';
+                    buttons.currency = 'AUD';
+                    break;
+                /*case 'AUS':
+                    buttons.button10  = 'L4YUCXNEKGDZS';
+                    buttons.button10Price  = '$ 6.00 ';
+                    buttons.button50  = '6XB95DX3UDM2L';
+                    buttons.button50Price  = '$ 20.00 ';
+                    buttons.button100 = 'HRBDTWS4FZEE4';
+                    buttons.button100Price = '$ 36.00 ';
+                    buttons.currency = 'AUD';
+                    break;*/
+
+
+
+              /*case 'CAN':
+                  buttons.button10  = '9JGXLTLZARGM2';
+                  buttons.button10Price  = '$ 5.00 ';
+                  buttons.button50  = '9FN267ZWCU7GW';
+                  buttons.button50Price  = '$ 15.00 ';
+                  buttons.button100 = 'SB8W7ZN7V4V9W';
+                  buttons.button100Price = '$ 25.00 ';
+                  buttons.currency = 'CAD';
+                  break;*/
+
+            }
+                ret.Cards = [
+                    {
+                        BgColor: 'bg-color-red',
+                        Amount: '100 ' + LANGUAGE.COM_MSG069,
+                        Price: buttons.button100Price + buttons.currency,
+                        Link: 'https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id='+buttons.button100+'&on0=KEY&os0='+self.$app.data.MinorToken+'&on1=dn&os1='+self.$root.AppDetails.code+'&on2=other&os2='+self.$root.AppDetails.name+'',
+                    },
+                    {
+                        BgColor: 'bg-color-green',
+                        Amount: '50 ' + LANGUAGE.COM_MSG069,
+                        Price: buttons.button50Price + buttons.currency,
+                        Link: 'https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id='+buttons.button50+'&on0=KEY&os0='+self.$app.data.MinorToken+'&on1=dn&os1='+self.$root.AppDetails.code+'&on2=other&os2='+self.$root.AppDetails.name+'',
+                    },
+                    {
+                        BgColor: 'bg-color-darkgray',
+                        Amount: '10 ' + LANGUAGE.COM_MSG069,
+                        Price: buttons.button10Price + buttons.currency,
+                        Link: 'https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id='+buttons.button10+'&on0=KEY&os0='+self.$app.data.MinorToken+'&on1=dn&os1='+self.$root.AppDetails.code+'&on2=other&os2='+self.$root.AppDetails.name+'',
+                    },
+                ];
+
+
+            return ret;
+        },
+        methods: {
+            questionModal: function(){
+                var self = this;
+
+                self.$app.dialog.create({
+                       title: `<div class="custom-modal-logo-wrapper"><img class="custom-modal-logo" src="${self.$root.logoModal}" alt=""/></div>`,
+                        text: `<div class="custom-modal-text">${LANGUAGE.PROMPT_MSG062}</div>`,
+                     buttons: [
+                                {
+                                    text: LANGUAGE.COM_MSG067,
+                                    onClick: function() {
+                                        self.$app.methods.checkBalance(true);
+                                    }
+                                },
+                                {
+                                    text: LANGUAGE.COM_MSG068,
+                                },
+                            ]
+                }).open();
+
+            }
+        },
+        on: {
+            pageInit: function (e, page) {
+                var self = this;
+
+                var buttons = page.$el.find('.card-footer a');
+
+                $$(buttons).on('click', function(){
+                    setTimeout(self.questionModal, 3000);
+                });
+            },
+        }
+    };
+</script>

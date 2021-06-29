@@ -1,0 +1,846 @@
+<!--suppress JSAnnotator -->
+<template>
+    <div class="page " data-name="geofence"> <!-- page-with-subnavbar -->
+        <!-- Top Navbar -->
+        <div class="navbar">
+            <div class="navbar-bg"></div>
+            <div class="navbar-inner">
+                <div class="left">
+                    <a href="#" class="link icon-only back" >
+                        <i class="if-not-ios f7-icons icon-header-arrow-back"></i>
+                        <i class="if-ios icon icon-back"></i>
+                    </a>
+                </div>
+                <div class="title sliding">
+                    {{#unless Shared}}
+                        {{@global.LANGUAGE.ASSET_EDIT_MSG00}}
+                    {{else}}
+                        {{@global.LANGUAGE.COM_MSG075}}
+                    {{/unless}}
+                </div>
+                <div class="right">
+                    {{#unless Shared}}
+                    <label for="submit-form" class="link icon-only">
+                        <i class="f7-icons icon-header-apply"></i>
+                    </label>
+                    {{/unless}}
+                </div>
+            </div>
+        </div>
+
+        <form class="page-content" name="page-form">
+            <input type="submit" id="submit-form" class="display-none" />
+            <div id="{{MapId}}" class="map {{#unless Shared}}geofence-map{{/unless}}"></div>
+
+            {{#unless Shared}}
+            <div class="block-title">{{@global.LANGUAGE.GEOFENCES_MSG04}}</div>
+            <div class="list no-hairline-bottom no-margin-top">
+                <ul>
+                    <li>
+                        <a key="key-asset-list" class="item-link smart-select smart-select-asset-list custom-smart-select" data-open-in="popup" data-form-color-theme="green" data-searchbar="true" data-searchbar-placeholder="{{@global.LANGUAGE.COM_MSG002}}" data-append-searchbar-not-found="{{@global.LANGUAGE.PROMPT_MSG000}}" data-page-title = "{{@global.LANGUAGE.COM_MSG065}}" >
+                            <select name="Assets" multiple required validate>
+                                {{#AssetList}}
+                                    <option value="{{IMEI}}" {{#if AssetSelected}}selected{{/if}}>{{Name}}</option>
+                                {{/AssetList}}
+                               <!-- <option value="{{IMEI}}" data-option-image="{{AssetImg}}" {{#if AssetSelected}}selected{{/if}}>{{Name}}</option>-->
+                            </select>
+                            <div class="item-content item-input">
+                                <div class="item-media text-color-lightgray">
+                                    <i class="f7-icons icon-asset-name"></i>
+                                </div>
+                                <div class="item-inner">
+                                    <div class="item-title item-label ">{{@global.LANGUAGE.GEOFENCES_MSG02}}</div>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <div class="item-content item-input">
+                            <div class="item-media text-color-lightgray">
+                                <i class="f7-icons icon-menu-geofence"></i>
+                            </div>
+                            <div class="item-inner">
+                                <div class="item-title item-floating-label item-label">{{@global.LANGUAGE.GEOFENCES_MSG05}}</div>
+                                <div class="item-input-wrap">
+                                    <input type="text" name="Name" placeholder="Geofence name" value="{{Name}}" maxlength="200" required validate>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content item-input">
+                            <div class="item-media text-color-lightgray">
+                                <i class="f7-icons icon-live-address"></i>
+                            </div>
+                            <div class="item-inner">
+                                <div class="item-title item-floating-label item-label">{{@global.LANGUAGE.GEOFENCES_MSG07}}</div>
+                                <div class="item-input-wrap">
+                                    <textarea class="resizable" name="Address" maxlength="1000">{{Address}}</textarea>
+                                    <span class="input-search-button ">
+                                        <i class="f7-icons icon-search ripple text-color-red ripple-color-red"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li>
+                        <a key="key-alarm-types" class="item-link smart-select smart-select-alarm-types" >
+                            <select name="AlarmTypes" multiple required validate>
+                                {{#each AlarmTypes }}
+                                <option value="{{this.Val}}" {{#if this.State}} selected {{/if}}>{{this.Name}}</option>
+                                {{/each}}
+                            </select>
+                            <div class="item-content">
+                                <div class="item-media text-color-lightgray">
+                                    <i class="f7-icons icon-header-alarm"></i>
+                                </div>
+                                <div class="item-inner">
+                                    <div class="item-title ">{{@global.LANGUAGE.GEOFENCES_MSG06}}</div>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+
+                    <li >
+                        <a class="item-link smart-select smart-select-notify-list custom-smart-select" data-open-in="popup" data-searchbar="true" data-searchbar-placeholder="{{@global.LANGUAGE.COM_MSG002}}" data-append-searchbar-not-found="{{@global.LANGUAGE.PROMPT_MSG000}}" data-page-title = "{{@global.LANGUAGE.GEOFENCES_MSG10}}">
+                            <select name="NotifyEmails" multiple  >
+                                {{#NotifyEmails}}
+                                {{#if EMail}}
+                                <option value="{{Code}}" {{#if Selected}}selected{{/if}} >{{EMail}}({{FullName}})</option>
+                                {{/if}}
+                                {{/NotifyEmails}}
+                            </select>
+                            <div class="item-content item-input">
+                                <div class="item-media text-color-lightgray">
+                                    <i class="f7-icons icon-live-email"></i>
+                                </div>
+                                <div class="item-inner ">
+                                    <div class="item-title item-label">{{@global.LANGUAGE.GEOFENCES_MSG10}}</div>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="list no-hairline-bottom no-hairline-top no-margin-top z-index-0">
+                <ul>
+                    <li class="item-content">
+                        <div class="item-inner">
+                            <div class="item-title text-transform-uppercase tooltip-init" data-tooltip="{{@global.LANGUAGE.PROMPT_MSG046}}">{{@global.LANGUAGE.COM_MSG051}} <span class="badge color-lightblue">?</span></div>
+                            <div class="item-after">
+                                <label class="toggle toggle-ignore-between color-green">
+                                    <input type="checkbox" name="IgnoreBetweenState" {{#if IgnoreBetweenState}}checked="checked"{{/if}}>
+                                    <span class="toggle-icon"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content item-input {{#unless IgnoreBetweenState}} disabled {{/unless}}">
+                            <div class="item-media text-color-lightgray">
+                                <i class="f7-icons icon-live-engine-hours"></i>
+                            </div>
+                            <div class="item-inner">
+                                <div class="row width-100">
+                                    <div class="col">
+                                        <div class="item-title item-label ">{{@global.LANGUAGE.COM_MSG053}}</div>
+                                        <div class="item-input-wrap">
+                                            <input type="text" name="PickerStart" readonly="readonly" />
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="item-title item-label ">{{@global.LANGUAGE.COM_MSG054}}</div>
+                                        <div class="item-input-wrap">
+                                            <input type="text" name="PickerEnd" readonly="readonly" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <a key="key-days-of-week" class="item-link smart-select smart-select-days-of-week {{#unless IgnoreBetweenState}} disabled {{/unless}}" >
+                            <select name="IgnoreDays" multiple>
+                                {{#each DaysOfWeek}}
+                                <option value="{{val}}" data-display-as="{{displayAs}}" {{#if selected}} selected {{/if}}>{{name}}</option>
+                                {{/each}}
+                            </select>
+                            <div class="item-content">
+                                <div class="item-media text-color-lightgray">
+                                    <i class="f7-icons icon-live-date"></i>
+                                </div>
+                                <div class="item-inner">
+                                    <div class="item-title">{{@global.LANGUAGE.COM_MSG052}}</div>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="list no-hairline-bottom no-hairline-top no-margin-top">
+                <ul>
+                    <li class="item-content">
+                        <div class="item-inner">
+                            <div class="item-title text-transform-uppercase tooltip-init" data-tooltip="{{@global.LANGUAGE.PROMPT_MSG045}}">{{@global.LANGUAGE.GEOFENCES_MSG08}} <span class="badge color-lightblue">?</span></div>
+                            <div class="item-after">
+                                <label class="toggle toggle-ignore-between color-green">
+                                    <input type="checkbox" name="ShareState" {{#if ShareState}}checked="checked"{{/if}}>
+                                    <span class="toggle-icon"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="item-content">
+                        <div class="item-inner">
+                            <div class="item-title text-transform-uppercase tooltip-init" data-tooltip="{{@global.LANGUAGE.PROMPT_MSG047}}">{{@global.LANGUAGE.GEOFENCES_MSG09}} <span class="badge color-lightblue">?</span></div>
+                            <div class="item-after">
+                                <label class="toggle toggle-ignore-between color-green">
+                                    <input type="checkbox" name="ActiveState" {{#if ActiveState}}checked="checked"{{/if}}>
+                                    <span class="toggle-icon"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            {{/unless}}
+        </form>
+
+
+    </div>
+</template>
+
+
+<script>
+    // script must return component object
+    return {
+        data: function () {
+            let self = this;
+
+            let name = '';
+            let address = '';
+            let shared = false;
+            if(self.$route.query.code){
+                let geofence = self.$app.methods.getFromStorage('geofenceList')[self.$route.query.code];
+                name = geofence.Name;
+                address = geofence.Address;
+                shared = geofence.CustomerCode !== self.$root.MajorToken;
+            }
+            return {
+                Code: self.$route.query.code,
+                AssetList: [],
+                Shared: shared,
+                Name: name,
+                Address: address,
+                MapId: 'map-' + self.$app.utils.id(),
+                AlarmTypes: Protocol.Helper.getGoefenceAlarmTypes(),
+            };
+
+
+        },
+        methods: {
+            initIgnoreBetweenBlock: function(params = {}){
+                let self = this;
+
+                if (params.BeginTime) {
+                    params.BeginTime = moment(params.BeginTime,'HH:mm').add(self.$app.data.UTCOFFSET,'minutes').format('HH:mm');
+                }
+                if (params.EndTime) {
+                    params.EndTime = moment(params.EndTime,'HH:mm').add(self.$app.data.UTCOFFSET,'minutes').format('HH:mm');
+                }
+
+                let StartTimeValArray = params.BeginTime ? params.BeginTime.split(':') : [];
+                let EndTimeInputArray = params.EndTime ? params.EndTime.split(':') : [];
+                let ignoreBetweenStateEl = self.$el.find('[name="IgnoreBetweenState"]');
+                let daysOfWeekEl = self.$el.find('.smart-select-days-of-week');
+                let daysOfWeekArray = Protocol.Helper.getDaysOffWeekArray();
+
+                if (!StartTimeValArray || !StartTimeValArray.length) {
+                    StartTimeValArray = ['07', '00'];
+                }
+                if (!EndTimeInputArray || !EndTimeInputArray.length) {
+                    EndTimeInputArray = ['18', '00'];
+                }
+
+                ignoreBetweenStateEl.on('change', function(){
+                    self.$setState({
+                        IgnoreBetweenState: this.checked
+                    });
+                });
+
+                self.TimePickerStart = self.$app.picker.create({
+                    inputEl: self.$el.find('[name="PickerStart"]'),
+                    rotateEffect: true,
+                    sheetPush: true,
+                    value: StartTimeValArray,
+                    cols: [
+                        {
+                            textAlign: 'center',
+                            values: (function() {
+                                let arr = [];
+                                for (let i = 0; i <= 23; i++) { arr.push(i < 10 ? '0' + i : i); }
+                                return arr;
+                            })(),
+                        },
+                        // Divider
+                        {
+                            divider: true,
+                            content: ':'
+                        },
+                        // Minutes
+                        {
+                            textAlign: 'center',
+                            values: (function() {
+                                let arr = [];
+                                for (let i = 0; i <= 59; i++) { arr.push(i < 10 ? '0' + i : i); }
+                                return arr;
+                            })(),
+                        }
+                    ],
+                    /*renderToolbar: function () {
+                        return '';
+                    },*/
+                    formatValue: function(values, displayValues) {
+                        return values[0] + ':' + values[1];
+                    },
+                });
+
+                self.TimePickerEnd = self.$app.picker.create({
+                    inputEl: self.$el.find('[name="PickerEnd"]'),
+                    rotateEffect: true,
+                    sheetPush: true,
+                    value: EndTimeInputArray,
+                    cols: [
+                        {
+                            textAlign: 'center',
+                            values: (function() {
+                                let arr = [];
+                                for (let i = 0; i <= 23; i++) { arr.push(i < 10 ? '0' + i : i); }
+                                return arr;
+                            })(),
+                        },
+                        // Divider
+                        {
+                            divider: true,
+                            content: ':'
+                        },
+                        // Minutes
+                        {
+                            textAlign: 'center',
+                            values: (function() {
+                                let arr = [];
+                                for (let i = 0; i <= 59; i++) { arr.push(i < 10 ? '0' + i : i); }
+                                return arr;
+                            })(),
+                        }
+                    ],
+                    /*renderToolbar: function () {
+                        return '';
+                    },*/
+                    formatValue: function(values, displayValues) {
+                        return values[0] + ':' + values[1];
+                    },
+                });
+
+                if (params.Weeks) {
+                    let selectedDays = params.Weeks.split(',');
+                    if (selectedDays && selectedDays.length) {
+                        for (let i = selectedDays.length - 1; i >= 0; i--) {
+                            let dayIndex = daysOfWeekArray.findIndex(x => x.val === parseInt(selectedDays[i],10));
+                            if (dayIndex !== -1) {
+                                daysOfWeekArray[dayIndex].selected = true;
+                            }
+                        }
+                    }
+                }
+
+                self.$setState({
+                    DaysOfWeek: daysOfWeekArray,
+                });
+
+                self.$tick().then(() => {
+                    self.DaysOfWeekSelect = self.$app.smartSelect.create({
+                        el: daysOfWeekEl,
+                        openIn: 'sheet',
+                        formColorTheme: 'green',
+                        sheetPush: 'true'
+                    });
+                });
+            },
+
+            onMapGeofenceDraw: function (e) {
+                //let self=this;
+                //let type = e.layerType,
+                this.GeofenceFigureLayer = e.layer;
+
+                // Do whatever else you need to. (save to db, add to map etc)
+                this.GeofenceFiguresGroup.clearLayers().addLayer(this.GeofenceFigureLayer);
+            },
+            onMapGeofenceDeleted: function(e){
+                this.GeofenceFigureLayer = false;
+            },
+            isClockwise: function(poly){
+                var sum = 0;
+                for (var i=0; i<poly.length-1; i++) {
+                    var cur = poly[i],
+                        next = poly[i+1];
+                    sum += (next.lat - cur.lat) * (next.lng + cur.lng)
+                }
+                return sum > 0
+            },
+            updateGroupMarkers: function (assets){
+                var self = this;
+                if (self.GroupMarkers) {
+                    self.GroupMarkers.clearLayers();
+                    if (self.Map) {
+                        self.Map.removeLayer(self.GroupMarkers);
+                    }
+                }
+                if (assets && assets.length > 0) {
+                    let point = '';
+                    let markerData = '';
+                    for (var i = assets.length - 1; i >= 0; i--) {
+                        point = '';
+                        markerData = '';
+                        if (POSINFOASSETLIST[assets[i]] && POSINFOASSETLIST[assets[i]].posInfo && POSINFOASSETLIST[assets[i]].posInfo.lat !== 0 && POSINFOASSETLIST[assets[i]].posInfo.lng !== 0) {
+                            point = L.marker([POSINFOASSETLIST[assets[i]].posInfo.lat,POSINFOASSETLIST[assets[i]].posInfo.lng], {icon: self.$app.methods.getMarkerIcon({asset: true, type: POSINFOASSETLIST[assets[i]].SolutionType}), pmIgnore: true});
+                            markerData = POSINFOASSETLIST[assets[i]].Name ? POSINFOASSETLIST[assets[i]].Name : POSINFOASSETLIST[assets[i]].IMEI;
+                            point.bindTooltip(markerData,{permanent: false, direction: 'right'});
+                            point.addTo(self.GroupMarkers);
+                        }
+                    }
+                    self.GroupMarkers.addTo(self.Map);
+                }
+                self.centeringMap();
+            },
+            centeringMap: function(){
+                let boundsArr = [];
+                if (this.GroupMarkers.getLayers().length > 0) {
+                    boundsArr.push(this.GroupMarkers.getBounds())
+                }
+                if (this.GeofenceFiguresGroup.getLayers().length > 0) {
+                    boundsArr.push(this.GeofenceFiguresGroup.getBounds())
+                }
+                if(boundsArr.length){
+                    //this.Map.flyToBounds(boundsArr, { padding: [8, 8], maxZoom: 15 });
+                    this.Map.fitBounds(boundsArr, { padding: [8, 8], maxZoom: 15 });
+                }
+            },
+            saveGeofence: function(data, url){
+                var self = this;
+
+                self.$app.preloader.show();
+                self.$app.request.promise.post(url, data, 'json')
+                    .then(function (result) {
+                        if(result.data.MajorCode === '000') {
+                            mainView.router.back({force: true, ignoreCache: true});
+                        }else{
+                            self.$app.dialog.alert(LANGUAGE.PROMPT_MSG023 + `<br>MajorCode: ${result.data.MajorCode}<br>MinorCode: ${result.data.MinorCode}<br>${result.data.Data}`);
+                        }
+                    })
+                    .finally(function () {
+                        self.$app.preloader.hide();
+                    })
+                    .catch(function (err) {
+                        console.log(err);
+                        if (err && err.status === 404){
+                            self.$app.dialog.alert(LANGUAGE.PROMPT_MSG002);
+                        }else{
+                            self.$app.dialog.alert(LANGUAGE.PROMPT_MSG003);
+                        }
+                    });
+            },
+
+        },
+
+        on: {
+            pageInit: function (e, page) {
+                let self = this;
+
+                self.Map = Protocol.Helper.createMap({ target: self.MapId, latLng: [0,0], zoom: 2 });
+                self.GroupMarkers = L.markerClusterGroup({'maxClusterRadius':35,});
+                // FeatureGroup is to store editable layers
+                self.GeofenceFiguresGroup = new L.FeatureGroup();
+                self.GeofenceFigureLayer = false;
+                let geofence = false;
+                let searchAddressButtonEl = page.$el.find('.input-search-button');
+                let GeoSearchControl = window.GeoSearch.GeoSearchControl;
+                let OpenStreetMapProvider = window.GeoSearch.OpenStreetMapProvider;
+                let MapProvider = new OpenStreetMapProvider();
+
+                let formEl = page.$el.find('[name = "page-form"]');
+                let assetListObj = self.$app.methods.getFromStorage("assetList");
+                let keys = Object.keys(assetListObj);
+                let assetList = [];
+                for (const key of keys) {
+                    if(assetListObj[key].SolutionType.toLowerCase() !== 'protect' && assetListObj[key].SolutionType.toLowerCase() !== 'qprotect' && assetListObj[key].SolutionType.toLowerCase() !== 'witiprotect' && assetListObj[key].SolutionType.toLowerCase() !== 'witiqprotect'){
+                        assetListObj[key].AssetImg = self.$app.methods.getAssetImg(assetListObj[key], {'smartSelect':true});
+                        assetList.push(assetListObj[key]);
+                    }
+                }
+                assetList.sort(function(a, b) {
+                    if (a.Name < b.Name) return -1;
+                    if (a.Name > b.Name) return 1;
+                    return 0;
+                });
+                let selectedAssetArray = [];
+                let AlarmTypesSSEl = page.$el.find('.smart-select-alarm-types');
+                let AssetListSSEl = page.$el.find('.smart-select-asset-list');
+                let NotifyListSSEl = page.$el.find('.smart-select-notify-list');
+
+                let contactList = self.$app.methods.getFromStorage('contactList');
+                let userInfo = self.$app.methods.getFromStorage('userInfo');
+                contactList.push({
+                    EMail: userInfo.Email,
+                    FirstName: userInfo.FirstName,
+                    SubName: userInfo.SurName,
+                    Code: self.$app.data.MajorToken,
+                    CustomerCode: self.$app.data.MinorToken,
+                });
+                contactList = self.$app.methods.sortContactList(contactList);
+
+                let drawControl = new L.Control.Draw({
+                    draw: {
+                        polyline: false,
+                        marker: false,
+                        circlemarker: false,
+                        polygon: {
+                            shapeOptions: self.$app.data.PolygonCustomization
+                        },
+                        circle: {
+                            shapeOptions: self.$app.data.PolygonCustomization
+                        },
+                        rectangle: {
+                            shapeOptions: self.$app.data.PolygonCustomization
+                        }
+                    },
+                    edit: {
+                        featureGroup: self.GeofenceFiguresGroup,
+                        edit: {
+                            //moveMarkers: true // centroids, default: false
+                            selectedPathOptions: {
+                                moveMarkers: true
+                            }
+                        }
+                    }
+                });
+
+
+                if (!self.Code) {
+                    self.initIgnoreBetweenBlock();
+                    self.$setState({
+                        AssetList: assetList,
+                    });
+
+                }else{
+                    geofence = self.$app.methods.getFromStorage('geofenceList')[self.Code];
+                    let weeks = '';
+                    let latlng = [geofence.Lat, geofence.Lng];
+
+                    if (geofence.Week && geofence.Week.length) {
+                        for (let i = geofence.Week.length - 1; i >= 0; i--) {
+                            weeks += geofence.Week[i].Week+',';
+                        }
+                        weeks = weeks.slice(0, -1);
+                    }
+                    if (geofence.GeoType === 1) { //circle
+                        self.GeofenceFigureLayer = L.circle(latlng, {
+                            ...self.$app.data.PolygonCustomization,
+                            radius: geofence.Radius,
+                        });
+                    }else{
+                        if (geofence.GeoPolygon) {
+                            let polygonCoordsArr = geofence.GeoPolygon.split('((').pop().split('))')[0].split(',');
+                            let geojsonArr = [];
+                            for (let i = polygonCoordsArr.length - 1; i >= 0; i--) {
+                                geojsonArr.push(polygonCoordsArr[i].split(' ').map(parseFloat).reverse());
+                            }
+                            self.GeofenceFigureLayer = L.polygon(geojsonArr, {
+                                ...self.$app.data.PolygonCustomization,
+                            })
+                        }
+                    }
+
+                    if (self.GeofenceFigureLayer){
+                        self.GeofenceFiguresGroup.addLayer(self.GeofenceFigureLayer);
+                    }
+
+                    if (geofence.SelectedAssetList && geofence.SelectedAssetList.length) {
+                        for (let i = geofence.SelectedAssetList.length - 1; i >= 0; i--) {
+                            let found = assetList.findIndex(x => x.Id === geofence.SelectedAssetList[i].AsCode);
+                            if (found !== -1) {
+                                assetList[found].AssetSelected = true;
+                                selectedAssetArray.push(assetList[found].IMEI);
+                            }
+                        }
+                    }
+
+                    if (geofence.ContactList && geofence.ContactList.length) {
+                        for (let i = geofence.ContactList.length - 1; i >= 0; i--) {
+                            if (geofence.ContactList[i].Code) {
+                                let index = contactList.findIndex(x => x.Code === geofence.ContactList[i].Code);
+                                if (index !== -1) {
+                                    contactList[index].Selected = true;
+                                }
+                            }
+                        }
+                    }
+
+                    self.initIgnoreBetweenBlock({
+                        IgnoreBetweenState: geofence.Inverse,
+                        Weeks: weeks,
+                        BeginTime: weeks ? geofence.Week[0].BeginTime : '',
+                        EndTime: weeks ? geofence.Week[0].EndTime : '',
+                    });
+
+                    self.$setState({
+                        Name: geofence.Name,
+                        Address: geofence.Address,
+                        ActiveState: !!geofence.State,
+                        AssetList: assetList,
+                        AlarmTypes: Protocol.Helper.getGoefenceAlarmTypes(geofence.Alerts),
+                        ShareState: !!geofence.Share,
+                    });
+                }
+
+                self.$setState({
+                    NotifyEmails: contactList,
+                });
+
+
+                //check is this for view only page
+                if  (!self.Code || !geofence || self.$app.data.MajorToken === geofence.CustomerCode){
+                    self.Map.addControl(drawControl);
+                }
+                self.Map.addLayer(self.GeofenceFiguresGroup);
+                self.Map.on('draw:created', self.onMapGeofenceDraw);
+                self.Map.on('draw:deleted', self.onMapGeofenceDeleted);
+                self.updateGroupMarkers(selectedAssetArray);
+
+
+                self.$tick().then(() => {
+                    self.AlarmTypesSelect = self.$app.smartSelect.create({
+                        el: AlarmTypesSSEl,
+                        openIn: 'sheet',
+                        formColorTheme: 'green',
+                        sheetPush: true
+                    });
+                    self.AssetListSelect = self.$app.smartSelect.create({
+                        el: AssetListSSEl,
+                        openIn: 'popup',
+                        formColorTheme: 'green',
+                        popupPush: true,
+                        searchbar: true,
+                        searchbarPlaceholder: LANGUAGE.COM_MSG002,
+                        appendSearchbarNotFound: LANGUAGE.PROMPT_MSG000,
+                        pageTitle: LANGUAGE.COM_MSG065,
+                        on: {
+                            change: function (smartSelect, val) {
+                                self.updateGroupMarkers(val);
+                            }
+                        }
+                    });
+                    self.NotifyListSelect = self.$app.smartSelect.create({
+                        el: NotifyListSSEl,
+                        openIn: 'popup',
+                        popupPush: true,
+                        formColorTheme: 'green',
+                        searchbar: true,
+                        searchbarPlaceholder: LANGUAGE.COM_MSG002,
+                        appendSearchbarNotFound: LANGUAGE.PROMPT_MSG000,
+                        pageTitle: LANGUAGE.GEOFENCES_MSG10
+                    });
+                });
+
+                searchAddressButtonEl.on('click', function(e){
+                    let $GeoAddress = $$(this).siblings('[name="Address"]');
+                    let GeoAddressVal = $GeoAddress.val();
+                    if (!GeoAddressVal || GeoAddressVal.length < 3 || GeoAddressVal === $GeoAddress.data('prev-val')){
+                        return;
+                    }
+
+                    let $parent = $$($GeoAddress.parent());
+                    let resultContainer = $parent.find('.results');
+
+                    if (!resultContainer.length){
+                        $parent.append('<div class="results find-address-results"></div>');
+                        resultContainer = $parent.find('.results');
+                    }
+
+                    $GeoAddress.data('prev-val', GeoAddressVal);
+                    self.$app.progressbar.show('gray');
+                    MapProvider
+                        .search({ query: GeoAddressVal })
+                        .then(function(result) {
+                            self.$app.utils.nextFrame(()=>{ self.$app.progressbar.hide(); });
+
+                            if(!result.length){
+                                self.$app.methods.customNotification({ text: LANGUAGE.PROMPT_MSG000 });
+                                return;
+                            }
+
+                            let template = '<ul>';
+                            for (let i = 0; i < result.length; i++) {
+                                template += `<li data-key="${i}">${result[i].label}</li>`;
+                            }
+                            template += '</ul>';
+                            resultContainer.html(template);
+                            if (!resultContainer.hasClass('show')){
+                                resultContainer.addClass('show');
+                            }
+
+                            $(document).on('click.hideAddressesList',function (e) {
+                                if(!$$(e.target).closest('.results').length){
+                                    resultContainer.removeClass('show');
+                                    $(document).off('.hideAddressesList');
+                                }
+                            });
+
+                            resultContainer.find('li').on('click', function (e) {
+                                $GeoAddress.val(result[e.target.dataset.key].label).change();
+                                self.$setState({
+                                    Address: result[e.target.dataset.key].label
+                                });
+
+                                resultContainer.removeClass('show');
+                                $(document).off('.hideAddressesList');
+
+                                if(self.AddressMarker){
+                                    Map.removeLayer(self.AddressMarker);
+                                }
+                                self.AddressMarker = L.marker([result[e.target.dataset.key].y,result[e.target.dataset.key].x], {icon: Protocol.MarkerIcon[9]});
+                                self.AddressMarker.bindPopup(result[e.target.dataset.key].label,{maxWidth:self.$app.data.MaxMapPopupWidth, closeButton: false});
+                                self.AddressMarker.addTo(self.Map);
+
+                                page.$el.find('.page-content').scrollTop(0, 300, function() {
+                                    self.Map.fitBounds(result[e.target.dataset.key].bounds,{padding:[16,16]});
+                                })
+                            });
+                        })
+                        .catch(function(){
+                            self.$app.utils.nextFrame(()=>{ self.$app.progressbar.hide(); });
+                            self.$app.methods.customNotification({ text: LANGUAGE.PROMPT_MSG051 });
+                        });
+                });
+
+
+                formEl.on('submit', function(e){
+                    e.preventDefault();
+
+                    if (!self.GeofenceFigureLayer) {
+                        self.$app.methods.customDialog({text:LANGUAGE.PROMPT_MSG048});
+                        return;
+                    }
+
+                    let selectedAssetsArr = self.AssetListSelect.getValue();
+                    selectedAssetIds = [];
+                    for (let i = 0; i < selectedAssetsArr.length; i++) {
+                        selectedAssetIds+= ','+assetListObj[selectedAssetsArr[i]].Id;
+                    }
+                    if (selectedAssetIds) {
+                        selectedAssetIds = selectedAssetIds.substr(1);
+                    }
+                    let ignoreDaysArr = formEl.find('[name="IgnoreDays"]').val();
+                    let url = API_URL.GEOFENCE_ADD;
+
+                    let data = {
+                        MinorToken: self.$app.data.MinorToken,
+                        MajorToken: self.$app.data.MajorToken,
+
+                        Name: formEl.find('[name="Name"]').val(),
+                        Lat: 0,
+                        Lng: 0,
+                        Radius: 0,
+                        Alerts: formEl.find('[name="AlarmTypes"]').val().toString(),
+                        Address: formEl.find('[name="Address"]').val(),
+                        AssetCodes: selectedAssetIds,
+                        ContactCodes: formEl.find('[name="NotifyEmails"]').val().toString(),
+
+                        AlertConfigState: formEl.find('[name="ActiveState"]').is(":checked") ? 1 : 0,
+
+                        Inverse: formEl.find('[name="IgnoreBetweenState"]').is(":checked") ? 1 : 0,
+                        BeginTime: moment(formEl.find('[name="PickerStart"]').val(), 'HH:mm').utc().format('HH:mm:ss'),
+                        EndTime: moment(formEl.find('[name="PickerEnd"]').val(), 'HH:mm').utc().format('HH:mm:ss'),
+
+                        Share: formEl.find('[name="ShareState"]').is(":checked") ? 1 : 0,
+
+                        DelayTime: 0,
+                        GeoType: 1, //circle
+                        CycleType: 3, // NONE = 0, TIME = 1, DATE = 2, WEEK = 3
+
+                    };
+
+                    if (self.GeofenceFigureLayer.options.radius) { //circle
+                        let latlng = self.GeofenceFigureLayer.getLatLng();
+
+                        data.Lat = latlng.lat;
+                        data.Lng = latlng.lng;
+                        data.Radius = parseInt(self.GeofenceFigureLayer.getRadius(),10);
+                    }else{ // else Polygon
+                        let latlngs = self.GeofenceFigureLayer.getLatLngs();
+                        if (latlngs.length === 1 && Array.isArray(latlngs[0]) && latlngs[0].length > 1) {
+                            latlngs=latlngs[0];
+                            if (latlngs[0].lat !== latlngs[latlngs.length-1].lat || latlngs[0].lng !== latlngs[latlngs.length-1].lng){
+                                latlngs.push(latlngs[0]);
+                            }
+                        }
+                        if (!self.isClockwise(latlngs)){
+                            latlngs = latlngs.reverse();
+                        }
+                        let latlngArry=[];
+                        for(var i=0;i<latlngs.length;i++){
+                            latlngArry.push(latlngs[i].lng+" "+latlngs[i].lat);
+                        }
+                        data.GeoPolygon = "POLYGON(("+latlngArry.join(',')+"))";
+                        data.GeoType = 2;
+                        data.Lat = latlngs[0].lat;
+                        data.Lng = latlngs[0].lng;
+                    }
+
+                    if (ignoreDaysArr && ignoreDaysArr.length) {
+                        data.Days = ignoreDaysArr.toString();
+                    }
+
+                    if (self.Code) {
+                        data.Code = self.Code;
+                        url = API_URL.GEOFENCE_EDIT;
+                    }
+
+                    self.saveGeofence(data, url);
+
+                    return false;
+                });
+            },
+
+
+            pageBeforeRemove: function () {
+                if(this.AlarmTypesSelect){
+                    this.AlarmTypesSelect.destroy();
+                }
+                if(this.AssetListSelect){
+                    this.AssetListSelect.destroy();
+                }
+                if (this.DaysOfWeekSelect) {
+                    this.DaysOfWeekSelect.destroy();
+                }
+                if (this.TimePickerStart) {
+                    this.TimePickerStart.destroy();
+                }
+                if (this.TimePickerEnd) {
+                    this.TimePickerEnd.destroy();
+                }
+                this.Map.eachLayer(function(layer){
+                    layer.remove();
+                });
+                this.Map.off('draw:created');
+                this.Map.off('draw:deleted');
+
+                this.Map.remove();
+            }
+
+        }
+    };
+</script>

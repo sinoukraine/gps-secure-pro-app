@@ -1,0 +1,401 @@
+<!--suppress JSAnnotator -->
+<template>
+<!-- Page, data-name contains page name which can be used in callbacks -->
+        <div class="page " data-name="notification" > <!-- page-with-subnavbar -->
+        <!-- Top Navbar -->
+            <div class="navbar">
+                <div class="navbar-bg"></div>
+                <div class="navbar-inner">
+                    <div class="left">
+                        <a href="#" class="link icon-only back">
+                            <i class="if-not-ios f7-icons icon-header-arrow-back"></i>
+                            <i class="if-ios icon icon-back"></i>
+                        </a>
+                    </div>
+                    <div class="title sliding">{{PageTitle}}</div>
+                    <div class="right">
+                        <!-- <a href="#" class="link">
+                                             <i class="f7-icons icon-delete "></i>
+                                         </a>    -->                 
+                    </div>
+                    
+                    
+                </div>
+            </div>          
+            
+            <!-- Scrollable page content-->
+            <div class="page-content" >
+                
+                {{#js_if "this.NotificationData.alarm == 'STATUS' || this.NotificationData.alarm == 'CONFIG'" }}
+
+                    {{#if NotificationData.AssetImg}}
+                        <div class="block asset-image-big-wrapper text-align-center">
+                            {{NotificationData.AssetImg}}
+                        </div>
+
+                    {{/if}}
+
+                    <div class="list no-margin-top no-hairlines " >
+                        <ul class="row no-gap">
+                            <li class="item-content col-100 tooltip-init" data-tooltip="{{@global.LANGUAGE.NOTIFICATIONS_MSG17}}">
+                                <div class="item-media text-color-lightgray">
+                                    <i class="f7-icons icon-asset-name"></i>
+                                </div>
+                                <div class="item-inner">
+                                    <div class="item-title ">{{NotificationData.AssetName}}</div>
+                                </div>
+                            </li>
+                            <li class="item-content col-100 tooltip-init" data-tooltip="{{@global.LANGUAGE.NOTIFICATIONS_MSG04}}">
+                                <div class="item-media text-color-lightgray">
+                                    <i class="f7-icons icon-status-imei"></i>
+                                </div>
+                                <div class="item-inner">
+                                    <div class="item-title ">{{NotificationData.Imei}}
+                            </li>
+                            <li class="item-content col-100 tooltip-init" data-tooltip="{{@global.LANGUAGE.NOTIFICATIONS_MSG05}}">
+                                <div class="item-media text-color-lightgray">
+                                   <!-- <i class="f7-icons icon-live-direction"></i>-->
+                                </div>
+                                <div class="item-inner">
+                                    <div class="item-title ">{{NotificationData.Imsi}}</div>
+                                </div>
+                            </li>
+                            {{#if NotificationData.Acc}}
+                                <li class="item-content col-50 tooltip-init" data-tooltip="{{@global.LANGUAGE.PROMPT_MSG007}}">
+                                    <div class="item-media {{NotificationData.AccColor}}">
+                                        <i class="f7-icons icon-status-acc2"></i>
+                                    </div>
+                                    <div class="item-inner">
+                                        <div class="item-title {{NotificationData.AccColor}}">{{NotificationData.Acc}}</div>
+                                    </div>
+                                </li>
+                            {{/if NotificationData.Acc}}
+                            {{#if NotificationData.Direction}}
+                            <li class="item-content col-50 tooltip-init" data-tooltip="{{@global.LANGUAGE.PROMPT_MSG015}}">
+                                <div class="item-media text-color-lightgray">
+                                    <i class="f7-icons icon-live-direction"></i>
+                                </div>
+                                <div class="item-inner">
+                                    <div class="item-title ">{{NotificationData.Direction}}</div>
+                                </div>
+                            </li>
+                            {{/if NotificationData.Direction}}
+                            {{#if NotificationData.Mileage}}
+                            <li class="item-content col-50 tooltip-init" data-tooltip="{{@global.LANGUAGE.ASSET_STATUS_LIVE_MSG03}}">
+                                <div class="item-media text-color-lightgray">
+                                    <i class="f7-icons icon-live-mileage"></i>
+                                </div>
+                                <div class="item-inner">
+                                    <div class="item-title ">{{NotificationData.Mileage}}</div>
+                                </div>
+                            </li>
+                            {{/if NotificationData.Mileage}}
+                            {{#if NotificationData.EngineHours}}
+                            <li class="item-content col-50 tooltip-init" data-tooltip="{{@global.LANGUAGE.PROMPT_MSG020}}">
+                                <div class="item-media text-color-lightgray">
+                                    <i class="f7-icons icon-live-engine-hours"></i>
+                                </div>
+                                <div class="item-inner">
+                                    <div class="item-title ">{{NotificationData.EngineHours}}</div>
+                                </div>
+                            </li>
+                            {{/if NotificationData.EngineHours}}
+                            {{#if NotificationData.Relay}}
+                            <li class="item-content col-50 tooltip-init" data-tooltip="{{@global.LANGUAGE.NOTIFICATIONS_MSG07}}">
+                                <div class="item-media text-color-lightgray">
+                                    <i class="f7-icons icon-status-relay"></i>
+                                </div>
+                                <div class="item-inner">
+                                    <div class="item-title ">{{NotificationData.Relay}}</div>
+                                </div>
+                            </li>
+                            {{/if NotificationData.Relay}}
+                            {{#if NotificationData.Battery}}
+                            <li class="item-content col-50 tooltip-init" data-tooltip="{{@global.LANGUAGE.PROMPT_MSG010}}">
+                                <div class="item-media text-color-lightgray">
+                                    <i class="f7-icons icon-status-battery2"></i>
+                                </div>
+                                <div class="item-inner">
+                                    <div class="item-title ">{{NotificationData.Battery}}</div>
+                                </div>
+                            </li>
+                            {{/if NotificationData.Battery}}
+                            {{#if NotificationData.Power}}
+                            <li class="item-content col-50 tooltip-init" data-tooltip="{{@global.LANGUAGE.NOTIFICATIONS_MSG09}}">
+                                <div class="item-media text-color-lightgray">
+                                    <i class="f7-icons icon-status-power"></i>
+                                </div>
+                                <div class="item-inner">
+                                    <div class="item-title ">{{NotificationData.Power}}</div>
+                                </div>
+                            </li>
+                            {{/if NotificationData.Power}}
+                            {{#if NotificationData.GPS}}
+                            <li class="item-content col-50 tooltip-init" data-tooltip="{{@global.LANGUAGE.PROMPT_MSG012}}">
+                                <div class="item-media text-color-lightgray">
+                                    <i class="f7-icons icon-status-satellite2"></i>
+                                </div>
+                                <div class="item-inner">
+                                    <div class="item-title ">{{NotificationData.GPS}}</div>
+                                </div>
+                            </li>
+                            {{/if NotificationData.GPS}}
+                            {{#if NotificationData.GSM}}
+                            <li class="item-content col-50 tooltip-init" data-tooltip="{{@global.LANGUAGE.PROMPT_MSG013}}">
+                                <div class="item-media text-color-lightgray">
+                                    <i class="f7-icons icon-status-tower"></i>
+                                </div>
+                                <div class="item-inner">
+                                    <div class="item-title ">{{NotificationData.GSM}}</div>
+                                </div>
+                            </li>
+                            {{/if NotificationData.GSM}}
+                            {{#if NotificationData.GPRS}}
+                            <li class="item-content col-50 tooltip-init" data-tooltip="{{@global.LANGUAGE.PROMPT_MSG014}}">
+                                <div class="item-media text-color-lightgray">
+                                    <i class="f7-icons icon-status-signal2"></i>
+                                </div>
+                                <div class="item-inner">
+                                    <div class="item-title ">{{NotificationData.GPRS}}</div>
+                                </div>
+                            </li>
+                            {{/if NotificationData.GPRS}}
+                            {{#if NotificationData.Charger}}
+                            <li class="item-content col-50 tooltip-init" data-tooltip="{{@global.LANGUAGE.PROMPT_MSG009}}">
+                                <div class="item-media text-color-lightgray">
+                                    <i class="f7-icons icon-status-voltage2"></i>
+                                </div>
+                                <div class="item-inner">
+                                    <div class="item-title ">{{NotificationData.Charger}}</div>
+                                </div>
+                            </li>
+                            {{/if NotificationData.Charger}}
+                        </ul>
+                    </div>
+                    {{#if NotificationData.PARAMS}}
+                    <div class="list no-hairlines no-margin-top list-custom" >
+                        <ul class="">
+                            {{#each NotificationData.PARAMS}}
+                            <li>
+                                <div class="item-content">
+                                    <div class="item-media text-color-lightgray">
+
+                                    </div>
+                                    <div class="item-inner">
+                                        <div class="item-title">{{@key}}</div>
+                                        <div class="item-after">{{this}}</div>
+                                    </div>
+                                </div>
+                            </li>
+                            {{/each}
+                        </ul>
+                    </div>
+                    {{/if}}
+                {{else}}
+
+                <div id="{{MapId}}" class="map"></div>
+
+                <div class="fab fab-left-bottom fab-custom with-borders {{#unless SVExist}}disabled{{/unless}}">
+                    <a @click="ShowStreetView" href="#" class="bg-color-darkgray elevation-hover-10" data-lat="{{NotificationData.Lat}}" data-lng="{{NotificationData.Lng}}">
+                        <i class="pano-preview-img"></i>
+                    </a>
+                </div>
+                <div class="fab fab-right-bottom fab-custom {{#if DisableRoute}}disabled{{/if}}">
+                    <a href="#" class="bg-color-darkgray elevation-hover-10 flex-direction-column routeButton" data-lat="{{NotificationData.Lat}}" data-lng="{{NotificationData.Lng}}">
+                        <i class="f7-icons icon-other-route"></i>
+                        <div class="fab-text">{{@global.LANGUAGE.ASSET_TRACK_MSG20}}</div>
+                    </a>
+                </div>
+
+                {{/js_if}}
+
+            </div>
+        </div>
+</template>
+
+<script>
+  // script must return component object
+    return {
+        data: function () {
+            let self = this;
+            let ret = {
+                CustomAddress : LANGUAGE.COM_MSG004,
+                MapId : 'map-' + self.$app.utils.id(),
+            };
+
+            if(self.$route.query.id){
+                let account = localStorage.ACCOUNT;
+                let notifications = self.$app.methods.getFromStorage('notifications')[account];
+                if (notifications && notifications.length) {
+                    let notification = notifications.find(c => c.UniqueId === self.$route.query.id);
+
+                    if (notification) {
+                        ret.NotificationData = self.$app.methods.formatStatusMessage(notification);
+                        ret.PageTitle = ret.NotificationData.alarm;
+                    }
+                }
+            }else if(self.$route.context.AlertData){
+                ret.NotificationData = self.$route.context.AlertData;
+                if(ret.NotificationData.IMEI){
+                    ret.NotificationData.Imei = ret.NotificationData.IMEI;
+                }
+                if(ret.NotificationData.AlertID){
+                    ret.NotificationData.type = ret.NotificationData.AlertID;
+                }
+                //if(ret.NotificationData.alarm === 'STATUS' || ret.NotificationData.alarm === 'CONFIG'){
+                    ret.NotificationData = self.$app.methods.formatStatusMessage(ret.NotificationData);
+                //}
+                ret.PageTitle = ret.NotificationData.GeofenceName ? ret.NotificationData.GeofenceName + ' - ' + ret.NotificationData.AlertName : (ret.NotificationData.AlertName ? ret.NotificationData.AlertName : ret.NotificationData.alarm);
+            }
+
+            return ret;
+        },
+        methods: {
+            initMapWithMarker: function(params={}){
+                let self = this;
+                let assetList = self.$app.methods.getFromStorage('assetList');
+                self.Map = Protocol.Helper.createMap({ target: self.MapId, latLng: [0,0], zoom: 2 });
+                self.MarkersGroup = L.markerClusterGroup({'maxClusterRadius':35,});
+                self.StreetViewService = new google.maps.StreetViewService();
+
+                if(!params.Imei || !assetList[params.Imei]){
+                    self.$setState({
+                        DisableRoute: true
+                    });
+                    self.$app.methods.customNotification({text: LANGUAGE.PROMPT_MSG094});
+                    return;
+                }
+
+                if (parseFloat(params.Lat) && parseFloat(params.Lng)) {
+                    let asset = POSINFOASSETLIST[params.Imei] ? POSINFOASSETLIST[params.Imei] : self.$app.methods.getFromStorage('assetList')[params.Imei];
+                    let point = L.marker([params.Lat,params.Lng], {icon: self.$app.methods.getMarkerIcon({asset: true, type: asset.SolutionType})});
+                    let markerData = self.$app.methods.getMarkerDataTable(asset, params);
+                    point                            
+                        .bindPopup(markerData,{maxWidth:self.$root.MaxMapPopupWidth, closeButton: false})
+                        .on('popupopen', function (e) {                               
+                            if (!point.customAddress) {
+                                Protocol.Helper.getAddressByGeocoder({lat: params.Lat, lng: params.Lng},function(address){
+                                    point.customAddress = params.customAddress = address;
+                                    markerData = self.$app.methods.getMarkerDataTable(asset, params);
+                                    e.target.setPopupContent(markerData);                                        
+                                    e.popup.update();                                       
+                                }); 
+                            }
+                            if(params.type && parseInt(params.type,10) === 32 && parseInt(asset.MaxSpeedAlertMode,10) === 1 && !point.SpeedLimit){
+                                let data = {
+                                    timestamp: 1,
+                                    latitude: params.Lat,
+                                    longitude: params.Lng,
+                                };
+                                self.$app.request.promise.get(API_URL.GET_SPEEDLIMIT, data, 'json')
+                                    .then(function (result) {
+                                        if (result.data && result.data.max) {
+                                            let speed = Protocol.Helper.getSpeedValue(asset.Unit, parseInt(result.data.max));
+                                            let speedUnit = Protocol.Helper.getSpeedUnit(asset.Unit);
+                                            point.SpeedLimit = params.SpeedLimit = parseInt(speed) + ' '+ speedUnit;
+
+                                            markerData = self.$app.methods.getMarkerDataTable(asset, params);
+                                            e.target.setPopupContent(markerData);
+                                            e.popup.update();
+                                        }
+                                    })
+                                    .catch(function (err) {
+                                        console.log(err);
+                                    });
+                            }
+                        });
+                    point._custom_asset_imei = params.Imei;
+                    point.addTo(self.MarkersGroup);
+                    self.MarkersGroup.addTo(self.Map);
+
+                    if (self.MarkersGroup.getBounds().isValid()) {
+                        self.Map.fitBounds(self.MarkersGroup.getBounds(),{padding:[16,16], maxZoom: 15});
+                    }
+                    self.PanoButtonUpdate([params.Lat, params.Lng]);
+                }                
+            },
+            PanoButtonUpdate: function (latlng=[]) {
+                let self = this;
+                if(!latlng.length){
+                    latlng = [self.Lat, self.Lng];
+                }
+                self.StreetViewService.getPanorama({ location: new google.maps.LatLng(latlng[0], latlng[1]), radius: 50 }, self.ProcessSVData);
+            },
+            ProcessSVData: function(data, status) {
+                this.$setState({
+                    SVExist: status === 'OK'
+                });
+            },
+            ShowStreetView: function(e) {
+                let self = this;
+                let $target = $$(e.target).closest('a');
+
+                let content = `
+                        <div class="popup" >
+                            <div class="view">
+                                <div class="page">
+                                    <div class="page-content">
+                                        <div class="fab fab-left-top fab-pano-close popup-close">
+                                            <a href="#">
+                                                <i class="f7-icons">close</i>
+                                            </a>
+                                        </div>
+                                        <div id="pano" class="pano" ></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`;
+
+                self.DynamicMenuPopup = self.$app.popup.create({
+                    content: content,
+                    on: {
+                        open: function (popup) {
+                            let panoramaOptions = {
+                                position: new google.maps.LatLng($target.data('lat'), $target.data('lng')),
+                                pov: {
+                                    heading: 0,
+                                    pitch: 0
+                                },
+                                linksControl: false,
+                                panControl: false,
+                                enableCloseButton: false,
+                                addressControl: false
+                            };
+                            let panorama = new google.maps.StreetViewPanorama(document.getElementById('pano'), panoramaOptions);
+
+                        },
+                        closed: function(popup){
+                            popup.$el.remove();
+                            popup.destroy();
+                        },
+                    }
+                }).open();
+            },
+            
+        },
+        on: {
+            pageInit: function (e, page) { 
+                let self = this;
+
+                if (!self.NotificationData) {
+                    return;
+                }
+                if(self.NotificationData.alarm !== 'STATUS' && self.NotificationData.alarm !== 'CONFIG' ){
+                    self.initMapWithMarker(self.NotificationData);
+                }
+
+            },
+
+            pageBeforeRemove: function (e, page) {
+                let self = this;
+                if(self.MarkersGroup){
+                    self.MarkersGroup.clearLayers();
+                }
+                if(self.Map){
+                    self.Map.remove()
+                }
+                
+            },   
+        }
+    };
+</script>

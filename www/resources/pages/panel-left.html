@@ -1,0 +1,224 @@
+<!--suppress JSAnnotator -->
+<template>
+    <div class="panel panel-left panel-cover panel-init">
+        <div class="page" data-name="panel-left">
+
+            <div class="toolbar toolbar-bottom bg-color-transparent no-hairline no-shadow {{ToolbarAdditionaClass}}">
+                <div class="toolbar-inner flex-direction-column bg-color-white no-padding">
+                    {{#if ShowButtonReferFriend }}
+                    <div class="width-100 ">
+                        <a href="#" @click="showReferralModal" class="button button-fill color-darkgray margin-horizontal margin-bottom"><i class="f7-icons icon-menu-refer vertical-align-middle size-18 margin-right-half"></i>{{@global.LANGUAGE.COM_MSG100}}</a>
+                    </div>
+                    {{/if}}
+                    {{#if ShowButtonCall}}
+                    <div class="width-100 ">
+                        <a href="#" @click="callTo({{SupportPhone}})" class="button button-fill color-custom margin-horizontal margin-bottom"><i class="f7-icons icon-menu-call vertical-align-middle size-18 margin-right-half"></i>{{DealerName}}</a>
+                    </div>
+                    {{/if}}
+                    {{#if ShowPayment}}
+                    <div class="bg-color-lightgray width-100 overflow-hidden">
+                        <a href="/recharge-credits/" class="link text-color-black ">{{@global.LANGUAGE.COM_MSG003}}: {{Remaining}}</a>
+                    </div>
+                    {{/if}}
+                </div>
+            </div>
+            <div class="page-content">
+                <div class="panel-header bg-custom bg-header">
+                    <span class="app-version text-color-white">{{AppVersion}}</span>
+                    <div class="block no-margin padding">
+                        <div class="logo">
+                            <img src="{{Logo}}" alt="">
+                        </div>
+                        <p class="text-color-darkgrey no-margin-bottom">{{FirstName}} {{LastName}}</p>
+                        <p class="text-color-darkgrey no-margin">{{Email}}</p>
+                    </div>
+                </div>
+                <div class="list no-hairlines no-hairlines-between no-chevron margin-top-half">
+                    <ul>
+                        <li>
+                            <a href="/" data-clear-previous-history="true" data-ignore-cache="true" class="item-link item-content panel-close">
+                                <div class="item-media text-color-lightgray"><i class="f7-icons icon-menu-home "></i></div>
+                                <div class="item-inner">
+                                    <div class="item-title">{{@global.LANGUAGE.MENU_MSG00}}</div>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/account-settings/" class="item-link item-content panel-close">
+                                <div class="item-media text-color-lightgray"><i class="f7-icons icon-menu-profile "></i></div>
+                                <div class="item-inner">
+                                    <div class="item-title">{{@global.LANGUAGE.MENU_MSG01}}</div>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/geofence-list/" class="item-link item-content panel-close">
+                                <div class="item-media text-color-lightgray"><i class="f7-icons icon-menu-geofence "></i></div>
+                                <div class="item-inner">
+                                    <div class="item-title">{{@global.LANGUAGE.MENU_MSG02}}</div>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/asset-select/?type=multiple&nextPage=asset-alarm" class="item-link item-content panel-close">
+                                <div class="item-media text-color-lightgray"><i class="f7-icons icon-menu-alarms "></i></div>
+                                <div class="item-inner">
+                                    <div class="item-title">{{@global.LANGUAGE.MENU_MSG03}}</div>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/reports/" class="item-link item-content panel-close">
+                                <div class="item-media text-color-lightgray"><i class="f7-icons icon-menu-reports "></i></div>
+                                <div class="item-inner">
+                                    <div class="item-title">{{@global.LANGUAGE.MENU_MSG04}}</div>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/contact-list/" class="item-link item-content panel-close">
+                                <div class="item-media text-color-lightgray"><i class="f7-icons icon-contacts "></i></div>
+                                <div class="item-inner">
+                                    <div class="item-title">{{@global.LANGUAGE.MENU_MSG10}}</div>
+                                </div>
+                            </a>
+                        </li>
+                        {{#if ShowPayment}}
+                        <li>
+                            <a href="/recharge-credits/" class="item-link item-content panel-close">
+                                <div class="item-media text-color-lightgray"><i class="f7-icons icon-menu-credits "></i></div>
+                                <div class="item-inner">
+                                    <div class="item-title">{{@global.LANGUAGE.MENU_MSG05}}</div>
+                                </div>
+                            </a>
+                        </li>
+                        {{/if}}
+
+
+                        <li>
+                            <a href="{{UserGuideURL}}" target="_system" class="item-link item-content panel-close external">
+                                <div class="item-media text-color-lightgray"><i class="f7-icons icon-menu-manual "></i></div>
+                                <div class="item-inner">
+                                    <div class="item-title">{{@global.LANGUAGE.MENU_MSG11}}</div>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{SupportUrl}}" target="_system" class="item-link item-content panel-close external">
+                                <div class="item-media text-color-lightgray"><i class="f7-icons icon-menu-support "></i></div>
+                                <div class="item-inner">
+                                    <div class="item-title">{{@global.LANGUAGE.MENU_MSG06}}</div>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a @click="logout" href="#" class="item-link item-content panel-close">
+                                <div class="item-media text-color-lightgray"><i class="f7-icons icon-menu-logout "></i></div>
+                                <div class="item-inner">
+                                    <div class="item-title">{{@global.LANGUAGE.MENU_MSG07}}</div>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+    // script must return component object
+    return {
+        data: function () {
+            let self = this;
+
+            let userInfo = self.$app.methods.getFromStorage('userInfo');
+            let additionalFlags = self.$app.methods.getFromStorage('additionalFlags');
+
+            let paramsForSupportUrl = {
+                service: self.$root.AppDetails.supportCode,
+            };
+            if (userInfo.FirstName) {
+                paramsForSupportUrl.name = userInfo.FirstName.trim();
+            }
+            if (userInfo.SubName) {
+                paramsForSupportUrl.name = paramsForSupportUrl.name + ' ' + userInfo.SubName.trim();
+                paramsForSupportUrl.name = paramsForSupportUrl.name.trim();
+            }
+            if (localStorage.ACCOUNT) {
+                paramsForSupportUrl.loginName = localStorage.ACCOUNT.trim();
+                paramsForSupportUrl.loginName = encodeURIComponent(paramsForSupportUrl.loginName);
+            }
+            if (userInfo.EMail) {
+                paramsForSupportUrl.email = userInfo.EMail.trim();
+                paramsForSupportUrl.email = encodeURIComponent(paramsForSupportUrl.email);
+            }
+            if (userInfo.Mobile) {
+                paramsForSupportUrl.phone = userInfo.Mobile.trim();
+                paramsForSupportUrl.phone = encodeURIComponent(paramsForSupportUrl.phone);
+            }
+            if (paramsForSupportUrl.name) {
+                paramsForSupportUrl.name = encodeURIComponent(paramsForSupportUrl.name);
+            }
+
+            let ret = {
+                Logo: self.$root.logo,
+                FirstName: userInfo && userInfo.FirstName ? userInfo.FirstName : 'User',
+                LastName: userInfo && userInfo.SurName ? userInfo.SurName : 'Name',
+                Email: userInfo && userInfo.Email ? userInfo.Email : 'test@mail.com',
+                Remaining: userInfo && userInfo.SMSTimes ? userInfo.SMSTimes : '0',
+                SupportUrl: API_URL.URL_SUPPORT + '?' + self.$app.utils.serializeObject(paramsForSupportUrl),
+                UserGuideURL: API_URL.URL_USER_GUIDE,
+                SupportPhone: self.$root.AppDetails.supportPhone,
+                AppVersion: self.$root.AppDetails.appVersion ? 'v'+self.$root.AppDetails.appVersion : '',
+                ToolbarAdditionaClass: '',
+                DealerName: self.$app.name,
+                ShowPayment: true,
+            };
+            if (userInfo.CountryCode && userInfo.CountryCode.toLowerCase() === 'aus') {
+                //~ret.ToolbarAdditionaClass += ' toolbar-size-2';
+                //~ret.ShowButtonCall = true;
+                //~ret.ShowButtonReferFriend = true;
+            }
+            if(self.$app.device.ios && !additionalFlags.elemRc){
+            //if(!additionalFlags.elemRc){
+                ret.ShowPayment = false;
+                ret.ToolbarAdditionaClass += ' toolbar-size-4';
+            }
+
+            return ret;
+        },
+        methods: {
+            showReferralModal: function(){
+                 this.$app.methods.customDialog({
+                     title: LANGUAGE.PROMPT_MSG104,
+                     text: LANGUAGE.PROMPT_MSG105.format(API_URL.REFERRAL_PROGRAM)
+                 })
+            },
+            callTo: function(phone){
+                this.$app.methods.callTo(phone)
+            },
+            logout: function () {
+                //this.$app.methods.unregisterPush();
+                this.$app.methods.logout();
+            }
+        },
+
+        on: {
+            pageInit: function (e, page) {
+                let self = this;
+                console.log('panel loaded');
+
+
+            },
+            pageAfterIn:function(){
+
+            },
+            pageAfterOut: function () {
+                // page has left the view
+            },
+
+        }
+    };
+</script>

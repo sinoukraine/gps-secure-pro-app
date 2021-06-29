@@ -1,0 +1,539 @@
+<!--suppress JSAnnotator -->
+<template>
+<!-- Page, data-name contains page name which can be used in callbacks -->
+        <div class="page " data-name="report-generate"> <!-- page-with-subnavbar -->
+        <!-- Top Navbar -->
+            <div class="navbar">
+                <div class="navbar-bg"></div>
+                <div class="navbar-inner">
+                    <div class="left">
+                        <a href="#" class="link icon-only back" >
+                            <i class="if-not-ios f7-icons icon-header-arrow-back"></i>
+                            <i class="if-ios icon icon-back"></i>
+                        </a>
+                    </div>
+                    <div class="title sliding">{{PageTitle}}</div>
+                    <div class="right">
+                        <label for="submit-generate-report-from" class="link icon-only">
+                            <i class="f7-icons icon-header-apply"></i>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <!-- Scrollable page content-->
+            <form class="page-content" name="GenerateReportForm">
+                <input type="submit" id="submit-generate-report-from" class="display-none" />
+                <div class="block">
+                    {{@global.LANGUAGE.PROMPT_MSG091}}
+                </div>
+                <div class="list no-hairlines">
+                    <ul>
+                        <li>
+                            <a key="key-asset-list" class="item-link smart-select smart-select-init custom-smart-select smart-select-asset-list" data-open-in="popup" data-form-color-theme="green" data-searchbar="true" data-searchbar-placeholder="{{@global.LANGUAGE.COM_MSG002}}" data-append-searchbar-not-found="{{@global.LANGUAGE.PROMPT_MSG000}}" data-page-title = "{{@global.LANGUAGE.COM_MSG065}}" >
+                                <select name="Assets" multiple required validate>
+                                    {{#AssetList}}
+                                    <option value="{{IMEI}}" data-id="{{Id}}" selected>{{Name}}</option>
+                                    {{/AssetList}}
+                                </select>
+                                <div class="item-content item-input">
+                                    <div class="item-media text-color-lightgray">
+                                        <i class="f7-icons icon-asset-name"></i>
+                                    </div>
+                                    <div class="item-inner">
+                                        <div class="item-title item-label">{{@global.LANGUAGE.GEOFENCES_MSG02}}</div>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <div class="item-content item-input">
+                                <div class="item-media text-color-lightgray">
+                                    <i class="f7-icons icon-live-date"></i>
+                                </div>
+                                <div class="item-inner">
+                                    <div class="item-title item-floating-label item-label">{{@global.LANGUAGE.ASSET_PLAYBACK_MSG03}}</div>
+                                    <div class="item-input-wrap">
+                                        <input type="text" placeholder="Select date and time" readonly="readonly" name="StartDateTime" />
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content item-input">
+                                <div class="item-media text-color-lightgray">
+                                    <i class="f7-icons icon-live-date"></i>
+                                </div>
+                                <div class="item-inner">
+                                    <div class="item-title item-floating-label item-label">{{@global.LANGUAGE.ASSET_PLAYBACK_MSG04}}</div>
+                                    <div class="item-input-wrap">
+                                        <input type="text" placeholder="Select date and time" readonly="readonly" name="EndDateTime" />
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+
+                        {{#js_if "this.ReportType == '1'"}}
+                            {{#if GeofenceListShow}}
+                            <li key="key-geofence-list">
+                                <a class="item-link smart-select smart-select-init custom-smart-select custom-smart-select-geofence-list {{#unless GeofenceList}}disabled tooltip-init{{/unless}}" data-open-in="popup" data-searchbar="true" data-searchbar-placeholder="{{@global.LANGUAGE.COM_MSG002}}" data-append-searchbar-not-found="{{@global.LANGUAGE.PROMPT_MSG000}}" data-form-color-theme="green" data-tooltip="{{@global.LANGUAGE.PROMPT_MSG092}}">
+                                    <select name="GeofenceList" multiple >
+                                        {{#GeofenceList}}
+                                        <option value="{{Code}}" selected>{{Name}}</option>
+                                        {{/GeofenceList}}
+                                    </select>
+                                    <div class="item-content item-input">
+                                        <div class="item-media text-color-lightgray">
+                                            <i class="f7-icons icon-menu-geofence"></i>
+                                        </div>
+                                        <div class="item-inner">
+                                            <div class="item-title item-label">{{@global.LANGUAGE.REPORTS_MSG06}}</div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>
+                            {{else}}
+                            <li key="key-preloader-geofence-list" class="item-link item-content asset skeleton-text skeleton-effect-blink">
+                                <div class="item-media text-color-lightgray">
+                                    <div class="skeleton-block" style="width: 32px; height: 32px;"></div>
+                                </div>
+                                <div class="item-inner">
+                                    <div class="item-title">
+                                        <div class="item-header">
+                                            Geofences
+                                        </div>
+                                        some selected geofence
+                                    </div>
+                                </div>
+                            </li>
+                            {{/if}}
+                            <li key="key-overview-options-list">
+                                <a class="item-link smart-select smart-select-init custom-smart-select custom-smart-select-overview-options-list" data-open-in="popup" data-searchbar="true" data-searchbar-placeholder="{{@global.LANGUAGE.COM_MSG002}}" data-append-searchbar-not-found="{{@global.LANGUAGE.PROMPT_MSG000}}" data-form-color-theme="green">
+                                    <select name="OverviewOptionsList" multiple >
+                                        {{#OverviewOptionsList}}
+                                        <option value="{{Value}}" selected>{{Name}}</option>
+                                        {{/OverviewOptionsList}}
+                                    </select>
+                                    <div class="item-content item-input">
+                                        <div class="item-media text-color-lightgray">
+                                            <i class="f7-icons icon-live-hint"></i>
+                                        </div>
+                                        <div class="item-inner">
+                                            <div class="item-title item-label">{{@global.LANGUAGE.REPORTS_MSG08}}</div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>
+                        {{/js_if}}
+
+                        {{#js_if "this.ReportType == '1' || this.ReportType == '3'" }}
+                            {{#if AlertListShow}}
+                            <li key="key-alert-list-list">
+                                <a class="item-link smart-select smart-select-init custom-smart-select  custom-smart-select-alert-list {{#unless AlertList}}disabled tooltip-init{{/unless}}" data-open-in="popup" data-searchbar="true" data-searchbar-placeholder="{{@global.LANGUAGE.COM_MSG002}}" data-append-searchbar-not-found="{{@global.LANGUAGE.PROMPT_MSG000}}" data-form-color-theme="green" data-tooltip="{{@global.LANGUAGE.PROMPT_MSG093}}">
+                                    <select name="AlertList" multiple >
+                                        {{#AlertList}}
+                                            {{#if CustomName}}
+                                            <option value="{{AlertId}}" selected>{{CustomName}}</option>
+                                            {{/if}}
+                                        {{/AlertList}}
+                                    </select>
+                                    <div class="item-content item-input">
+                                        <div class="item-media text-color-lightgray">
+                                            <i class="f7-icons icon-header-alarm"></i>
+                                        </div>
+                                        <div class="item-inner">
+                                            <div class="item-title item-label">{{@global.LANGUAGE.REPORTS_MSG07}}</div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>
+                            {{else}}
+                            <li key="key-preloader-alert-list" class="item-link item-content asset skeleton-text skeleton-effect-blink">
+                                <div class="item-media text-color-lightgray">
+                                    <div class="skeleton-block" style="width: 32px; height: 32px;"></div>
+                                </div>
+                                <div class="item-inner">
+                                    <div class="item-title">
+                                        <div class="item-header">
+                                            Alerts
+                                        </div>
+                                        some selected alerts
+                                    </div>
+                                </div>
+                            </li>
+                            {{/if}}
+                        {{/js_if}}
+
+                        {{#js_if "this.ReportType == '2'"}}
+                        <!--<li class="item-content item-input ">
+                            <label class="item-media checkbox color-green">
+                                <input type="checkbox" name="MovementState" {{#if MovementState}}checked{{/if}}><i class="icon-checkbox"></i>
+                            </label>
+                            <div class="item-inner">
+                                <div class="item-title item-floating-label item-label">{{@global.LANGUAGE.REPORTS_MSG09}}({{@global.LANGUAGE.COM_MSG102}})</div>
+                                <div class="item-input-wrap ">
+                                    <input type="tel" name="Movement" value="2" maxlength="20" data-error-message="{{@global.LANGUAGE.PROMPT_MSG106}}" pattern="[0-9]*" validate {{#if MovementState}}required{{/if}}>
+                                </div>
+                            </div>
+                        </li>-->
+                        <!--<li class="item-content item-input ">
+                            <label class="item-media checkbox color-green">
+                                <input type="checkbox" name="StationaryState" {{#if StationaryState}}checked{{/if}}><i class="icon-checkbox"></i>
+                            </label>
+                            <div class="item-inner">
+                                <div class="item-title item-floating-label item-label">{{@global.LANGUAGE.REPORTS_MSG10}}({{@global.LANGUAGE.COM_MSG102}})</div>
+                                <div class="item-input-wrap ">
+                                    <input type="tel" name="Stationary" value="2" maxlength="20" data-error-message="{{@global.LANGUAGE.PROMPT_MSG106}}" pattern="[0-9]*" validate {{#if StationaryState}}required{{/if}}>
+                                </div>
+                            </div>
+                        </li>-->
+                        <li class="item-content item-input ">
+                            <div class="item-media text-color-lightgray">
+                                <i class="f7-icons icon-live-hint"></i>
+                            </div>
+                            <div class="item-inner">
+                                <div class="item-title item-floating-label item-label">{{@global.LANGUAGE.REPORTS_MSG10}}({{@global.LANGUAGE.COM_MSG102}})</div>
+                                <div class="item-input-wrap ">
+                                    <input type="tel" name="Stationary" value="2" maxlength="20" data-error-message="{{@global.LANGUAGE.PROMPT_MSG106}}" pattern="[0-9]*" validate required>
+                                </div>
+                            </div>
+                        </li>
+                        {{/js_if}}
+                        {{#js_if "this.ReportType == '5'"}}
+                        <li class="item-content item-input ">
+                            <label class="item-media checkbox color-green">
+                                <input type="checkbox" name="IgnitionOnState" {{#if IgnitionOnState}}checked{{/if}}><i class="icon-checkbox"></i>
+                            </label>
+                            <div class="item-inner">
+                                <div class="item-title item-floating-label item-label">{{@global.LANGUAGE.ASSET_ALARM_MSG11}}({{@global.LANGUAGE.COM_MSG102}})</div>
+                                <div class="item-input-wrap ">
+                                    <input type="tel" name="IgnitionOn" value="5" maxlength="20" data-error-message="{{@global.LANGUAGE.PROMPT_MSG106}}" pattern="[0-9]*" validate {{#if IgnitionOnState}}required{{/if}}>
+                                </div>
+                            </div>
+                        </li>
+
+                        <li class="item-content item-input ">
+                            <label class="item-media checkbox color-green">
+                                <input type="checkbox" name="IgnitionOffState" {{#if IgnitionOffState}}checked{{/if}}><i class="icon-checkbox"></i>
+                            </label>
+                            <div class="item-inner">
+                                <div class="item-title item-floating-label item-label">{{@global.LANGUAGE.ASSET_ALARM_MSG10}}({{@global.LANGUAGE.COM_MSG102}})</div>
+                                <div class="item-input-wrap ">
+                                    <input type="tel" name="IgnitionOff" value="5" maxlength="20" data-error-message="{{@global.LANGUAGE.PROMPT_MSG106}}" pattern="[0-9]*" validate {{#if IgnitionOffState}}required{{/if}}>
+                                </div>
+                            </div>
+                        </li>
+                        {{/js_if}}
+
+                        <li class="item-divider">{{@global.LANGUAGE.PROMPT_MSG102}}</li>
+                        <li>
+                            <a class="item-link smart-select smart-select-init custom-smart-select custom-smart-select-contact-list {{#unless ContactList}}disabled{{/unless}}" data-open-in="popup" data-searchbar="true" data-searchbar-placeholder="{{@global.LANGUAGE.COM_MSG002}}" data-append-searchbar-not-found="{{@global.LANGUAGE.PROMPT_MSG000}}" data-page-title = "{{@global.LANGUAGE.COM_MSG077}}" data-form-color-theme="green">
+                                <select name="ContactList" multiple validate {{#unless CustomEmail}}required{{/unless}}>
+                                {{#ContactList}}
+                                {{#if EMail}}
+                                <option value="{{EMail}}" data-display-as="{{EMail}}">{{FullName}}({{EMail}})</option>
+                                {{/if}}
+                                {{/ContactList}}
+                                </select>
+                                <div class="item-content item-input">
+                                    <div class="item-media text-color-lightgray">
+                                        <i class="f7-icons icon-live-email"></i>
+                                    </div>
+                                    <div class="item-inner">
+                                        <div class="item-title item-label">{{@global.LANGUAGE.COM_MSG077}}</div>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                        {{#unless ContactList}}
+                        <li class="text-color-red block-footer">{{@global.LANGUAGE.PROMPT_MSG068}}</li>
+                        {{/unless}}
+                        <li class="item-divider">{{@global.LANGUAGE.PROMPT_MSG103}}</li>
+                        <li class="item-content item-input ">
+                            <div class="item-media text-color-lightgray"><i class="f7-icons icon-live-email "></i></div>
+                            <div class="item-inner">
+                                <div class="item-title item-floating-label item-label">{{@global.LANGUAGE.COM_MSG101}}</div>
+                                <div class="item-input-wrap ">
+                                    <input type="email" name="CustomEmail" value="" maxlength="200" validate {{#if CustomEmail}}required{{/if}}>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+
+            </form>
+        </div>
+</template>
+
+
+<script>
+  // script must return component object
+    return {
+        data: function () {
+            let self = this;
+
+            let assetListObj = self.$app.methods.getFromStorage("assetList");
+            let keys = Object.keys(assetListObj);
+            let assetList = [];
+            let contactList = self.$app.methods.getFromStorage('contactList');
+            let userInfo = self.$app.methods.getFromStorage('userInfo');
+            let overviewOptionsList = Protocol.Helper.getOverviewReportOptions();
+
+            for (const key of keys) {
+                if(assetListObj[key].SolutionType.toLowerCase() !== 'protect' && assetListObj[key].SolutionType.toLowerCase() !== 'qprotect' && assetListObj[key].SolutionType.toLowerCase() !== 'witiprotect' && assetListObj[key].SolutionType.toLowerCase() !== 'witiqprotect'){
+                    assetList.push(assetListObj[key]);
+                }
+            }
+            assetList.sort(function(a, b) {
+                if (a.Name < b.Name) return -1;
+                if (a.Name > b.Name) return 1;
+                return 0;
+            });
+            if (overviewOptionsList && overviewOptionsList.length) {
+                overviewOptionsList.sort(function(a,b){
+                    if(a.Name < b.Name) return -1;
+                    if(a.Name > b.Name) return 1;
+                    return 0;
+                });
+            }
+
+            contactList.push({
+                EMail: userInfo.Email,
+                FirstName: userInfo.FirstName,
+                SubName: userInfo.SurName,
+                Code: self.$app.data.MajorToken,
+                CustomerCode: self.$app.data.MinorToken,
+            });
+            contactList = self.$app.methods.sortContactList(contactList);
+
+            let ret = {
+                PageTitle: Protocol.Helper.getReportNameByType(self.$route.query.type),
+                ReportType: self.$route.query.type,
+                AssetList: assetList,
+                ContactList: contactList,
+                OverviewOptionsList: overviewOptionsList,
+
+                StationaryState: true,
+                IgnitionOnState: true,
+            };
+
+            return ret;
+        },
+        methods: {
+            generateReport: function(data, url){
+                var self = this;
+
+                self.$app.preloader.show();
+                self.$app.request.promise.post(url, data, 'json')
+                    .then(function (result) {
+                        console.log(result.data);
+                        if(result.data.MajorCode === '000' && result.data.Data.Success) {
+                            self.$app.methods.customNotification({title: self.PageTitle, text: LANGUAGE.PROMPT_MSG095});
+                            mainView.router.back();
+                        }else if(result.data.MajorCode === '1010'){
+                            self.$app.methods.customDialog({title: self.PageTitle, text: LANGUAGE.PROMPT_MSG111});
+                        }else{
+                            self.$app.dialog.alert(LANGUAGE.PROMPT_MSG023 + `<br>MajorCode: ${result.data.MajorCode}<br>MinorCode: ${result.data.MinorCode}<br>${result.data.Data}`);
+                        }
+                    })
+                    .finally(function () {
+                        self.$app.preloader.hide();
+                    })
+                    .catch(function (err) {
+                        console.log(err);
+                        if (err && err.status === 404){
+                            self.$app.dialog.alert(LANGUAGE.PROMPT_MSG002);
+                        }else{
+                            self.$app.dialog.alert(LANGUAGE.PROMPT_MSG003);
+                        }
+                    });
+            },
+            initGeofencesSelect: function (listObj={}) {
+                let self = this;
+
+                let list = [];
+                if (!self.$app.methods.isObjEmpty(listObj)) {
+                    const keys = Object.keys(listObj);
+                    for (const key of keys) {
+                        list.push({
+                            Code: key,
+                            Name: listObj[key].Name
+                        });
+                    }
+                    list.sort(function(a,b){
+                        if(a.Name < b.Name) return -1;
+                        if(a.Name > b.Name) return 1;
+                        return 0;
+                    });
+                }
+
+                self.$setState({
+                    GeofenceList: list,
+                    GeofenceListShow: true,
+                })
+            },
+            initAlertsSelect: function (list=[]) {
+                let self = this;
+
+                self.$setState({
+                    AlertList: list,
+                    AlertListShow: true,
+                })
+            },
+
+
+        },
+
+        on: {
+            pageInit: function (e, page) {
+                let self = this;
+                let startDateTimeEl = page.$el.find('[name="StartDateTime"]');
+                let endDateTimeEl = page.$el.find('[name="EndDateTime"]');
+                let assetsEl = page.$el.find('[name = "Assets"]');
+                let contactsEl = page.$el.find('[name = "ContactList"]');
+                let customEmailEl = page.$el.find('[name = "CustomEmail"]');
+                let form = page.$el.find('[name = "GenerateReportForm"]');
+
+                self.CalendarStartDateTime = self.$app.calendar.create({
+                    inputEl: startDateTimeEl,
+                    timePicker: true,
+                    dateFormat: 'MM dd yyyy, HH::mm',
+                    value: [moment().subtract(1, 'days').format('MMMM DD YYYY, HH:mm')],
+                    maxDate: new Date(),
+                });
+                self.CalendarEndDateTime = self.$app.calendar.create({
+                    inputEl: endDateTimeEl,
+                    timePicker: true,
+                    dateFormat: 'MM dd yyyy, HH::mm',
+                    value: [moment().format('MMMM DD YYYY, HH:mm')],
+                    maxDate: new Date(),
+                });
+
+                self.$app.methods.getGeofenceList(self.initGeofencesSelect);
+                self.$app.methods.getAlertList(self.initAlertsSelect);
+
+                customEmailEl.on('input', function () {
+                    self.$setState({
+                        CustomEmail: !!this.value
+                    },()=>{
+                        $$(this).change();
+                        page.$el.find('[name="ContactList"]').change();
+                    });
+                });
+
+                page.$el.on('change', '[name="MovementState"], [name="StationaryState"], [name="IgnitionOnState"], [name="IgnitionOffState"]', function () {
+                    self.$setState({
+                        [this.name]: this.checked
+                    })
+                });
+
+                form.on('submit', function(e) {
+                    e.preventDefault();
+                    let alertsEl = page.$el.find('[name = "AlertList"]');
+                    let overviewOptionsEl = page.$el.find('[name = "OverviewOptionsList"]');
+                    let geofencesEl = page.$el.find('[name = "GeofenceList"]');
+                    let stationaryEl = page.$el.find('[name = "Stationary"]');
+                    let ignitionOnEl = page.$el.find('[name = "IgnitionOn"]');
+                    let ignitionOffEl = page.$el.find('[name = "IgnitionOff"]');
+
+
+
+
+
+                    let data = {
+                        MinorToken: self.$app.data.MinorToken,
+                        MajorToken: self.$app.data.MajorToken,
+                        From: moment.utc(self.CalendarStartDateTime.getValue()[0]).format(window.COM_TIMEFORMAT),
+                        To: moment.utc(self.CalendarEndDateTime.getValue()[0]).format(window.COM_TIMEFORMAT),
+                        IMEIs: assetsEl.val(),
+                        Emails: contactsEl.val(),
+                        Export: 'PDF',
+                        Logo: self.$app.data.logoExternal,
+                    };
+                    if(self.CustomEmail){
+                        data.Emails.push(customEmailEl.val());
+                    }
+                    let url = API_URL.GET_REPORT_OVERVIEW;
+                    switch (self.ReportType) {
+                        case '1':   //OVERVIEW
+                            data.Alerts = alertsEl.val();
+                            data.GetGeofenceCodes = geofencesEl.val();
+                            data.Features = overviewOptionsEl.val();
+                            break;
+
+                        case '2':   //STOP log
+                            url = API_URL.GET_REPORT_BY_EVENT;
+                            data.DateFrom = data.From;
+                            data.DateTo = data.To;
+                            data.EventClass = '4';
+                            data.EventTypes = '0';
+                            data.EventDurations=[stationaryEl.val()];
+                            break;
+
+                        case '3':   //ALARM report
+                            url = API_URL.GET_REPORT_BY_ALERT;
+                            data.DateFrom = data.From;
+                            data.DateTo = data.To;
+                            data.AlertIds = alertsEl.val();
+
+                            data.AsIds = [];// assetsEl.val();
+                            assetsEl.find('option').each((i, el)=>{
+                                if (el.selected) {
+                                    data.AsIds.push(el.getAttribute('data-id'));
+                                }
+                            });
+                            break;
+
+                        case '4':   //TRIP report
+                            url = API_URL.GET_REPORT_TRIP;
+                            data.DateFrom = data.From;
+                            data.DateTo = data.To;
+                            break;
+
+                        case '5':   //RUNTIME / IGNITION
+                            url = API_URL.GET_REPORT_BY_EVENT;
+                            data.DateFrom = data.From;
+                            data.DateTo = data.To;
+                            data.EventClass = '2';
+                            data.EventTypes = [];
+                            data.EventDurations=[];
+
+                            if(self.IgnitionOffState){
+                                data.EventTypes.push(0);
+                                data.EventDurations.push(ignitionOffEl.val());
+                            }
+                            if(self.IgnitionOnState){
+                                data.EventTypes.push(1);
+                                data.EventDurations.push(ignitionOnEl.val());
+                            }
+
+                            break;
+
+                    }
+
+                    self.generateReport(data, url);
+                    /*if (self.ReportType === '4'){
+                        self.$app.methods.customDialog({title: self.PageTitle, text: LANGUAGE.PROMPT_MSG107});
+                    }else{
+                        self.generateReport(data, url);
+                    }*/
+
+                    return false;
+                });
+
+                /*if (self.ReportType === '4'){
+                    self.$app.methods.customDialog({title: self.PageTitle, text: LANGUAGE.PROMPT_MSG107});
+                }*/
+            },
+            pageBeforeRemove: function () {
+                let self = this;
+                if (self.CalendarStartDateTime) {
+                    self.CalendarStartDateTime.destroy();
+                }
+                if (self.CalendarEndDateTime) {
+                    self.CalendarEndDateTime.destroy();
+                }
+            }
+        }
+    };
+</script>

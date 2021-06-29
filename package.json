@@ -1,0 +1,75 @@
+{
+  "name": "com.gpssecure.app",
+  "displayName": "gpssecure",
+  "version": "1.0.0",
+  "description": "A sample Apache Cordova application that responds to the deviceready event.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "ecosystem:cordova"
+  ],
+  "author": "Apache Cordova Team",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@havesource/cordova-plugin-push": "^2.0.0",
+    "cordova-android": "^9.0.0",
+    "cordova-launch-review": "^4.0.1",
+    "cordova-plugin-actionsheet": "^2.3.3",
+    "cordova-plugin-androidx-adapter": "^1.1.3",
+    "cordova-plugin-buildinfo": "^4.0.0",
+    "cordova-plugin-camera": "^5.0.1",
+    "cordova-plugin-device": "^2.0.3",
+    "cordova-plugin-dialogs": "^2.0.2",
+    "cordova-plugin-inappbrowser": "^5.0.0",
+    "cordova-plugin-network-information": "git+https://github.com/apache/cordova-plugin-network-information.git",
+    "cordova-plugin-safariviewcontroller": "^2.0.0",
+    "cordova-plugin-screen-orientation": "^3.0.2",
+    "cordova-plugin-splashscreen": "^6.0.0",
+    "cordova-plugin-statusbar": "^2.1.3",
+    "cordova-plugin-whitelist": "^1.3.4",
+    "cordova-plugin-wkwebview-engine-v2": "^2.2.0",
+    "cordova-plugin-wkwebview-file-xhr": "^3.0.0",
+    "es6-promise-plugin": "^4.2.2",
+    "phonegap-plugin-mobile-accessibility": "^1.0.5",
+    "uk.co.workingedge.phonegap.plugin.istablet": "^1.2.0",
+    "uk.co.workingedge.phonegap.plugin.launchnavigator": "^5.0.5"
+  },
+  "cordova": {
+    "plugins": {
+      "cordova-plugin-whitelist": {},
+      "@havesource/cordova-plugin-push": {
+        "SENDER_ID": "1097482483564",
+        "ANDROID_SUPPORT_V13_VERSION": "28.0.0",
+        "FCM_VERSION": "18.+"
+      },
+      "cordova-plugin-statusbar": {},
+      "cordova-plugin-device": {},
+      "cordova-plugin-buildinfo": {},
+      "cordova-plugin-splashscreen": {},
+      "cordova-plugin-camera": {
+        "ANDROID_SUPPORT_V4_VERSION": "27.+"
+      },
+      "phonegap-plugin-mobile-accessibility": {},
+      "cordova-launch-review": {
+        "ANDROID_PLAY_SERVICES_CORE_VERSION": "1.8.0"
+      },
+      "cordova-plugin-inappbrowser": {},
+      "cordova-plugin-wkwebview-engine-v2": {},
+      "cordova-plugin-wkwebview-file-xhr": {},
+      "cordova-plugin-safariviewcontroller": {},
+      "uk.co.workingedge.phonegap.plugin.istablet": {},
+      "cordova-plugin-screen-orientation": {},
+      "uk.co.workingedge.phonegap.plugin.launchnavigator": {
+        "GOOGLE_API_KEY_FOR_ANDROID": "",
+        "OKHTTP_VERSION": "3.12.0"
+      },
+      "cordova-plugin-androidx-adapter": {}
+    },
+    "platforms": [
+      "android"
+    ]
+  },
+  "dependencies": {}
+}

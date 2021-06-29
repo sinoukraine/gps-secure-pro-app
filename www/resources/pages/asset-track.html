@@ -1,0 +1,464 @@
+<!--suppress JSAnnotator -->
+<template>
+    <div class="page " data-name="asset-track"> <!-- page-with-subnavbar -->
+        <!-- Top Navbar -->
+        <div class="navbar">
+            <div class="navbar-bg"></div>
+            <div class="navbar-inner">
+                <div class="left">
+                    {{#if Tabs}}
+                    <a href="/panel-left/" class="link icon-only " >
+                        <i class="if-not-ios f7-icons icon-header-menu"></i>
+                        <i class="if-ios icon material-icons">menu</i>
+                    </a>
+                    {{else}}
+                    <a href="#" class="link icon-only back">
+                        <i class="if-not-ios f7-icons icon-header-arrow-back"></i>
+                        <i class="if-ios icon icon-back"></i>
+                    </a>
+                    {{/if}}
+                </div>
+                <div class="title sliding">
+                    {{PageTitle}}
+                </div>
+                <div class="right">
+                    {{#if LiveAsset}}
+                    <a @click="GetLiveUpdate" href="#" class="link icon-only ">
+                        <i class="f7-icons icon-header-refresh"></i>
+                    </a>
+                    <a href="/asset-log-last-alarms/?imei={{IMEI}}" class="link icon-only ">
+                        <i class="f7-icons icon-header-alarm"></i>
+                    </a>
+                    {{/if}}
+                    <a @click="showMapControlls" href="#" class="link icon-only ">
+                        <i class="f7-icons icon-header-menu2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {{#if Tabs}}
+        <div class="toolbar tabbar toolbar-top">
+            <div class="toolbar-inner">
+                <a href="/asset-status/?imei={{IMEI}}&tabs=true" class="tab-link">{{@global.LANGUAGE.ASSET_STATUS_LIVE_MSG00}}</a>
+                <a href="/asset-alarm/?imei={{IMEI}}&tabs=true" class="tab-link">{{@global.LANGUAGE.ASSET_ALARM_MSG00}}</a>
+                <a href="/asset-playback/?imei={{IMEI}}" class="tab-link">{{@global.LANGUAGE.ASSET_PLAYBACK_MSG00}}</a>
+                <a href="#" class="tab-link tab-link-active">{{@global.LANGUAGE.ASSET_TRACK_MSG00}}</a>
+            </div>
+        </div>
+        {{/if}}
+        {{#unless ViewAll}}
+        <div class="fab fab-left-bottom fab-custom with-borders {{#unless SVExist}}disabled{{/unless}}">
+            <a @click="ShowStreetView" href="#" class="bg-color-darkgray elevation-hover-10" data-lat="{{Lat}}" data-lng="{{Lng}}">
+                <i class="pano-preview-img"></i>
+            </a>
+        </div>
+        {{/unless}}
+
+        {{#unless ViewAll}}
+        <div class="fab fab-right-bottom fab-custom ">
+            <a href="#" class="bg-color-darkgray elevation-hover-10 flex-direction-column routeButton" data-lat="{{Lat}}" data-lng="{{Lng}}">
+                <i class="f7-icons icon-other-route"></i>
+                <div class="fab-text">{{@global.LANGUAGE.ASSET_TRACK_MSG20}}</div>
+            </a>
+        </div>
+        {{/unless}}
+        {{#unless LiveAsset}}
+        <div class="fab fab-right-bottom2 fab-custom ">
+            <a @click="GetProtectUpdate" href="#" class="bg-color-darkgray elevation-hover-10 flex-direction-column">
+                <i class="f7-icons icon-header-refresh"></i>
+                <div class="fab-text">{{@global.LANGUAGE.COM_MSG057}}</div>
+            </a>
+        </div>
+        {{/unless}}
+
+        <div class="page-content">
+            <div id="{{MapId}}" class="map"></div>
+        </div>
+
+    </div>
+</template>
+
+
+<script>
+    // script must return component object
+    return {
+        data: function () {
+            let self = this;
+            let imei = decodeURIComponent(self.$route.query.imei);
+            let tabsFlag = self.$route.query.tabs;
+
+            let asset = '';
+            let viewAll = self.$route.query.all;
+            if(!viewAll){
+                asset = self.$app.methods.getFromStorage('assetList')[imei];
+            }
+
+            let ret = {
+                PageTitle: !viewAll ? asset.Name : LANGUAGE.HOME_MSG02,
+                MapId: 'map-' + self.$app.utils.id(),
+                Tabs: !!tabsFlag,
+                //Name: asset.Name,
+                IMEI: !viewAll ? asset.IMEI : '',
+                IMSI: !viewAll ? asset.IMSI : '',
+                LiveAsset: asset && asset.SolutionType.toLowerCase() !== 'protect' && asset.SolutionType.toLowerCase() !== 'loc8' && asset.SolutionType.toLowerCase() !== 'qprotect' && asset.SolutionType.toLowerCase() !== 'witiprotect' && asset.SolutionType.toLowerCase() !== 'witiqprotect' || !!viewAll,
+                ViewAll: !!viewAll,
+                MarkersIds: {},
+            };
+
+            return ret;
+        },
+        methods: {
+            UpdateData: function () {
+                let self = this;
+
+                //self.$app.dialog.alert('here')
+
+
+                for (let i = 0; i < self.AssetsIMEIs.length; i++) {
+                    let asset = POSINFOASSETLIST[self.AssetsIMEIs[i]];
+
+                    if (asset && asset.posInfo && parseFloat(asset.posInfo.lat) !== 0 && parseFloat(asset.posInfo.lng) !== 0){
+
+                        let marker =  self.MarkersGroup.getLayer(self.MarkersIds[self.AssetsIMEIs[i]]);
+                        if (marker) {
+                            //self.$app.dialog.alert(asset.posInfo.positionTime.format(window.COM_TIMEFORMAT))
+                            marker.setLatLng([asset.posInfo.lat, asset.posInfo.lng]).setPopupContent(self.$app.methods.getMarkerDataTable(asset));
+                            let popup = marker.getPopup();
+                            if (popup.isOpen()) {
+                                popup.update();
+                                Protocol.Helper.getAddressByGeocoder({lat: asset.posInfo.lat, lng: asset.posInfo.lng},function(address){
+                                    asset.lastQueryPosinfo = { lat: Math.floor(asset.posInfo.lat * 10000) / 10000, lng: Math.floor(asset.posInfo.lng * 10000) / 10000, address: address };
+                                    if (popup.isOpen()) {
+                                        marker.setPopupContent(self.$app.methods.getMarkerDataTable(asset));
+                                        popup.update();
+                                    }
+                                });
+                            }
+                        }
+                    }
+                }
+
+                if(!self.ViewAll){
+                    self.$setState({
+                        Lat: POSINFOASSETLIST[self.AssetsIMEIs[0]].posInfo.lat,
+                        Lng: POSINFOASSETLIST[self.AssetsIMEIs[0]].posInfo.lng
+                    });
+                    self.PanoButtonUpdate([POSINFOASSETLIST[self.AssetsIMEIs[0]].posInfo.lat, POSINFOASSETLIST[self.AssetsIMEIs[0]].posInfo.lng]);
+                }
+
+            },
+            GetLiveUpdate: function () {
+                let self = this;
+                let assetList = self.$app.methods.getFromStorage('assetList');
+                self.$app.progressbar.show('custom');
+                self.$app.methods.getAssetListPosInfo(assetList, true, function () {
+                    self.$app.progressbar.hide();
+                    self.$app.methods.showToast(LANGUAGE.PROMPT_MSG041);
+                });
+            },
+            GetProtectUpdate: function(){
+                let self = this;
+                let data = {
+                    url: API_URL.SEND_COM_POS,
+                    imsi: self.IMSI,
+                    imei: self.IMEI,
+                    type: 'position',
+                    timeStamp: moment().format(window.COM_TIMEFORMAT)
+                }
+                self.$app.methods.precheckSendCommand(data);
+                //self.$app.methods.sendCommand(API_URL.SEND_COM_POS, self.IMSI);
+            },
+            PanoButtonUpdate: function (latlng=[]) {
+                let self = this;
+                if(!latlng.length){
+                    latlng = [self.Lat, self.Lng];
+                }
+                self.StreetViewService.getPanorama({ location: new google.maps.LatLng(latlng[0], latlng[1]), radius: 50 }, self.ProcessSVData);
+            },
+            ProcessSVData: function(data, status) {
+                this.$setState({
+                    SVExist: status === 'OK'
+                });
+            },
+            ShowStreetView: function(e) {
+                let self = this;
+                let $target = $$(e.target).closest('a');
+
+                let content = `
+                        <div class="popup" >
+                            <div class="view">
+                                <div class="page">
+                                    <div class="page-content">
+                                        <div class="fab fab-left-top fab-pano-close popup-close">
+                                            <a href="#">
+                                                <i class="f7-icons">close</i>
+                                            </a>
+                                        </div>
+                                        <div id="pano" class="pano" ></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`;
+
+                self.DynamicMenuPopup = self.$app.popup.create({
+                    content: content,
+                    on: {
+                        open: function (popup) {
+                            let panoramaOptions = {
+                                position: new google.maps.LatLng($target.data('lat'), $target.data('lng')),
+                                pov: {
+                                    heading: 0,
+                                    pitch: 0
+                                },
+                                linksControl: false,
+                                panControl: false,
+                                enableCloseButton: false,
+                                addressControl: false
+                            };
+                            let panorama = new google.maps.StreetViewPanorama(document.getElementById('pano'), panoramaOptions);
+
+                        },
+                        closed: function(popup){
+                            popup.$el.remove();
+                            popup.destroy();
+                        },
+                    }
+                }).open();
+            },
+
+            initMapSettings: function(){
+                let self = this;
+                let mapSettingsObg = self.$app.methods.getFromStorage('mapSettings');
+
+                self.Geofences = [];
+                mapSettingsObg && mapSettingsObg.showGeofences ? self.showGeofences(self.Map) : '';
+
+                if (!self.$app.methods.isObjEmpty(mapSettingsObg)){
+                    if(mapSettingsObg.showGeofences) self.showGeofences(self.Map);
+                    if(mapSettingsObg.showTooltips) self.showTooltips(self.MarkersGroup);
+                }
+            },
+            isGeofencesShowed: function(){
+                return this.Geofences ? !!this.Geofences.length : false;
+            },
+            showGeofences: function(map) {
+                let self = this;
+                if (!self.isGeofencesShowed()) {
+                    let geofenceList = self.$app.methods.getFromStorage('geofenceList');
+                    if (!app.methods.isObjEmpty(geofenceList)) {
+                        const keys = Object.keys(geofenceList);
+                        for (const key of keys) {
+                            let geofenceDetails = {
+                                Name: geofenceList[key].Name,
+                                Code: geofenceList[key].Code,
+                            };
+                            let markerData = self.$app.methods.getGeofenceDataTable(geofenceList[key], {geogroup: false});
+                            if (geofenceList[key].GeoType === 1) { //circle
+                                if (geofenceList[key].Lat && geofenceList[key].Lng && geofenceList[key].Radius) {
+                                    geofenceDetails.polygon = L.circle([geofenceList[key].Lat, geofenceList[key].Lng], {
+                                        ...self.$app.data.PolygonCustomization,
+                                        radius: geofenceList[key].Radius,
+                                    }).bindPopup(markerData, {maxWidth: 280, closeButton: false})//.bindTooltip(label ,{permanent: false, direction: 'right'});
+                                }
+                            } else if (geofenceList[key].GeoPolygon) {
+                                let polygonCoordsArr = geofenceList[key].GeoPolygon.split('((').pop().split('))')[0].split(',');
+                                let geojsonArr = [];
+                                for (let i = polygonCoordsArr.length - 1; i >= 0; i--) {
+                                    geojsonArr.push(polygonCoordsArr[i].split(' ').map(parseFloat).reverse());
+                                }
+                                geofenceDetails.polygon = L.polygon(geojsonArr, {
+                                    ...self.$app.data.PolygonCustomization,
+                                }).bindPopup(markerData, {maxWidth: 280, closeButton: false}); //.bindTooltip(label ,{permanent: false, direction: 'right'});
+                            }
+
+                            if (geofenceDetails.polygon) {
+                                geofenceDetails.polygon.addTo(map);
+                                self.Geofences.push(geofenceDetails);
+                            }
+                        }
+                    }
+                }
+            },
+            hideGeofences: function(map){
+                let self = this;
+                if (self.Geofences && self.Geofences.length) {
+                    for (let i = self.Geofences.length - 1; i >= 0; i--) {
+                        if (self.Geofences[i].polygon) {
+                            map.removeLayer(self.Geofences[i].polygon);
+                            //itm.openTooltip()
+                        }
+                    }
+                    self.Geofences.length = 0;
+                }
+            },
+            showTooltips: function(markersGroup){
+                let markers = markersGroup.getLayers();
+                if(markers.length){
+                    markers.forEach((itm) => {
+                        itm.bindTooltip(itm.options.customName,
+                            {
+                                offset: L.point(15, -20),
+                                permanent: true,
+                                direction: 'right',
+                                //opacity: 0.5
+                            }
+                        )
+                    })
+                }
+            },
+            hideTooltips: function(markersGroup){
+                let markers = markersGroup.getLayers();
+                if(markers.length){
+                    markers.forEach((itm) => {
+                        itm.unbindTooltip();
+                    })
+                }
+            },
+            showMapControlls: function(e){
+                let self = this;
+                let mapSettingsObg = self.$app.methods.getFromStorage('mapSettings');
+
+                let content =   `<div class="popover menu-popover" >
+                                        <div class="popover-inner">
+                                            <div class="list no-hairlines no-hairlines-between">
+                                                <ul>
+                                                    <li class="item-content changeGeofenceState popover-close">
+                                                        <div class="item-media ${ mapSettingsObg && mapSettingsObg.showGeofences ?  'text-color-green' : 'text-color-lightgray'} ">
+                                                            <i class="f7-icons icon-menu-geofence "></i>
+                                                        </div>
+                                                        <div class="item-inner">
+                                                            <div class="item-title ">${ LANGUAGE.COM_MSG062 }</div>
+                                                            <div class="item-after">
+                                                                <div class="toggle color-green">
+                                                                    <input type="checkbox" name="checkbox-map-settings" value="showGeofences" ${ mapSettingsObg && mapSettingsObg.showGeofences ?  'checked' : '' }>
+                                                                    <span class="toggle-icon"></span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                    <li class="item-content changeTooltipState popover-close">
+                                                        <div class="item-media ${ mapSettingsObg && mapSettingsObg.showTooltips ?  'text-color-green' : 'text-color-lightgray'} ">
+                                                            <i class="f7-icons icon-asset-name "></i>
+                                                        </div>
+                                                        <div class="item-inner">
+                                                            <div class="item-title ">${ LANGUAGE.COM_MSG108 }</div>
+                                                            <div class="item-after">
+                                                                <div class="toggle color-green">
+                                                                    <input type="checkbox" name="checkbox-map-settings" value="showTooltips" ${ mapSettingsObg && mapSettingsObg.showTooltips ?  'checked' : '' }>
+                                                                    <span class="toggle-icon"></span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>`;
+
+                self.$app.popover.create({
+                    backdrop: false,
+                    closeByOutsideClick: true,
+                    targetEl: $$(e.target).closest('a'),
+                    content: content,
+                    on: {
+                        opened: function(popover){
+                            let GeofencesState = popover.$el.find('.changeGeofenceState');
+                            let TooltipState = popover.$el.find('.changeTooltipState');
+
+                            GeofencesState.on('click', function () {
+                                let input = $$(this).find('input[name="checkbox-map-settings"]');
+                                let newState = !input.prop( "checked" );
+                                mapSettingsObg[input.val()] = newState;
+                                self.$app.methods.setInStorage({name: 'mapSettings', data: mapSettingsObg});
+                                newState ? self.showGeofences(self.Map) : self.hideGeofences(self.Map);
+                            });
+                            TooltipState.on('click', function () {
+                                let input = $$(this).find('input[name="checkbox-map-settings"]');
+                                let newState = !input.prop( "checked" );
+                                mapSettingsObg[input.val()] = newState;
+                                self.$app.methods.setInStorage({name: 'mapSettings', data: mapSettingsObg});
+                                newState ? self.showTooltips(self.MarkersGroup) : self.hideTooltips(self.MarkersGroup);
+                            });
+                        },
+                        closed: function(popover){
+                            popover.destroy();
+                        }
+                    }
+                }).open();
+            },
+        },
+
+        on: {
+            pageInit: function (e, page) {
+                let self = this;
+
+                self.StreetViewService = new google.maps.StreetViewService();
+                self.Map = Protocol.Helper.createMap({ target: self.MapId, latLng: [0,0], zoom: 2 });
+                self.MarkersGroup = L.markerClusterGroup({'maxClusterRadius':35,});
+
+                self.AssetsIMEIs = [];
+                if (!self.ViewAll){
+                    if(!POSINFOASSETLIST[self.IMEI] || !POSINFOASSETLIST[self.IMEI].posInfo || parseFloat(POSINFOASSETLIST[self.IMEI].posInfo.lat) === 0 && parseFloat(POSINFOASSETLIST[self.IMEI].posInfo.lng) === 0){
+                        self.$app.dialog.confirm(LANGUAGE.PROMPT_MSG081, function () {
+                            self.$app.methods.sendCommand(API_URL.SEND_COM_POS, self.IMSI);
+                        });
+                        return;
+                    }
+                    self.AssetsIMEIs.push(self.IMEI);
+                }else{
+                    let assetList = self.$app.methods.getFromStorage('assetList');
+                    self.AssetsIMEIs = !self.$app.methods.isObjEmpty(assetList) ? Object.keys(assetList) : [];
+                }
+
+                for (let i = 0; i < self.AssetsIMEIs.length; i++) {
+                    let asset = POSINFOASSETLIST[self.AssetsIMEIs[i]];
+
+                    if (asset && asset.posInfo && parseFloat(asset.posInfo.lat) !== 0 && parseFloat(asset.posInfo.lng) !== 0){
+                        let marker = L.marker([asset.posInfo.lat, asset.posInfo.lng], {customName: asset.Name, icon: self.$app.methods.getMarkerIcon({asset: true, type: asset.SolutionType})});
+                        marker
+                            .bindPopup(self.$app.methods.getMarkerDataTable(asset), {maxWidth:self.$app.data.MaxMapPopupWidth, closeButton: false})
+                            .on('popupopen', function (e) {
+                                if (!asset.lastQueryPosinfo || !asset.lastQueryPosinfo.address) {
+                                    Protocol.Helper.getAddressByGeocoder({lat: asset.posInfo.lat, lng: asset.posInfo.lng},function(address){
+                                        asset.lastQueryPosinfo = { lat: Math.floor(asset.posInfo.lat * 10000) / 10000, lng: Math.floor(asset.posInfo.lng * 10000) / 10000, address: address };
+                                        e.target.setPopupContent(self.$app.methods.getMarkerDataTable(asset));
+                                        e.popup.update();
+                                    });
+                                }
+                            });
+                        marker.addTo(self.MarkersGroup);
+                        //asset.markerId = self.MarkersGroup.getLayerId(marker);
+                        self.MarkersIds[self.AssetsIMEIs[i]] = self.MarkersGroup.getLayerId(marker);
+                    }
+                }
+
+                if (self.MarkersGroup.getBounds().isValid()) {
+                    self.MarkersGroup.addTo(self.Map);
+                    self.Map.fitBounds(self.MarkersGroup.getBounds(),{padding:[16,16], maxZoom: 15});
+                }
+
+                if(!self.ViewAll){
+                    self.$setState({
+                        Lat: POSINFOASSETLIST[self.AssetsIMEIs[0]].posInfo.lat,
+                        Lng: POSINFOASSETLIST[self.AssetsIMEIs[0]].posInfo.lng
+                    });
+                    self.PanoButtonUpdate([POSINFOASSETLIST[self.AssetsIMEIs[0]].posInfo.lat, POSINFOASSETLIST[self.AssetsIMEIs[0]].posInfo.lng]);
+                }
+
+                self.$app.methods.getGeofenceList(self.initMapSettings);
+
+                AssetUpdateEvents.on('updateReceived', self.UpdateData);
+            },
+            pageBeforeRemove: function () {
+                AssetUpdateEvents.off('updateReceived', this.UpdateData);
+                if(this.MarkersGroup){
+                    this.MarkersGroup.clearLayers();
+                }
+                if(this.Map){
+                    this.Map.remove()
+                }
+            }
+
+        }
+    };
+</script>

@@ -1,0 +1,541 @@
+<!--suppress JSAnnotator -->
+<template>
+    <div class="page " data-name="home"> <!-- page-with-subnavbar -->
+        <!-- Top Navbar -->
+        <div class="navbar">
+            <div class="navbar-bg"></div>
+            <div class="navbar-inner">
+                <div class="left">
+                    <a href="/panel-left/" class="link icon-only " >
+                        <i class="if-not-ios f7-icons icon-header-menu"></i>
+                        <i class="if-ios icon material-icons">menu</i>
+                    </a>
+                </div>
+                <div class="title sliding test" @click="testingFunction">
+                    {{@global.LANGUAGE.HOME_MSG00}}
+                </div>
+                <div class="right">
+                    <a @click="OpenSortingModal" href="#" class="link icon-only ">
+                        <i class="f7-icons icon-header-filter"></i>
+                    </a>
+                    <a @click="openNotificationsPage" href="#" class="link icon-only ">
+                        <i class="f7-icons icon-header-alarm position-relative">{{#if NotificationCount}}<span class="badge color-red">{{NotificationCount}}</span>{{/if}}</i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="toolbar tabbar toolbar-top">
+            <div class="toolbar-inner">
+                <a @click="FilterAssetList" href="#tab1" data-type="all" class="tab-link flex-direction-row tab-link-active">{{@global.LANGUAGE.HOME_MSG01}}<span class="badge color-custom margin-left-quarter">{{AssetsCount.All}}</span></a>
+                <a @click="FilterAssetList" href="#tab2" data-type="live" class="tab-link flex-direction-row">Live<span class="badge color-track margin-left-quarter">{{AssetsCount.Live}}</span></a>
+                <a @click="FilterAssetList" href="#tab3" data-type="loc8" class="tab-link flex-direction-row">Loc8<span class="badge color-loc8 margin-left-quarter">{{AssetsCount.Loc8}}</span></a>
+                <a @click="FilterAssetList" href="#tab4" data-type="protect" class="tab-link flex-direction-row">Protect<span class="badge color-protect margin-left-quarter">{{AssetsCount.Protect}}</span></a>
+            </div>
+        </div>
+        <form class="searchbar searchbar-init searchbar-home " data-search-container=".assetList" data-search-item="li" data-search-in=".item-title" >
+            <div class="searchbar-inner">
+                <div class="searchbar-input-wrap">
+                    <input type="search" placeholder="{{@global.LANGUAGE.COM_MSG002}}" title="{{@global.LANGUAGE.COM_MSG002}}">
+                    <i class="searchbar-icon"></i>
+                    <span class="input-clear-button"></span>
+                </div>
+                <span class="searchbar-disable-button text-color-gray">{{@global.LANGUAGE.COM_MSG001}}</span>
+            </div>
+        </form>
+
+        <div class="fab fab-right-bottom fab-custom fab-viewall ">
+            <a href="/asset-track/?all=true" class="bg-color-darkgray elevation-hover-10 flex-direction-column">
+                <i class="f7-icons icon-other-view-password"></i>
+                <div class="fab-text">{{@global.LANGUAGE.HOME_MSG02}}</div>
+            </a>
+        </div>
+
+        <div class="page-content ptr-content" data-ptr-distance="80" data-ptr-mousewheel="true">
+            <!--fake tabs for tabbar correct working working-->
+            <div class="tabs">
+                <div class="tab-active" id="tab1"></div>
+                <div id="tab2"></div>
+                <div id="tab3"></div>
+                <div id="tab4"></div>
+            </div>
+
+            <!-- Default pull to refresh preloader-->
+            <div class="ptr-preloader">
+                <div class="preloader"></div>
+                <div class="ptr-arrow"></div>
+            </div>
+
+            <div class="searchbar-backdrop"></div>
+
+            <div class="block searchbar-not-found">
+                <div class="block-inner">{{@global.LANGUAGE.PROMPT_MSG000}}</div>
+            </div>
+
+            {{#unless LoginDone}}
+            <div key="skeleton-virtual-list" class="list media-list no-hairlines no-chevron no-margin-top">
+                <ul>
+                    {{#each '123'}}
+                    <li>
+                        <a href="#" class="item-link item-content asset skeleton-text skeleton-effect-blink" >
+                            <div class="item-media">
+                                <div class="skeleton-block" style="width: 40px; height: 40px; border-radius: 50%"></div>
+                            </div>
+                            <div class="item-inner">
+                                <div class="item-title-row height-60 align-items-center">
+                                    <div class="item-title">
+                                        Asset Name
+                                        <div class="item-footer">
+                                            Asset status
+                                        </div>
+                                    </div>
+                                    <div class="item-after flex-direction-column align-content-flex-end">
+                                        <div class="text-align-right">
+                                            icons
+                                        </div>
+                                        <div class="text-align-right">
+                                            icons
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="item-text">
+                                    <div class="row no-gap">
+                                        <div class="col-50 margin-top-half">
+                                            indicator
+                                        </div>
+                                        <div class="col-50 margin-top-half">
+                                            indicator
+                                        </div>
+                                        <div class="col-100 margin-top-half only-2-rows">
+                                            asset address goes here, it can be very long, two lines.. some time it take 3 or even 4 lines
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                    {{/each}}
+                </ul>
+            </div>
+            {{/unless}}
+
+            <div class="list virtual-list media-list no-hairlines no-chevron no-margin-top searchbar-found assetList" data-filter-type="all" data-sort-by="state" data-order-by="asc">
+                <!-- keep it empty -->
+            </div>
+
+        </div>
+
+
+    </div>
+</template>
+
+
+<script>
+    // script must return component object
+    return {
+        data: function () {
+
+            let ret = {
+                NotificationCount: localStorage.NewNotificationsCounter ? parseInt(localStorage.NewNotificationsCounter):0,
+                AssetsCount: {
+                    All: 0,
+                    Live: 0,
+                    Loc8: 0,
+                    Protect: 0,
+                }
+            };
+
+            return ret;
+        },
+        methods: {
+            testingFunction(){
+
+            },
+            openNotificationsPage: function(){
+                let self = this;
+
+                self.$app.methods.getNewNotifications({
+                    loadPageNotification: true,
+                    //showLoader: true,
+                });
+            },
+            UpdateData: function(){
+                this.VirtualAssetListMain.update();
+            },
+            initVirtualAssetList: function () {
+                let self = this;
+                let listEl = self.$el.find('.assetList');
+                let assetListObj = self.$app.methods.getFromStorage('assetList');
+                let assetList = [];
+                if(!self.$app.methods.isObjEmpty(assetListObj)){
+                    let keys = Object.keys(assetListObj);
+                    for (const key of keys) {
+                        assetList.push(assetListObj[key]);
+                    }
+                    assetList = self.$app.methods.sortAssetList(assetList, 'state', 'asc');
+                }
+                var contactList = self.$app.methods.getFromStorage('contactList');
+
+
+                self.VirtualAssetListMain = self.$app.virtualList.create({
+                    el: listEl,
+                    items : assetList,
+                    cache: false,
+                    //rowsBefore: 10,
+                    //rowsAfter: 10,
+                    showFilteredItemsOnly: true,
+                    emptyTemplate: `<li class="block">${LANGUAGE.COM_MSG040}</li>`,
+                    searchAll: function (query, items) {
+                        let filterType = this.el.data('filter-type');
+                        let filteredListIndexes = self.$app.methods.filterAssetList(items, filterType);
+                        let found = [];
+
+                        for (let i = 0; i < filteredListIndexes.length; i++) {
+                            if (items[filteredListIndexes[i]].Name.toLowerCase().indexOf(query.toLowerCase()) >= 0 || query.trim() === '') found.push(filteredListIndexes[i]);
+                        }
+
+                        return found; //return array with mathced indexes
+                    },
+                    height: function(item){
+                        let height = 88;
+                        let afs = Protocol.Helper.getAssetStateInfo(POSINFOASSETLIST[item.IMEI]);
+                        if (afs && afs.stats) {
+                            height = 164.63;
+                            if (afs.voltage && afs.fuel || afs.battery && afs.fuel || afs.battery && afs.voltage) {
+                                height = 192.94;
+                            }else{
+                                if(POSINFOASSETLIST[item.IMEI].DriverCode) height += 21.37;
+                            }
+
+                        }
+                        return height;
+                    },
+                    renderItem: function (item, index) {
+                        let ret = '';
+                        let asset = POSINFOASSETLIST[item.IMEI]
+                        let afs = Protocol.Helper.getAssetStateInfo(POSINFOASSETLIST[item.IMEI]);
+                        let assetImg = self.$app.methods.getAssetImg(item, {'assetList':true});
+                        let solutiontype = item.SolutionType ? item.SolutionType : LANGUAGE.COM_MSG039;
+                        let solutiontypeIcon = Protocol.Helper.getSolutionTypeIcon(solutiontype);
+                        let driver = null;
+
+
+                        if(!self.$app.methods.isObjEmpty(POSINFOASSETLIST[item.IMEI]) && !self.$app.methods.isObjEmpty(afs) && afs.stats ){
+                            if ( !POSINFOASSETLIST[item.IMEI].lastQueryPosinfo ||
+                                Math.floor(POSINFOASSETLIST[item.IMEI].posInfo.lat * 10000) / 10000 !== POSINFOASSETLIST[item.IMEI].lastQueryPosinfo.lat ||
+                                Math.floor(POSINFOASSETLIST[item.IMEI].posInfo.lng * 10000) / 10000 !== POSINFOASSETLIST[item.IMEI].lastQueryPosinfo.lng )
+                            {
+                                let latlng = {
+                                    lat: POSINFOASSETLIST[item.IMEI].posInfo.lat,
+                                    lng: POSINFOASSETLIST[item.IMEI].posInfo.lng
+                                };
+
+                                Protocol.Helper.getAddressByGeocoder(latlng, function(address) {
+                                    POSINFOASSETLIST[item.IMEI].lastQueryPosinfo = { lat: Math.floor(latlng.lat * 10000) / 10000, lng: Math.floor(latlng.lng * 10000) / 10000, address: address };
+                                    self.$el.find("[data-id='address-value-"+item.IMEI+"']").text(address);
+                                });
+                            }
+                            if(asset && asset.DriverCode){
+                                let index = contactList.findIndex((item) => item.Code === asset.DriverCode)
+                                driver = index !== -1 ? contactList[index] : null
+                            }
+
+                            ret = `
+                                <li>
+                                    <a href="#" class="item-link item-content asset" data-imei="${item.IMEI}">
+                                        <div class="item-media">
+                                            ${ assetImg }`;
+                            if(solutiontype.toLowerCase() !== 'protect' && solutiontype.toLowerCase() !== 'witiprotect' && solutiontype.toLowerCase() !== 'loc8' && solutiontype.toLowerCase() !== 'qprotect' && solutiontype.toLowerCase() !== 'witiqprotect' ){
+                                ret +=`     <i class="icon-status-fix ${ afs.status.state }"></i>`;
+                            }
+                                ret +=` </div>
+                                        <div class="item-inner">
+                                            <div class="item-title-row height-60 align-items-center">
+                                                <div class="item-title">
+                                                    ${ item.Name }`;
+                            if(solutiontype.toLowerCase() !== 'protect' && solutiontype.toLowerCase() !== 'witiprotect' && solutiontype.toLowerCase() !== 'loc8' && solutiontype.toLowerCase() !== 'qprotect' && solutiontype.toLowerCase() !== 'witiqprotect'){
+                                ret +=`             <div class="item-footer ${ afs.status.state }">
+                                                        ${ afs.status.value }
+                                                    </div>`;
+                            }else{
+                                ret +=`             <div class="item-footer state-0">
+                                                        ${ POSINFOASSETLIST[item.IMEI].posInfo.positionTime ? LANGUAGE.COM_MSG041 + ' ' + POSINFOASSETLIST[item.IMEI].posInfo.positionTime.format(window.COM_TIMEFORMAT) + '('+ moment.duration(Protocol.Helper.getDifferenceBTtwoDates(POSINFOASSETLIST[item.IMEI].posInfo.positionTime,moment()), "milliseconds").format('d[d] h[h] m[m]') +')' : LANGUAGE.COM_MSG031 }
+                                                    </div>`;
+                            }
+
+                            ret +=`             </div>
+                                                <div class="item-after flex-direction-column align-content-flex-end">`;
+                            if(solutiontype.toLowerCase() !== 'protect' && solutiontype.toLowerCase() !== 'witiprotect' && solutiontype.toLowerCase() !== 'loc8' && solutiontype.toLowerCase() !== 'qprotect' && solutiontype.toLowerCase() !== 'witiqprotect'){
+                                ret +=`            <div class="text-align-right">
+                                                        <i data-id="solutiontype-${ item.IMEI }" class="f7-icons size-16 margin-left-half ${ solutiontypeIcon } text-color-blue"></i>
+                                                        <i data-id="signal-state-${ item.IMEI }" class="f7-icons size-16 margin-left-half icon-live-signal ${ afs.GSM.state }"></i>
+                                                        <i data-id="satellite-state-${ item.IMEI }" class="f7-icons size-16 margin-left-half icon-live-satellite ${ afs.GPS.state }"></i>
+                                                    </div>
+                                                    <div class="text-align-right">`;
+                                if((parseInt(POSINFOASSETLIST[item.IMEI]._FIELD_INT2) & 1) > 0){
+                            ret +=`                        <i id="immob-state-${ item.IMEI }" class="f7-icons size-16 margin-left-half icon-live-immobilisation ${ afs.immob.state }"></i>`;
+                                }
+                            ret +=`                        <i id="geolock-state-${ item.IMEI }" class="f7-icons size-16 margin-left-half icon-live-geolock ${ afs.geolock.state }"></i>
+                                                    </div>`;
+                            }else{
+                                ret +=`             <div class="text-align-right">
+                                                        <i data-id="solutiontype-${ item.IMEI }" class="f7-icons size-16 margin-left-half ${ solutiontypeIcon } text-color-blue"></i>`;
+                                if( solutiontype.toLowerCase() === 'witiprotect' || solutiontype.toLowerCase() === 'witiqprotect') {
+                                    ret += `            <i id="lockdoor-state-${ item.IMEI }" class="f7-icons size-16 margin-left-half icon-live-immobilisation ${ afs.lockdoor.state }"></i>`;
+                                }else if((parseInt(POSINFOASSETLIST[item.IMEI]._FIELD_INT2) & 1) > 0){
+                                    ret += `            <i id="immob-state-${ item.IMEI }" class="f7-icons size-16 margin-left-half icon-live-immobilisation ${afs.immob.state}"></i>`;
+                                }
+                                ret += `                <i id="geolock-state-${ item.IMEI }" class="f7-icons size-16 margin-left-half icon-live-geolock ${afs.geolock.state}"></i>
+                                                    </div>`;
+                            }
+
+
+                        ret +=`    </div>
+                                            </div>
+                                            <div class="item-text">
+                                                <div class="row no-gap">`;
+                            if (afs.speed) {
+                                ret +=`               <div class="col-50 margin-top-half">
+                                                        <i class="f7-icons size-16 icon-live-speed text-color-lightgray vertical-align-middle"></i>
+                                                        <span data-id="speed-value-${ item.IMEI }" class="size-12 vertical-align-middle margin-left-half text-color-black">${ afs.speed.value }</span>
+                                                      </div>`;
+                            }
+                            if (afs.voltage) {
+                                ret +=`               <div class="col-50 margin-top-half">
+                                                        <i class="f7-icons size-16 icon-live-voltag text-color-lightgray vertical-align-middle"></i>
+                                                        <span data-id="voltage-value-${ item.IMEI }" class="size-12 vertical-align-middle margin-left-half text-color-black">${ afs.voltage.value }</span>
+                                                      </div>`;
+                            }
+                            if (afs.battery) {
+                                ret +=`               <div class="col-50 margin-top-half">
+                                                        <i class="f7-icons size-16 icon-live-battery text-color-lightgray vertical-align-middle"></i>
+                                                        <span data-id="battery-value-${ item.IMEI }" class="size-12 vertical-align-middle margin-left-half text-color-black">${ afs.battery.value }</span>
+                                                      </div>`;
+                            }
+                            if (afs.temperature) {
+                                ret +=`               <div class="col-50 margin-top-half">
+                                                        <i class="f7-icons size-16 icon-live-temperature text-color-lightgray vertical-align-middle"></i>
+                                                        <span data-id="temperature-value-${ item.IMEI }" class="size-12 vertical-align-middle margin-left-half text-color-black">${ afs.temperature.value }</span>
+                                                      </div>`;
+                            }
+                            if (afs.fuel) {
+                                ret +=`               <div class="col-50 margin-top-half">
+                                                        <i class="f7-icons size-16 icon-live-fuel text-color-lightgray vertical-align-middle"></i>
+                                                        <span data-id="fuel-value-${ item.IMEI }" class="size-12 vertical-align-middle margin-left-half text-color-black">${ afs.fuel.value }</span>
+                                                      </div>`;
+                            }
+                            if (afs.heartrate) {
+                                ret +=`               <div class="col-50 margin-top-half">
+                                                        <i class="f7-icons size-16 icon-live-hearth text-color-lightgray vertical-align-middle"></i>
+                                                        <span data-id="heartrate-value-${ item.IMEI }" class="size-12 vertical-align-middle margin-left-half text-color-black">${ afs.heartrate.value }</span>
+                                                      </div>`;
+                            }
+                            if (driver) {
+                                ret +=`               <div class="col-50 margin-top-half">
+                                                        <i class="f7-icons size-16 icon-live-id text-color-lightgray vertical-align-middle"></i>
+                                                        <span data-id="driver-value-${ item.IMEI }" class="size-12 vertical-align-middle margin-left-half text-color-black">${ driver.FirstName ? driver.FirstName : driver.SubName }</span>
+                                                      </div>`;
+                            }
+
+                            ret +=`                <div class="col-100 margin-top-half only-2-rows">
+                                                        <i class="f7-icons size-16 icon-live-address text-color-lightgray vertical-align-middle"></i>
+                                                        <span data-id="address-value-${ item.IMEI }" class="size-12 vertical-align-middle margin-left-half text-color-black">${ POSINFOASSETLIST[item.IMEI].lastQueryPosinfo && POSINFOASSETLIST[item.IMEI].lastQueryPosinfo.address ? POSINFOASSETLIST[item.IMEI].lastQueryPosinfo.address : LANGUAGE.COM_MSG004 }</span>
+                                                   </div>`;
+
+                            ret +=`            </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                            `;
+
+                        }else{
+                            ret = `
+                                <li>
+                                    <a href="#" class="item-link item-content asset" data-imei="${item.IMEI}">
+                                        <div class="item-media">
+                                            ${ assetImg }
+                                            <i class="icon-status-fix state-0"></i>
+                                        </div>
+                                        <div class="item-inner">
+                                            <div class="item-title-row height-60 align-items-center">
+                                                <div class="item-title">
+                                                    ${ item.Name }
+                                                    <div class="item-footer">
+                                                        ${ LANGUAGE.COM_MSG031 }
+                                                    </div>
+                                                </div>
+                                                <div class="item-after flex-direction-column align-content-flex-end">
+                                                    <div class="text-align-right">
+                                                        <i data-id="solutiontype-${ item.IMEI }" class="f7-icons size-16 margin-left-half ${ solutiontypeIcon } text-color-blue"></i>
+                                                        <i data-id="signal-state-${ item.IMEI }" class="f7-icons size-16 margin-left-half icon-live-signal state-0"></i>
+                                                        <i data-id="satellite-state-${ item.IMEI }" class="f7-icons size-16 margin-left-half icon-live-satellite state-0"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                            `;
+                        }
+                        return ret;
+                    },
+
+                });
+
+                AssetUpdateEvents.on('updateReceived', self.UpdateData);
+
+                listEl.on('click', 'li a.asset', function () {
+                    let IMEI = $$(this).data('imei');
+                    if (!POSINFOASSETLIST[IMEI] || !POSINFOASSETLIST[IMEI].SolutionType || POSINFOASSETLIST[IMEI].SolutionType.toLowerCase() !== "track" && POSINFOASSETLIST[IMEI].SolutionType.toLowerCase() !== "watch" && POSINFOASSETLIST[IMEI].SolutionType.toLowerCase() !== "wititrack" && POSINFOASSETLIST[IMEI].SolutionType.toLowerCase() !== "boat_watch" ){
+                        mainView.router.navigate('/asset-protect/?imei='+IMEI);
+                    }else{
+                        mainView.router.navigate('/asset-status/?tabs=true&imei='+IMEI);
+                    }
+                });
+
+                self.$app.utils.nextFrame(()=>{
+                    if(!self.$app.methods.isObjEmpty(assetList)){
+                        LoginEvents.emit('signedIn', assetList);
+                    }
+                });
+
+            },
+            FilterAssetList: function (e) {
+                let self = this;
+                let filterType = $$(e.target).closest('.tab-link').data('type');
+                self.$app.methods.filterVirtualAssetList(self.VirtualAssetListMain, filterType);
+            },
+            OpenSortingModal: function (e) {
+                let self = this;
+                let filterType = self.VirtualAssetListMain.$el.data('filter-type');
+                let sortBy = self.VirtualAssetListMain.$el.data('sort-by');
+                let orderBy = self.VirtualAssetListMain.$el.data('order-by');
+                let content =   `<div class="popover menu-popover" >
+                                        <div class="popover-inner">
+                                            <div class="list filterMenuList no-hairlines no-hairlines-between">
+                                                <ul>
+                                                    <li class="item-divider">${ LANGUAGE.COM_MSG042 }</li>
+                                                    <li>
+                                                        <label class="item-radio color-green item-content popover-close" >
+                                                            <input type="radio" name="radio-sort-list" value="name" ${ sortBy === 'name' ? 'checked' : '' } />
+                                                            <i class="icon icon-radio"></i>
+                                                            <div class="item-inner">
+                                                                <div class="item-title">${ LANGUAGE.COM_MSG043 }</div>
+                                                            </div>
+                                                        </label>
+                                                    </li>
+                                                    <li>
+                                                        <label class="item-radio color-green item-content popover-close" >
+                                                            <input type="radio" name="radio-sort-list" value="state" ${ sortBy === 'state' ? 'checked' : '' } />
+                                                            <i class="icon icon-radio"></i>
+                                                            <div class="item-inner">
+                                                                <div class="item-title">${ LANGUAGE.COM_MSG044 }</div>
+                                                            </div>
+                                                        </label>
+                                                    </li>
+                                                    <li class="item-divider">${ LANGUAGE.COM_MSG045 }</li>
+                                                    <li>
+                                                        <label class="item-radio color-green item-content popover-close" >
+                                                            <input type="radio" name="radio-order-list" value="asc" ${ orderBy === 'asc' ? 'checked' : '' } />
+                                                            <i class="icon icon-radio"></i>
+                                                            <div class="item-inner">
+                                                                <div class="item-title">${ LANGUAGE.COM_MSG046 }</div>
+                                                            </div>
+                                                        </label>
+                                                    </li>
+                                                    <li>
+                                                        <label class="item-radio color-green item-content popover-close" >
+                                                            <input type="radio" name="radio-order-list" value="desc" ${ orderBy === 'desc' ? 'checked' : '' }/>
+                                                            <i class="icon icon-radio"></i>
+                                                            <div class="item-inner">
+                                                                <div class="item-title">${ LANGUAGE.COM_MSG047 }</div>
+                                                            </div>
+                                                        </label>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>`;
+
+                self.$app.popover.create({
+                    backdrop: true,
+                    closeByOutsideClick: true,
+                    targetEl: e.target,
+                    content: content,
+                    on: {
+                        opened: function(popover){
+                            let radioSortListEl = popover.$el.find('input[name="radio-sort-list"]');
+                            let radioOrdertListEl = popover.$el.find('input[name="radio-order-list"]');
+
+                            radioSortListEl.on('click', function (){
+                                self.$app.methods.sortVirtualAssetList(self.VirtualAssetListMain, this.value, self.VirtualAssetListMain.$el.data('order-by'));
+                            });
+                            radioOrdertListEl.on('click', function () {
+                                self.$app.methods.sortVirtualAssetList(self.VirtualAssetListMain, self.VirtualAssetListMain.$el.data('sort-by'), this.value);
+                            });
+                        },
+                        closed: function(popover){
+                            popover.destroy();
+                        }
+                    }
+                }).open();
+
+            }
+        },
+
+        on: {
+            pageInit: function (e, page) {
+                let self = this;
+
+                self.initVirtualAssetList();
+
+                page.$el.find('.ptr-content').on('ptr:refresh', function (e) {
+                    let assetList = self.$app.methods.getFromStorage('assetList');
+                    self.$app.progressbar.show('custom');
+                    //console.log(assetList)
+                    self.$app.methods.getAssetListPosInfo(assetList, true, function () {
+                        self.$app.ptr.done();
+                        self.$app.progressbar.hide();
+                        self.$app.methods.showToast(LANGUAGE.PROMPT_MSG041);
+                    });
+                });
+
+                LoginEvents.on('signedIn', function (items){
+                    self.$setState({
+                        AssetsCount: self.$app.methods.countItemsBySolution(items),
+                        LoginDone: true
+                    });
+                    self.VirtualAssetListMain.replaceAllItems(items);
+                    self.VirtualAssetListMain.scrollToItem(0);
+                });
+                LoginEvents.on('signedOut', function (){
+                    self.VirtualAssetListMain.deleteAllItems();
+                    self.$setState({
+                        LoginDone: false
+                    })
+                });
+
+                NotificationEvents.on('newNotificationsCounterChanged', function (count) {
+                    self.$setState({
+                        NotificationCount: count
+                    })
+                });
+            },
+            pageAfterIn:function(){
+                let self = this;
+
+                let searchbar = self.$app.searchbar.get('.searchbar-home');
+                searchbar.on('clear', function (searchbar, query, previousQuery) {
+                    self.$app.methods.filterVirtualAssetList(this.virtualList, this.virtualList.$el.data('filter-type'));
+                });
+
+            },
+            pageBeforeRemove: function () {
+                AssetUpdateEvents.off('updateReceived', this.UpdateData);
+                LoginEvents.off('signedIn');
+                LoginEvents.off('signedOut');
+                NotificationEvents.off('newNotificationsCounterChanged');
+            }
+        }
+    };
+</script>

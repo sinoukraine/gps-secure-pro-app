@@ -1,0 +1,283 @@
+<!--suppress JSAnnotator -->
+<template>
+    <div class="page " data-name="asset-protect"> <!-- page-with-subnavbar -->
+        <!-- Top Navbar -->
+        <div class="navbar">
+            <div class="navbar-bg"></div>
+            <div class="navbar-inner">
+                <div class="left">
+                    <a href="#" class="link icon-only back" >
+                        <i class="if-not-ios f7-icons icon-header-arrow-back"></i>
+                        <i class="if-ios icon icon-back"></i>
+                    </a>
+                </div>
+                <div class="title sliding">
+                    {{Name}}
+                </div>
+                <div class="right">
+                    <a href="/asset-edit/?imei={{IMEI}}" class="link icon-only ">
+                        <i class="f7-icons icon-header-edit"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <!--{{#if ShowPayment}}
+        <div class="toolbar toolbar-bottom ">
+            <div class="toolbar-inner ">
+                <a href="/asset-upgrade/?imei={{IMEI}}" class="link button width-100 color-white "><i class="f7-icons icon-upgrade-to-live margin-right"></i>{{@global.LANGUAGE.ASSET_PROTECT_MSG01}}</a>
+            </div>
+        </div>
+        {{/if}}-->
+
+        <div class="toolbar toolbar-bottom no-border {{#if ShowPayment}}toolbar-size-3{{else}}toolbar-size-1{{/if}}">
+            <div class="toolbar-inner flex-direction-column bg-color-white no-padding ">
+                {{#if ShowPayment}}
+                <div class="width-100 ">
+                    <a href="/asset-upgrade/?imei={{IMEI}}" class="link button  button-fill color-custom margin-horizontal margin-top"><i class="f7-icons icon-upgrade-to-live margin-right"></i>{{@global.LANGUAGE.ASSET_PROTECT_MSG01}}</a>
+                </div>
+                {{/if}}
+                <div class="width-100 ">
+                    <a href="/report-theft/?imei={{IMEI}}" class="link button button-fill color-darkgray col-100 margin-horizontal margin-top margin-bottom"><i class="f7-icons icon-live-report-thief margin-right"></i> {{@global.LANGUAGE.ASSET_STATUS_LIVE_MSG07}}</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="page-content">
+
+            <div class="block asset-image-big-wrapper text-align-center">
+                <a href="/asset-edit/?imei={{IMEI}}&openEditImage=true" class="link">
+                    {{AssetImg}}
+                </a>
+            </div>
+
+            <div class="list no-hairlines no-chevron " >
+                <li class="item-content">
+                    <div class="item-media text-color-lightgray">
+                        <i class="f7-icons icon-protect-status3"></i>
+                    </div>
+                    <div class="item-inner">
+                        <div class="item-title">{{@global.LANGUAGE.ASSET_STATUS_LIVE_MSG00}}</div>
+                        <div class="item-after min-width-122">
+                            <a href="/asset-status/?imei={{IMEI}}" class=" width-100 button button-fill color-custom">{{@global.LANGUAGE.COM_MSG048}}</a>
+                        </div>
+                    </div>
+                </li>
+                <li class="item-content">
+                    <div class="item-media text-color-lightgray">
+                        <i class="f7-icons icon-protect-position3"></i>
+                    </div>
+                    <div class="item-inner">
+                        <div class="item-title">{{@global.LANGUAGE.ASSET_PROTECT_MSG00}}</div>
+                        <div class="item-after min-width-122">
+                            <a  href="/asset-track/?imei={{IMEI}}" class=" width-100 button button-fill color-custom">{{@global.LANGUAGE.COM_MSG048}}</a>
+                        </div>
+                    </div>
+                </li>
+                <li class="item-content">
+                    <div class="item-media {{#if Geolock}} text-color-green {{else}} text-color-lightgray {{/if}}">
+                        <i class="f7-icons icon-protect-geolock3"></i>
+                    </div>
+                    <div class="item-inner">
+                        <div class="item-title">{{@global.LANGUAGE.ASSET_STATUS_LIVE_MSG04}}</div>
+                        <div class="item-after min-width-122 row ">
+                            <button @click="changeState" data-name="Geolock" data-state="false" class="button button-fill color-custom col {{#unless Geolock}} disabled {{/unless}}">{{@global.LANGUAGE.COM_MSG050}}</button>
+                            <button @click="changeState" data-name="Geolock" data-state="true"  class="button button-fill color-custom col {{#if Geolock}} disabled {{/if}}">{{@global.LANGUAGE.COM_MSG049}}</button>
+                        </div>
+                    </div>
+                </li>
+
+                {{#if IsWitiSolution}}
+                    <!--<li class="item-content">
+                        <div class="item-media {{#if LockDoor}} text-color-red {{else}} text-color-lightgray {{/if}}">
+                            <i class="f7-icons icon-protect-immobilisation3"></i>
+                        </div>
+                        <div class="item-inner">
+                            <div class="item-title">{{@global.LANGUAGE.ASSET_STATUS_LIVE_MSG08}} {{#if LockDoor}}{{@global.LANGUAGE.COM_MSG105}}{{else}}{{@global.LANGUAGE.COM_MSG106}}{{/if}}</div>
+                            <div class="item-after min-width-122">
+                                {{#if LockDoor}}
+                                <button @click="changeState" data-name="LockDoor" data-state="false" class="button button-fill color-custom ">{{@global.LANGUAGE.COM_MSG104}}</button>
+                                {{else}}
+                                <button @click="changeState" data-name="LockDoor" data-state="true" class="button button-fill color-custom ">{{@global.LANGUAGE.COM_MSG103}}</button>
+                                {{/if}}
+                            </div>
+                        </div>
+                    </li>-->
+                {{else}}
+
+                    {{#if IsImmobilisationSupported}}
+                    <li class="item-content">
+                        <div class="item-media {{#if Immobilise}} text-color-red {{else}} text-color-lightgray {{/if}}">
+                            <i class="f7-icons icon-protect-immobilisation3"></i>
+                        </div>
+                        <div class="item-inner">
+                            <div class="item-title">{{@global.LANGUAGE.ASSET_STATUS_LIVE_MSG05}}</div>
+                            <div class="item-after min-width-122 row ">
+                                <button @click="changeState" data-name="Immobilise" data-state="false" class="button button-fill color-custom col {{#unless Immobilise}} disabled {{/unless}}">{{@global.LANGUAGE.COM_MSG050}}</button>
+                                <button @click="changeState" data-name="Immobilise" data-state="true" class="button button-fill color-custom col {{#if Immobilise}} disabled {{/if}}">{{@global.LANGUAGE.COM_MSG049}}</button>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="item-content">
+                        <div class="item-media text-color-lightgray ">
+                            <i class="f7-icons icon-locimmob"></i>
+                        </div>
+                        <div class="item-inner">
+                            <div class="item-title">{{@global.LANGUAGE.ASSET_PROTECT_MSG03}}</div>
+                            <div class="item-after display-flex align-items-center">
+                                <span class="badge color-lightblue margin-right-half tooltip-init" data-tooltip="{{@global.LANGUAGE.PROMPT_MSG120}}">?</span>
+                                <div class="min-width-122">
+                                    <button @click="changeState" data-name="Immobilise" data-state="true" data-command="locate" class="button button-fill color-custom ">{{@global.LANGUAGE.COM_MSG114}}</button>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    {{/if}}
+                {{/if}}
+
+                <li class="item-content">
+                    <div class="item-media text-color-lightgray">
+                        <i class="f7-icons icon-header-alarm"></i>
+                    </div>
+                    <div class="item-inner">
+                        <div class="item-title">{{@global.LANGUAGE.ASSET_PROTECT_MSG02}}</div>
+                        <div class="item-after min-width-122">
+                            <a href="/asset-alarm/?imei={{IMEI}}" class=" width-100 button button-fill color-custom">{{@global.LANGUAGE.COM_MSG048}}</a>
+                        </div>
+                    </div>
+                </li>
+            </div>
+
+        </div>
+
+
+    </div>
+</template>
+
+
+<script>
+    // script must return component object
+    return {
+        data: function () {
+            let self = this;
+            let imei = decodeURIComponent(self.$route.query.imei);
+            let asset = self.$app.methods.getFromStorage('assetList')[imei];
+            let assetImg = self.$app.methods.getAssetImg(asset, {'assetEdit':true});
+            let additionalFlags = self.$app.methods.getFromStorage('additionalFlags');
+
+            let afs = Protocol.Helper.getAssetStateInfo(POSINFOASSETLIST[imei]);
+
+            let ret = {
+                Name: asset.Name,
+                IMEI: asset.IMEI,
+                IMSI: asset.IMSI,
+                Id: asset.Id,
+                AssetImg: assetImg,
+                ShowPayment: true,
+
+                Geolock: afs && afs.geolock ? afs.geolock.value : false,
+                Immobilise: afs && afs.immob ? afs.immob.value : false,
+                LockDoor: afs.lockdoor ? afs.lockdoor.value : false,
+
+                IsImmobilisationSupported: (parseInt(asset._FIELD_INT2) & 1) > 0,
+                IsLockDoorSupported: (parseInt(asset._FIELD_INT2) & 512) > 0,
+
+                IsWitiSolution: asset.SolutionType.toLowerCase() === 'witiprotect' || asset.SolutionType.toLowerCase() === 'witiqprotect',
+            };
+            if(self.$app.device.ios && !additionalFlags.elemRc){
+            //if(!additionalFlags.elemRc){
+                ret.ShowPayment = false;
+            }
+
+            return ret;
+        },
+        methods: {
+            changeState: function (e) {
+                let self = this;
+
+                let $el = $$(e.target);
+                let alarm = $el.data('name');
+                let state = JSON.parse($el.data('state'));
+                let command = $el.data('command');
+                let data = {
+                    MajorToken: self.$root.MajorToken,
+                    MinorToken: self.$root.MinorToken,
+                    code: self.Id,
+                    state: state ? 'on' : 'off'
+                };
+                let url = API_URL.SET_GEOLOCK;
+                if(alarm === 'Immobilise'){
+                    url = API_URL.SET_IMMOBILISATION;
+                }else if(alarm === 'LockDoor'){
+                    url = API_URL.SET_DOORLOCK;
+                    data.state = state ? 'lock' : 'unlock';
+                }
+
+                $el.addClass('disabled');
+                self.$app.progressbar.show('gray');
+                self.$app.request.promise.get(url, data, 'json')
+                    .then(function (result) {
+                        if (result.data && result.data.MajorCode === '000') {
+                            $el.removeClass('disabled');
+                            self.$app.methods.setStatusNewState({
+                                asset: self.IMEI,
+                                forAlarm: alarm,
+                                state: state
+                            });
+                            self.$setState({ [alarm]: state });
+                            self.$app.methods.checkBalance();
+                            if(command && command === 'locate'){
+                                self.$app.methods.sendCommand(API_URL.SEND_COM_POS, self.IMSI);
+                            }
+
+                        }else if(result.data && result.data.MajorCode === '200' && result.data.MinorCode === '1003'){
+                            self.$app.methods.customDialog({title: LANGUAGE.PROMPT_MSG039, text: LANGUAGE.PROMPT_MSG040});
+
+                        }else if(result.data && result.data.MajorCode === '100' && result.data.MinorCode === '1003'){
+                            self.$app.methods.customDialog({title: LANGUAGE.PROMPT_MSG039, text: LANGUAGE.PROMPT_MSG040});
+
+                        }else if (result.data && result.data.MajorCode === '100' && result.data.MinorCode === '1006') {
+                            self.$app.methods.customDialogNoCredit();
+
+                        }else if(result.data && result.data.MajorCode === '100' && result.data.MinorCode === '0000'){
+                            self.$app.methods.customDialog({title: params.imei, text: LANGUAGE.PROMPT_MSG085});
+
+                        }else{
+                            self.$app.dialog.alert(LANGUAGE.PROMPT_MSG023 + `<br>MajorCode: ${result.data.MajorCode}<br>MinorCode: ${result.data.MinorCode}<br>${result.data.Data}`);
+                        }
+                    })
+                    .finally(function () {
+                        self.$app.utils.nextFrame(()=>{
+                            self.$app.progressbar.hide();
+                        });
+                    })
+                    .catch(function (err) {
+                        console.log(err);
+                        if (err && err.status === 404){
+                            self.$app.dialog.alert(LANGUAGE.PROMPT_MSG002);
+                        }else{
+                            self.$app.dialog.alert(LANGUAGE.PROMPT_MSG003);
+                        }
+                    });
+            }
+        },
+
+        on: {
+            pageInit: function (e, page) {
+                let self = this;
+
+
+
+            },
+            pageAfterIn:function(){
+                let self = this;
+
+
+
+            },
+            pageAfterOut: function () {
+                // page has left the view
+            },
+
+        }
+    };
+</script>

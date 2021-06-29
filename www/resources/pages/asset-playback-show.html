@@ -1,0 +1,1513 @@
+<!--suppress JSAnnotator -->
+<template>
+    <div class="page " data-name="asset-playback-show"> <!-- page-with-subnavbar -->
+        <!-- Top Navbar -->
+        <div class="navbar">
+            <div class="navbar-bg"></div>
+            <div class="navbar-inner">
+                <div class="left">
+                    <a href="#" class="link icon-only back" >
+                        <i class="if-not-ios f7-icons icon-header-arrow-back"></i>
+                        <i class="if-ios icon icon-back"></i>
+                    </a>
+                </div>
+                <div class="title sliding">
+                    {{Name}}
+                </div>
+                <div class="right">
+                    {{#js_if 'this.CurrentActiveTab === "map-container" ' }}
+                        <a key="playback-control" @click="playbackControlClick" href="#" class="link icon-only playback-controll-button">
+                            <i class="f7-icons icon-header-play"></i>
+                        </a>
+                        <a key="map-control" @click="showMapControlls" href="#" class="link icon-only ">
+                            <i class="f7-icons icon-header-menu2"></i>
+                        </a>
+                    {{else}}
+                        <a key="send-on-email" @click="showSendOnEmailModal" href="#" class="link icon-only ">
+                            <i class="f7-icons icon-live-email"></i>
+                        </a>
+                    {{/js_if}}
+                </div>
+            </div>
+        </div>
+
+        <div class="toolbar tabbar toolbar-top">
+            <div class="toolbar-inner">
+                <a href="#map-container" class="tab-link tab-link-active">{{@global.LANGUAGE.ASSET_PLAYBACK_MSG05}}</a>
+                <a href="#activity" class="tab-link">{{@global.LANGUAGE.ASSET_PLAYBACK_MSG07}}</a>
+                <a href="#trips" class="tab-link">{{@global.LANGUAGE.ASSET_PLAYBACK_MSG08}}</a>
+                <a href="#summary" class="tab-link">{{@global.LANGUAGE.ASSET_PLAYBACK_MSG06}}</a>
+            </div>
+        </div>
+
+        <div class="tabs-animated-wrap">
+            <div class="tabs">
+                <div class="page-content tab tab-active " id="map-container">
+                    <div class="map-playback position-relative">
+                        {{#unless OptimizedLoaded}}<div class="progressbar-infinite color-custom"></div>{{/unless}}
+                        <div id="{{MapId}}" class="map "></div>
+
+                        <div class="fab fab-left-bottom fab-custom with-borders {{#unless SVExist}}disabled{{/unless}}">
+                            <a @click="ShowStreetView" href="#" class="bg-color-darkgray elevation-hover-10" data-lat="{{Lat}}" data-lng="{{Lng}}">
+                                <i class="pano-preview-img"></i>
+                            </a>
+                        </div>
+                        <div class="fab fab-right-bottom fab-custom ">
+                            <a href="#" class="bg-color-darkgray elevation-hover-10 flex-direction-column routeButton" data-lat="{{Lat}}" data-lng="{{Lng}}">
+                                <i class="f7-icons icon-other-route"></i>
+                                <div class="fab-text">{{@global.LANGUAGE.ASSET_TRACK_MSG20}}</div>
+                            </a>
+                        </div>
+                    </div>
+
+
+                    <div class="bottom-block overflow-hidden">
+                        <div class="list no-margin no-hairlines no-hairlines-between">
+                            <ul>
+                                <li class="item-content">
+                                    <div class="item-inner ">
+                                        <div class="range-slider range-slider-playback color-red " >
+                                            <input type="range" min="0" max="{{PointsCount}}" step="1" value="0">
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="item-content margin-top--10">
+                                    <div class="item-inner no-padding-top">
+                                        <div class="item-title size-14">
+                                            <div class="item-header text-color-gray">
+                                                {{@global.LANGUAGE.ASSET_PLAYBACK_MSG09}}
+                                            </div>
+                                            {{FirstPoint.DateTime}}
+                                        </div>
+                                        <div class="item-title size-14 text-align-right">
+                                            <div class="item-header text-color-gray">
+                                                {{@global.LANGUAGE.ASSET_PLAYBACK_MSG10}}
+                                            </div>
+                                            {{LastPoint.DateTime}}
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="item-content">
+                                    <div class="item-inner ">
+                                        <div class="item-title width-100 overflow-visible">
+                                            <div class="range-slider range-slider-speed color-red " >
+                                                <input type="range" name="PlaybackSpeed" min="1" max="16" step="0.5" value="1">
+                                            </div>
+                                            <div class="item-footer display-flex justify-content-space-between text-color-gray">
+                                                <span>{{@global.LANGUAGE.ASSET_PLAYBACK_MSG12}}</span>
+                                                <span>{{@global.LANGUAGE.ASSET_PLAYBACK_MSG11}}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="page-content tab " id="activity">
+                    {{#unless EventAddressesLoaded}}<div class="progressbar-infinite color-custom"></div>{{/unless}}
+                    <div class="list media-list no-hairlines no-margin-top">
+                        <ul>
+                            {{#EventsList}}
+                            <li data-markerid="{{MarkerId}}" data-event-name="{{EventName}}">
+                                <a  @click="showClickedMarker" href="#" class="item-content item-link"  >
+                                    <div class="item-media {{IconColor}} align-self-flex-start"><i class="f7-icons {{Icon}}"></i></div>
+                                    <div class="item-inner flex-direction-column align-items-stretch">
+                                        <div class="item-title">
+                                            <div class="item-header text-color-gray">
+                                                {{BeginTimeLocal}}
+                                            </div>
+                                            {{EventName}}
+                                        </div>
+                                        <div class="item-text margin-top-half margin-horizontal-half">
+                                            <div class="row no-gap">
+                                                {{#if Duration}}
+                                                <div class="col-50 tooltip-init" data-tooltip="{{@global.LANGUAGE.ASSET_PLAYBACK_MSG22}}">
+                                                    <i class="f7-icons size-16 icon-live-duration text-color-lightgray vertical-align-middle"></i>
+                                                    <span class="size-14 vertical-align-middle margin-left-half text-color-black">{{Duration}}</span>
+                                                </div>
+                                                {{/if}}
+                                                {{#if OtherName}}
+                                                <div class="col-50 ">
+                                                    <i class="f7-icons size-16 icon-live-hint text-color-lightgray vertical-align-middle"></i>
+                                                    <span class="size-14 vertical-align-middle margin-left-half text-color-black">{{OtherName}}</span>
+                                                </div>
+                                                {{/if}}
+                                                <div class="col-100" >
+                                                    <i class="f7-icons size-16 icon-live-address text-color-lightgray vertical-middle"></i>
+                                                    <span class="size-14 vertical-align-middle margin-left-half text-color-black">{{#if CustomAddress}}{{CustomAddress}}{{else}}{{@global.LANGUAGE.COM_MSG004}}{{/if}}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>
+                            {{else}}
+                            <li>
+                                <div class="item-content">
+                                    <div class="item-inner">
+                                        <div class="item-title">
+                                            {{@global.LANGUAGE.PROMPT_MSG070}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            {{/EventsList}}
+
+                        </ul>
+                    </div>
+                </div>
+                <div class="page-content tab " id="trips">
+                    {{#unless TripsLoaded}}
+                    <div class="progressbar-infinite color-custom"></div>
+                    <div key="skeleton-trips" class="list no-hairline-bottom no-hairline-top no-margin-top">
+                        <ul>
+                            {{#each '12'}}
+                            <li class="item-content skeleton-text skeleton-effect-blink">
+                                <div class="item-media text-color-green align-self-flex-start"><div class="skeleton-block" style="width: 25px; height: 25px;"></div></div>
+                                <div class="item-inner flex-direction-column align-items-stretch">
+                                    <div class="item-title only-2-rows">
+                                        <div class="item-header text-color-gray">
+                                            start time
+                                        </div>
+                                        some address of start position
+                                    </div>
+                                    <div class="item-text margin-half">
+                                        <div class="row no-gap">
+                                            <div class="col-50 ">
+                                                <span class="size-14 vertical-align-middle margin-left-half text-color-gray">duration</span>
+                                            </div>
+                                            <div class="col-50 ">
+                                                <span class="size-14 vertical-align-middle margin-left-half text-color-gray">Distance</span>
+                                            </div>
+                                            <div class="col-50 ">
+                                                <span class="size-14 vertical-align-middle margin-left-half text-color-gray">MaxSpeed</span>
+                                            </div>
+                                            <div class="col-50 ">
+                                                <span class="size-14 vertical-align-middle margin-left-half text-color-gray">AvgSpeed</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="item-title only-2-rows">
+                                        <div class="item-header text-color-gray">
+                                            end time
+                                        </div>
+                                        some address of end position
+                                    </div>
+                                </div>
+                            </li>
+                            {{/each}}
+                        </ul>
+                    </div>
+                    {{else}}
+                    <div key="trip-list" class="list no-hairlines no-margin-top no-chevron">
+                        <ul>
+                            {{#TripList}}
+                            <li data-item-index="">
+                                <a @click="showStartTripPosition({{@index}})" href="#" class="item-content item-link">
+                                    <div class="item-media text-color-green align-self-flex-start"><i class="f7-icons icon-live-trip"></i></div>
+                                    <div class="item-inner flex-direction-column align-items-stretch">
+                                        <div class="item-title only-2-rows size-14">
+                                            <div class="item-header text-color-gray">
+                                                {{StartTimeLocal}}
+                                            </div>
+                                            {{#if StartCustomAddress}}{{StartCustomAddress}}{{else}}{{@global.LANGUAGE.COM_MSG004}}{{/if}}
+                                        </div>
+                                        <div class="item-text margin-half">
+                                            <div class="row no-gap">
+                                                <div class="col-50 tooltip-init" data-tooltip="{{@global.LANGUAGE.ASSET_PLAYBACK_MSG22}}">
+                                                    <i class="f7-icons size-16 icon-live-duration text-color-lightgray vertical-align-middle"></i>
+                                                    <span class="size-14 vertical-align-middle margin-left-half text-color-black">{{Duration}}</span>
+                                                </div>
+                                                <div class="col-50 tooltip-init" data-tooltip="{{@global.LANGUAGE.ASSET_TRACK_MSG04}}">
+                                                    <i class="f7-icons size-16 icon-live-distance text-color-lightgray vertical-align-middle"></i>
+                                                    <span class="size-14 vertical-align-middle margin-left-half text-color-black">{{Distance}} {{@global.LANGUAGE.COM_MSG080}}</span>
+                                                </div>
+                                                <div class="col-50 tooltip-init" data-tooltip="{{@global.LANGUAGE.COM_MSG085}}">
+                                                    <i class="f7-icons size-16 icon-live-speed text-color-lightgray vertical-align-middle"></i>
+                                                    <span class="size-14 vertical-align-middle margin-left-half text-color-black">{{MaxSpeed}} {{@global.LANGUAGE.COM_MSG081}}</span>
+                                                </div>
+                                                <div class="col-50 tooltip-init" data-tooltip="{{@global.LANGUAGE.COM_MSG084}}">
+                                                    <i class="f7-icons size-16 icon-live-speed text-color-lightgray vertical-align-middle"></i>
+                                                    <span class="size-14 vertical-align-middle margin-left-half text-color-black">{{AvgSpeed}} {{@global.LANGUAGE.COM_MSG081}}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="item-title only-2-rows size-14">
+                                            <div class="item-header text-color-gray">
+                                                {{EndTimeLocal}}
+                                            </div>
+                                            {{#if EndCustomAddress}}{{EndCustomAddress}}{{else}}{{@global.LANGUAGE.COM_MSG004}}{{/if}}
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>
+                            {{else}}
+                            <li>
+                                <div class="item-content">
+                                    <div class="item-inner">
+                                        <div class="item-title">{{@global.LANGUAGE.COM_MSG031}}</div>
+                                    </div>
+                                </div>
+                            </li>
+                            {{/TripList}}
+                        </ul>
+                    </div>
+                    {{/unless}}
+                </div>
+
+                <div class="page-content tab " id="summary">
+                    {{#unless SummaryLoaded}}
+                        <div class="progressbar-infinite color-custom"></div>
+                        <div key="skeleton-summary" class="list no-hairline-bottom no-hairline-top no-margin-top">
+                            <ul>
+                                {{#each '123'}}
+                                <li class="item-content skeleton-text skeleton-effect-blink">
+                                    <div class="item-media text-color-lightgray">
+                                        <div class="skeleton-block" style="width: 25px; height: 25px;"></div>
+                                    </div>
+                                    <div class="item-inner">
+                                        <div class="item-title">object name</div>
+                                        <div class="item-after">obj val</div>
+                                    </div>
+                                </li>
+                                {{/each}}
+                            </ul>
+                        </div>
+                    {{else}}
+                        <div key="summary-list" class="list list-custom no-hairlines no-margin-top">
+                            <ul>
+                                {{#SummaryList}}
+                                <li>
+                                    <div class="item-content">
+                                        <div class="item-media text-color-lightgray">{{#if Icon}}<i class="f7-icons {{Icon}}"></i>{{/Icon}}</div>
+                                        <div class="item-inner">
+                                            <div class="item-title">{{Name}}</div>
+                                            <div class="item-after">{{Value}}</div>
+                                        </div>
+                                    </div>
+                                </li>
+                                {{else}}
+                                <li>
+                                    <div class="item-content">
+                                        <div class="item-inner">
+                                            <div class="item-title">{{@gloabl.LANGUAGE.PROMPT_MSG072}}</div>
+                                        </div>
+                                    </div>
+                                </li>
+                                {{/SummaryList}}
+                            </ul>
+                        </div>
+                    {{/unless}}
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</template>
+
+
+<script>
+    // script must return component object
+    return {
+        data: function () {
+            let self = this;
+            let imei = decodeURIComponent(self.$route.query.imei);
+            let asset = self.$app.methods.getFromStorage('assetList')[imei];
+            let playbackFilterEventsList = self.$app.methods.getPlaybackFilterEventsList();
+            let selectedEvents = self.$route.query.events ? self.$route.query.events.split(',') : [];
+            let userInfo = self.$app.methods.getFromStorage('userInfo');
+
+            let optimisedState = self.$route.query.optimisedState;
+            let historyArray = self.$app.methods.getFromStorage('historyArray');
+            let geofenceList = self.$app.methods.getFromStorage('geofenceList');
+
+            let contactList = self.$app.methods.getFromStorage('contactList');
+            contactList.push({
+                EMail: userInfo.Email,
+                FirstName: userInfo.FirstName,
+                SubName: userInfo.SurName,
+                Code: self.$app.data.MajorToken,
+                CustomerCode: self.$app.data.MinorToken,
+            });
+
+            if(contactList && contactList.length){
+                contactList = self.$app.methods.sortContactList(contactList);
+            }
+
+            if(selectedEvents && selectedEvents.length){
+                for(let eventVal of selectedEvents){
+                    let index = playbackFilterEventsList.findIndex( obj => obj.Value === eventVal)
+                    if (index !== -1){
+                        playbackFilterEventsList[index].Selected = true;
+                    }
+                }
+            }
+
+            let geofenceListArr = [];
+            if (!app.methods.isObjEmpty(geofenceList)) {
+                const keys = Object.keys(geofenceList);
+                for (const key of keys) {
+                    geofenceListArr.push({
+                        Code: geofenceList[key].Code,
+                        Name: geofenceList[key].Name
+                    })
+                }
+            }
+            let firstPoint = self.$app.methods.formatPlaybackData(historyArray[0], asset);
+            let lastPoint = self.$app.methods.formatPlaybackData(historyArray[historyArray.length-1], asset);
+            //console.log(firstPoint);
+            let ret = {
+                Name: asset.Name,
+                IMEI: asset.IMEI,
+                MapId: 'map-' + self.$app.utils.id(),
+
+                Id: asset.Id,
+                SolutionType: asset.SolutionType,
+                Make: asset.Describe1,
+                Model: asset.Describe2,
+                Color: asset.Describe3,
+                Year: asset.Describe4,
+                Registration: asset.Registration,
+                EngineCapacity: asset.EngineCapacity,
+                PlaybackFrom: decodeURIComponent(self.$route.query.from),
+                PlaybackTo: decodeURIComponent(self.$route.query.to),
+                Lat: historyArray[0].lat,
+                Lng: historyArray[0].lng,
+
+                CurrentActiveTab: 'map-container',
+                OptimizedRouteState: (optimisedState === 'true'),
+                CantBeOptimised: false,
+                PlaybackTimer: false,
+                PlaybackRouteLayerGroup: false,
+                PlaybackRouteLayerGroupOptimized: false,
+                PlaybackMarker: false,
+                PlaybackEventsLayerGroup: false,
+                PlaybackEventsLayerSubGroups: {},
+
+                PointsCount: historyArray.length-1,
+                FirstPoint: firstPoint,
+                LastPoint: lastPoint,
+                HistoryArray: historyArray,
+
+                SummaryLoaded: false,
+                TripsLoaded: false,
+                OptimizedLoaded: false,
+                EventAddressesLoaded: false,
+                GeofenceList: geofenceListArr,
+                PlaybackFilterEventsList: playbackFilterEventsList,
+                PlaybackSelectedEvents: selectedEvents,
+                ContactList: contactList,
+            };
+
+            return ret;
+        },
+        methods: {
+            PanoButtonUpdate: function (latlng=[]) {
+                let self = this;
+                if(!latlng.length){
+                    latlng = [self.Lat, self.Lng];
+                }
+                self.StreetViewService.getPanorama({ location: new google.maps.LatLng(latlng[0], latlng[1]), radius: 50 }, self.ProcessSVData);
+            },
+            ProcessSVData: function(data, status) {
+                this.$setState({
+                    SVExist: status === 'OK'
+                });
+            },
+            ShowStreetView: function(e) {
+                let self = this;
+                let $target = $$(e.target).closest('a');
+
+                let content = `
+                        <div class="popup" >
+                            <div class="view">
+                                <div class="page">
+                                    <div class="page-content">
+                                        <div class="fab fab-left-top fab-pano-close popup-close">
+                                            <a href="#">
+                                                <i class="f7-icons">close</i>
+                                            </a>
+                                        </div>
+                                        <div id="pano" class="pano" ></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`;
+
+                self.DynamicMenuPopup = self.$app.popup.create({
+                    content: content,
+                    on: {
+                        open: function (popup) {
+                            let panoramaOptions = {
+                                position: new google.maps.LatLng($target.data('lat'), $target.data('lng')),
+                                pov: {
+                                    heading: 0,
+                                    pitch: 0
+                                },
+                                linksControl: false,
+                                panControl: false,
+                                enableCloseButton: false,
+                                addressControl: false
+                            };
+                            let panorama = new google.maps.StreetViewPanorama(document.getElementById('pano'), panoramaOptions);
+
+                        },
+                        closed: function(popup){
+                            popup.$el.remove();
+                            popup.destroy();
+                        },
+                    }
+                }).open();
+            },
+            initMapSettings: function(){
+                let self = this;
+                let mapSettingsObg = self.$app.methods.getFromStorage('mapSettings');
+
+                self.Geofences = [];
+                mapSettingsObg && mapSettingsObg.showGeofences ? self.showGeofences(self.Map) : '';
+            },
+            isGeofencesShowed: function(){
+                return this.Geofences ? !!this.Geofences.length : false; //simplified this.data.Geofences.length ? true : false;
+            },
+            showGeofences: function(map) {
+                let self = this;
+                if (!self.isGeofencesShowed()) {
+                    let geofenceList = self.$app.methods.getFromStorage('geofenceList');
+                    if (!app.methods.isObjEmpty(geofenceList)) {
+                        const keys = Object.keys(geofenceList);
+                        for (const key of keys) {
+                            let geofenceDetails = {
+                                Name: geofenceList[key].Name,
+                                Code: geofenceList[key].Code,
+                            };
+                            let markerData = self.$app.methods.getGeofenceDataTable(geofenceList[key], {geogroup: false});
+                            if (geofenceList[key].GeoType === 1) { //circle
+                                if (geofenceList[key].Lat && geofenceList[key].Lng && geofenceList[key].Radius) {
+                                    geofenceDetails.polygon = L.circle([geofenceList[key].Lat, geofenceList[key].Lng], {
+                                        ...self.$app.data.PolygonCustomization,
+                                        radius: geofenceList[key].Radius,
+                                    }).bindPopup(markerData, {maxWidth: 280, closeButton: false})//.bindTooltip(label ,{permanent: false, direction: 'right'});
+                                }
+                            } else if (geofenceList[key].GeoPolygon) {
+                                let polygonCoordsArr = geofenceList[key].GeoPolygon.split('((').pop().split('))')[0].split(',');
+                                let geojsonArr = [];
+                                for (let i = polygonCoordsArr.length - 1; i >= 0; i--) {
+                                    geojsonArr.push(polygonCoordsArr[i].split(' ').map(parseFloat).reverse());
+                                }
+                                geofenceDetails.polygon = L.polygon(geojsonArr, {
+                                    ...self.$app.data.PolygonCustomization,
+                                }).bindPopup(markerData, {maxWidth: 280, closeButton: false}); //.bindTooltip(label ,{permanent: false, direction: 'right'});
+                            }
+
+                            if (geofenceDetails.polygon) {
+                                geofenceDetails.polygon.addTo(map);
+                                self.Geofences.push(geofenceDetails);
+                            }
+                        }
+                    }
+                }
+            },
+            hideGeofences: function(map){
+                let self = this;
+                if (self.Geofences && self.Geofences.length) {
+                    for (let i = self.Geofences.length - 1; i >= 0; i--) {
+                        if (self.Geofences[i].polygon) {
+                            map.removeLayer(self.Geofences[i].polygon);
+                        }
+                    }
+                    self.Geofences.length = 0;
+                }
+            },
+            showMapControlls: function(e){
+                let self = this;
+                let mapSettingsObg = self.$app.methods.getFromStorage('mapSettings');
+
+                let eventListTemplate ='';
+                for(let event of self.PlaybackFilterEventsList){
+                    eventListTemplate +=`<option value="${ event.Value }" data-option-icon="${ event.Icon }" ${event.Selected ? 'selected': ''}>${ event.Name }</option>`
+                }
+
+                let content =   `<div class="sheet-modal" >
+                                        <div class="toolbar">
+                                              <div class="toolbar-inner">
+                                                <div class="left"></div>
+                                                <div class="right">
+                                                  <a href="#" class="link sheet-close">${ LANGUAGE.COM_MSG086 }</a>
+                                                </div>
+                                              </div>
+                                        </div>
+                                        <div class="sheet-modal-inner">
+                                            <div class="list no-margin no-hairlines no-hairlines-between">
+                                                <ul>
+                                                    <li class="item-content changeGeofenceState sheet-close">
+                                                        <div class="item-media ${ mapSettingsObg && mapSettingsObg.showGeofences ?  'text-color-green' : 'text-color-lightgray'} ">
+                                                            <i class="f7-icons icon-menu-geofence "></i>
+                                                        </div>
+                                                        <div class="item-inner">
+                                                            <div class="item-title ">${ LANGUAGE.COM_MSG062 }</div>
+                                                            <div class="item-after">
+                                                                <div class="toggle color-green">
+                                                                    <input type="checkbox" name="checkbox-map-settings" value="showGeofences" ${ mapSettingsObg && mapSettingsObg.showGeofences ?  'checked' : '' }>
+                                                                    <span class="toggle-icon"></span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                    <li class="item-content changeOptimizedRouteState sheet-close">
+                                                        <div class="item-media ${ self.OptimizedRouteState ?  'text-color-green' : 'text-color-lightgray'} ">
+                                                            <i class="f7-icons icon-live-trip "></i>
+                                                        </div>
+                                                        <div class="item-inner">
+                                                            <div class="item-title ">${ LANGUAGE.ASSET_PLAYBACK_MSG01 }</div>
+                                                            <div class="item-after">
+                                                                <div class="toggle color-green">
+                                                                    <input type="checkbox" name="checkbox-optimized-route" value="" ${ self.OptimizedRouteState ?  'checked' : '' }>
+                                                                    <span class="toggle-icon"></span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                    <li>
+                                                        <a class="item-link smart-select smart-select-events">
+                                                            <select name="Events" multiple>
+                                                                ${eventListTemplate}
+                                                            </select>
+                                                            <div class="item-content">
+                                                                <div class="item-media text-color-lightgray">
+                                                                    <i class="f7-icons icon-header-alarm"></i>
+                                                                </div>
+                                                                <div class="item-inner">
+                                                                    <div class="item-title ">${ LANGUAGE.ASSET_PLAYBACK_MSG02 }</div>
+                                                                </div>
+                                                            </div>
+                                                        </a>
+                                                    </li>
+                                                    <li class="item-content item-link sheet-close send-by-email">
+                                                        <div class="item-media text-color-lightgray">
+                                                            <i class="f7-icons icon-live-email"></i>
+                                                        </div>
+                                                        <div class="item-inner">
+                                                            <div class="item-title">${ LANGUAGE.COM_MSG078 }</div>
+                                                        </div>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>`;
+
+
+                self.$app.sheet.create({
+                    backdrop: false,
+                    closeByOutsideClick: false,
+                    targetEl: e.target,
+                    content: content,
+                    on: {
+                        opened: function(popover){
+                            let GeofencesState = popover.$el.find('.changeGeofenceState');
+                            let OptimizedState = popover.$el.find('.changeOptimizedRouteState');
+                            let SmartSelectEventsEl = popover.$el.find('.smart-select-events');
+                            let sendByEmailEl = popover.$el.find('.send-by-email');
+
+                            GeofencesState.on('click', function () {
+                                let input = $$(this).find('input[name="checkbox-map-settings"]');
+                                let newState = !input.prop( "checked" );
+                                mapSettingsObg[input.val()] = newState;
+                                self.$app.methods.setInStorage({name: 'mapSettings', data: mapSettingsObg});
+                                newState ? self.showGeofences(self.Map) : self.hideGeofences(self.Map);
+                            });
+                            OptimizedState.on('click', function () {
+                                let input = $$(this).find('input[name="checkbox-optimized-route"]');
+                                let newState = !input.prop( "checked" );
+                                if (!self.CantBeOptimised) {
+                                    self.$setState({
+                                        OptimizedRouteState: newState
+                                    });
+                                    if (newState) {
+                                        if (self.PlaybackRouteLayerGroupOptimized) {
+                                            self.Map.removeLayer(self.PlaybackRouteLayerGroup);
+                                            self.Map.addLayer(self.PlaybackRouteLayerGroupOptimized);
+                                        }
+                                    }else{
+                                        if (self.PlaybackRouteLayerGroup) {
+                                            self.Map.removeLayer(self.PlaybackRouteLayerGroupOptimized);
+                                            self.Map.addLayer(self.PlaybackRouteLayerGroup);
+                                        }
+                                    }
+                                }else{
+                                    self.$app.methods.customNotification({
+                                        title: LANGUAGE.ASSET_PLAYBACK_MSG00,
+                                        text: LANGUAGE.PROMPT_MSG069
+                                    });
+                                    self.$setState({
+                                        OptimizedRouteState: false
+                                    });
+                                }
+                            });
+                            self.SmartSelectEvents = self.$app.smartSelect.create({
+                                el: SmartSelectEventsEl,
+                                view: mainView,
+                                openIn: 'popover',
+                                formColorTheme: 'green',
+                                on: {
+                                    change: function (smartSelect, val) {
+                                        for (var i = self.PlaybackFilterEventsList.length - 1; i >= 0; i--) {
+                                            if (val.indexOf(self.PlaybackFilterEventsList[i].Value) !== -1) {
+                                                if (!self.Map.hasLayer(self.PlaybackEventsLayerSubGroups[self.PlaybackFilterEventsList[i].Value])) {
+                                                    self.Map.addLayer(self.PlaybackEventsLayerSubGroups[self.PlaybackFilterEventsList[i].Value])
+                                                    self.PlaybackFilterEventsList[i].Selected = true;
+                                                }
+                                            }else{
+                                                self.Map.removeLayer(self.PlaybackEventsLayerSubGroups[self.PlaybackFilterEventsList[i].Value])
+                                                self.PlaybackFilterEventsList[i].Selected = false;
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                            sendByEmailEl.on('click', self.showSendOnEmailModal);
+                        },
+                        closed: function(popover){
+                            popover.destroy();
+                            self.SmartSelectEvents.destroy();
+                        }
+                    }
+                }).open();
+            },
+
+
+            getOptimizedRoute: function(historyArray){
+                let self = this;
+
+                let rawArray = [];
+                $.each( historyArray, function(index,value){
+                    rawArray.push([
+                        null,
+                        null,
+                        null,
+                        new Date(value.positionTime * 1000),
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        value.lat,   //lat
+                        value.lng,   // lng
+                        null,
+                        value.direct,   //direct
+                        value.speed,   //speed
+                        value.mileage    //mileage
+                    ]);
+                });
+
+                /*self.$app.progressbar.show('custom');*/
+
+                $.ajax({
+                    type: "POST",
+                    url: API_URL.GET_PLAYBACK_ARR_OPTIMISED,
+                    dataType: "json",
+                    data: JSON.stringify(rawArray),
+                    contentType: 'application/json',
+                    async: true,
+                    cache: false,
+                    timeout: 10000,
+                    success: function (result) {
+                        //console.log(result);
+                        let polylineOptBg = new L.Polyline(result.polylines, self.$app.data.PolylineCustomization.mainBg);
+                        let polylineOpt = new L.Polyline(result.polylines, self.$app.data.PolylineCustomization.main);
+                        self.PlaybackRouteLayerGroupOptimized = L.featureGroup([polylineOptBg,polylineOpt]);
+
+                        if (result.dropped) {
+                            let polylineOptDroppedBg = new L.Polyline(result.dropped, self.$app.data.PolylineCustomization.droppedBg);
+                            let polylineOptDropped = new L.Polyline(result.dropped, self.$app.data.PolylineCustomization.dropped);
+                            self.PlaybackRouteLayerGroupOptimized.addLayer(polylineOptDroppedBg).addLayer(polylineOptDropped);
+                        }
+                        if (result.boundaries) {
+                            let polylineOptBoundariesBg = new L.Polyline(result.boundaries, self.$app.data.PolylineCustomization.boundariesBg);
+                            let polylineOptBoundaries = new L.Polyline(result.boundaries, self.$app.data.PolylineCustomization.boundaries);
+                            self.PlaybackRouteLayerGroupOptimized.addLayer(polylineOptBoundariesBg).addLayer(polylineOptBoundaries);
+                        }
+                        if (self.OptimizedRouteState) {
+                            if (self.Map.hasLayer(self.PlaybackRouteLayerGroup)) {
+                                self.Map.removeLayer(self.PlaybackRouteLayerGroup);
+                            }
+                            self.PlaybackRouteLayerGroupOptimized.addTo(self.Map);
+                            self.Map.fitBounds(self.PlaybackRouteLayerGroupOptimized.getBounds());     // zoom the map to the polyline
+                        }
+                        self.$setState({
+                            OptimizedLoaded: true
+                        });
+                    },
+                    error: function (textStatus) {
+                        console.log(textStatus);
+                        if (self.OptimizedRouteState) {
+                            self.$app.methods.customNotification({
+                                title: LANGUAGE.ASSET_PLAYBACK_MSG00,
+                                text: LANGUAGE.PROMPT_MSG069
+                            });
+                        }
+
+                        self.$setState({OptimizedRouteState: false, CantBeOptimised: true, OptimizedLoaded: true});
+                        self.showPlaybackRoute();
+                    }
+                });
+
+            },
+            showPlaybackRoute: function(){
+                let self = this;
+
+                //if (self.PlaybackRouteLayerGroup && self.PlaybackMarkerGroup) {
+                if (self.PlaybackRouteLayerGroup) {
+                    if (self.OptimizedRouteState && self.PlaybackRouteLayerGroupOptimized) {
+                        self.Map.addLayer(self.PlaybackRouteLayerGroupOptimized);
+                        self.Map.fitBounds(self.PlaybackRouteLayerGroupOptimized.getBounds());
+                    }else{
+                        self.Map.addLayer(self.PlaybackRouteLayerGroup);
+                        self.Map.fitBounds(self.PlaybackRouteLayerGroup.getBounds());
+                    }
+                    //self.Map.addLayer(self.PlaybackMarkerGroup);
+                    self.Map.addLayer(self.PlaybackMarker);
+                    self.Map.addLayer(self.PlaybackEventsLayerGroup);
+
+
+                }else{
+                    let asset = POSINFOASSETLIST[self.IMEI];
+                    /*PLAYBACK ROUTE ADDING*/
+
+                    let polylinePoints = [];
+                    for (let point of self.HistoryArray) {
+                        polylinePoints.push(new L.LatLng(point.lat, point.lng));
+                    }
+
+                    let polylineBG = new L.Polyline(polylinePoints, self.$app.data.PolylineCustomization.mainBg);
+                    let polyline = new L.Polyline(polylinePoints, self.$app.data.PolylineCustomization.main);
+                    self.PlaybackRouteLayerGroup = L.featureGroup([polylineBG, polyline]);
+                    self.PlaybackRouteLayerGroup.addTo(self.Map);
+
+                    self.Map.fitBounds(polyline.getBounds());     // zoom the map to the polyline
+
+                    /*EVENTS POINTS ADDING*/
+                    let historyEvents = self.$app.methods.getFromStorage('historyEvents');
+
+                    if (!historyEvents || !historyEvents.length) {
+                        self.$setState({
+                            EventAddressesLoaded: true,
+                            EventsList: [],
+                        });
+                    }else{
+                        self.PlaybackEventsLayerGroup = L.markerClusterGroup({'maxClusterRadius':35,});
+                        let markerData = '';
+                        let point = '';
+                        let popupAddresses = {};
+                        let newEventsArr = [];
+                        let newEventsArrLatLngs = [];
+                        let pinDetails = {};
+
+                        for (let i = self.PlaybackFilterEventsList.length - 1; i >= 0; i--) {
+                            self.PlaybackEventsLayerSubGroups[self.PlaybackFilterEventsList[i].Value] = L.featureGroup.subGroup(self.PlaybackEventsLayerGroup).addTo(self.Map);
+                        }
+
+                        $.each( historyEvents, function(index,value){
+                            if (parseFloat(value.lat) !== 0 && parseFloat(value.lng) !== 0) {
+                                if (value.eventClass === 1 || value.eventClass === 2 && value.eventType === 1 || value.eventClass === 4 && value.eventType === 0) {  //filtering to display only   1-Alert(alarms) , 2-ACC , 4 - static  events
+                                    pinDetails = self.getPlaybackMapPinDetails(value);
+                                    value.index = index;
+                                    markerData = self.$app.methods.getPlaybackMarkerDataTableInfoPin(value, {GeofenceList: self.GeofenceList});
+                                    point = L.marker([value.lat, value.lng], {icon: pinDetails.Icon, customPlaybackFilterType: pinDetails.CustomFilterType});
+                                    point.bindPopup(markerData,{ maxWidth:self.$app.data.MaxMapPopupWidth, closeButton: false})
+                                        .on('popupopen', function (marker) {
+                                            if (popupAddresses[index]) {
+                                                $$('body #'+self.MapId).find('[data-popupIdAddress="'+index+'"]').html(popupAddresses[index]);
+                                            }else{
+                                                Protocol.Helper.getAddressByGeocoder(this.getLatLng(),function(address){
+                                                    $$('body #'+self.MapId).find('[data-popupIdAddress="'+index+'"]').html(address);
+                                                    popupAddresses[index] = address;
+                                                });
+                                            }
+                                        });
+
+                                    self.PlaybackEventsLayerSubGroups[pinDetails.CustomFilterType].addLayer(point);
+                                    value.MarkerId = self.PlaybackEventsLayerSubGroups[pinDetails.CustomFilterType].getLayerId(point);
+
+                                    newEventsArr.push(self.$app.methods.formatPlaybackEventData(value, self.GeofenceList));
+                                    newEventsArrLatLngs.push([value.lat,value.lng]);
+                                }
+                            }
+                        });
+
+                        self.Map.addLayer(self.PlaybackEventsLayerGroup);
+
+                        //hiding events which should be hided by filter from previous page, but keep them on page to display if needed
+                        for (var i = self.PlaybackFilterEventsList.length - 1; i >= 0; i--) {
+                            if (self.PlaybackSelectedEvents.indexOf(self.PlaybackFilterEventsList[i].Value) !== -1) {
+                                if (!self.Map.hasLayer(self.PlaybackEventsLayerSubGroups[self.PlaybackFilterEventsList[i].Value])) {
+                                    self.Map.addLayer(self.PlaybackEventsLayerSubGroups[self.PlaybackFilterEventsList[i].Value])
+                                }
+                            }else{
+                                self.Map.removeLayer(self.PlaybackEventsLayerSubGroups[self.PlaybackFilterEventsList[i].Value])
+                            }
+                        }
+
+                        self.$setState({
+                            EventsList: newEventsArr
+                        });
+
+                        let promise = new Promise(function(resolve, reject) {
+                            self.getAddresses(newEventsArrLatLngs, resolve, reject);
+                        });
+
+                        promise.then(function(result) {
+                            //console.log(result);
+                            if (result && result.length) {
+                                for (let i = result.length - 1; i >= 0; i--) {
+                                    if (result[i] && typeof result[i] === 'object' && result[i].display_name) {
+                                        self.EventsList[i].CustomAddress = result[i].display_name;
+                                    }
+                                }
+                                self.$setState({
+                                    EventAddressesLoaded: true,
+                                    EventsList: self.EventsList
+                                });
+                            }
+                        }, function(error){
+                            console.log(error);
+                        });
+                    }
+
+                    /*MARKER ADDING*/
+                    self.PlaybackMarker = L.marker([self.HistoryArray[0].lat, self.HistoryArray[0].lng], {icon: self.$app.methods.getMarkerIcon({asset: true, type: self.SolutionType})});
+                    self.PlaybackMarker
+                        .bindPopup(self.$app.methods.getMarkerDataTablePB(asset, self.HistoryArray[0]), {maxWidth:self.$app.data.MaxMapPopupWidth, closeButton: false})
+                        .on('popupopen', function (marker) {
+                            let index = self.RangeSliderPlayback.getValue();
+                            if(!self.HistoryArray[index].customAddress){
+                                Protocol.Helper.getAddressByGeocoder({lat: self.HistoryArray[index].lat, lng: self.HistoryArray[index].lng},function(address){
+                                    lastQueryPosinfo = {lat : Math.floor(self.HistoryArray[index].lat * 10000) / 10000, lng : Math.floor(self.HistoryArray[index].lng * 10000) / 10000, address: address };
+                                    self.HistoryArray[index].customAddress = address;
+                                    self.PlaybackMarker.setPopupContent(self.$app.methods.getMarkerDataTablePB(asset, self.HistoryArray[index]));
+                                    if (self.HistoryArray[index+1]) {
+                                        self.HistoryArray[index+1].customAddress = address;
+                                    }
+                                });
+                            }
+                        });
+                    self.PanoButtonUpdate([self.HistoryArray[0].lat, self.HistoryArray[0].lng]);
+                    self.PlaybackMarker.addTo(self.Map);
+
+                    Protocol.Helper.getAddressByGeocoder({lat: asset.posInfo.lat, lng: asset.posInfo.lng},function(address){
+                        self.HistoryArray[0].customAddress = address;
+                        self.PlaybackMarker.setPopupContent(self.$app.methods.getMarkerDataTablePB(asset, self.HistoryArray[0]));
+                    });
+                }
+
+
+            },
+            stopPlaybackPlayer: function(){
+                let self = this;
+
+                let playbackControllButtonIcon = self.$el.find('.playback-controll-button i');
+
+                playbackControllButtonIcon.removeClass('icon-header-stop').addClass('icon-header-play');
+
+                clearInterval(self.PlaybackTimer);
+                self.PlaybackTimer = false;
+            },
+            playbackControlClick: function(e){
+                let self = this;
+                if (self.PlaybackTimer) {
+                    self.stopPlaybackPlayer();
+                }else{
+                    $$(e.target).closest('a').find('i').removeClass('icon-header-play').addClass('icon-header-stop');
+                    self.PlaybackTimer = setInterval(self.playbackIntrvalFunc, 1000/self.RangeSliderSpeed.getValue());
+                }
+            },
+            showClickedMarker: function(e){
+                let self = this;
+                let parent = $$(e.target).closest('li');
+                let markerId = parent.data('markerid');
+
+                if (markerId) {
+                    let marker = self.PlaybackEventsLayerGroup.getLayer(markerId);
+                    if (marker) {
+                        self.$app.tab.show('#map-container', true);
+                        self.PlaybackEventsLayerGroup.zoomToShowLayer(marker, function() {
+                            if (self.Map.getZoom() < 15) {
+                                self.Map.setView(marker.getLatLng(),15)
+                            }
+                            marker.openPopup();
+                        });
+                    }else{
+                        let name = parent.data('event-name');
+                        self.$app.methods.customNotification({title: name ? name : '', text: LANGUAGE.PROMPT_MSG071});
+                    }
+                }
+            },
+            showStartTripPosition: function(index){
+                let self = this;
+                let trip = self.TripList[index];
+                let unixTimeStamp = parseInt(moment.utc(trip.StartTime,'DD/MM/YYYY HH:mm:ss').format('X'));
+                let pointIndex = self.HistoryArray.findIndex(point => point.positionTime === unixTimeStamp);
+                if(pointIndex !== -1){
+                    self.$app.tab.show('#map-container', true);
+                    self.RangeSliderPlayback.setValue(pointIndex);
+                    self.PlaybackMarker.openPopup();
+                }
+            },
+            playbackIntrvalFunc: function(){
+                let self = this;
+                clearInterval(self.PlaybackTimer);
+
+                self.PlaybackTimer = setInterval(self.playbackIntrvalFunc, 1000/self.RangeSliderSpeed.getValue());
+
+                let value = self.RangeSliderPlayback.getValue();
+                if (value !== self.PointsCount) {
+                    value++;
+                    self.RangeSliderPlayback.setValue(value);
+                }else{
+                    self.RangeSliderPlayback.setValue(0);
+                    self.stopPlaybackPlayer();
+                }
+            },
+
+            getTrips: function(){
+                let self = this;
+
+                let data = {
+                    MajorToken: self.$root.MajorToken,
+                    MinorToken: self.$root.MinorToken,
+                    DateFrom: moment.utc(self.$route.query.from, window.COM_TIMEFORMAT2).format(window.COM_TIMEFORMAT),
+                    DateTo: moment.utc(self.$route.query.to, window.COM_TIMEFORMAT2).format(window.COM_TIMEFORMAT),
+                    Imeis: [self.IMEI],
+                };
+                //console.log(data);
+                self.$app.request.promise.post(API_URL.GET_REPORT_TRIP, data, 'json')
+                    .then(function (result) {
+                            if(result.data.MajorCode === '000') {
+                                if(result.data.Data && result.data.Data.length){
+                                    self.initSummaryList(result.data.Data[0].Total, result.data.Data[0].Details);
+                                    self.initTripList(result.data.Data[0].Details);
+                                }else{
+                                    self.initSummaryList();
+                                    self.initTripList();
+                                }
+
+                            }else{
+                                console.log('here');
+                                self.$app.dialog.alert(LANGUAGE.PROMPT_MSG023 + `<br>MajorCode: ${result.data.MajorCode}<br>MinorCode: ${result.data.MinorCode}<br>${result.data.Data}`);
+                            }
+                    })
+                    .catch(function (err) {
+                        console.log(err);
+                    });
+
+            },
+            initTripList: function(tripsDetails=[]){
+                let self = this;
+
+                if (tripsDetails && tripsDetails.length){
+                    let startLatLngs = [];
+                    let endLatLngs = [];
+
+                    for (let trip of tripsDetails) {
+                        if (trip.StartTime) {
+                            trip.StartTimeLocal = moment(trip.StartTime,'DD/MM/YYYY HH:mm:ss').add(self.$app.data.UTCOFFSET,'minutes').format(window.COM_TIMEFORMAT);
+                        }
+                        if (trip.EndTime) {
+                            trip.EndTimeLocal = moment(trip.EndTime,'DD/MM/YYYY HH:mm:ss').add(self.$app.data.UTCOFFSET,'minutes').format(window.COM_TIMEFORMAT);
+                        }
+                        startLatLngs.push([trip.StartLat,trip.StartLng]);
+                        endLatLngs.push([trip.EndLat,trip.EndLng]);
+                    }
+
+                    let promiseStartAddress = new Promise(function(resolve, reject) {
+                        self.getAddresses(startLatLngs, resolve, reject);
+                    });
+                    let promiseEndAddress = new Promise(function(resolve, reject) {
+                        self.getAddresses(endLatLngs, resolve, reject);
+                    });
+
+                    Promise.all([
+                        promiseStartAddress.catch(error => { return error }),
+                        promiseEndAddress.catch(error => { return error }),
+                    ]).then(values => {
+                        if (values[0] && values[1]){
+                            for (let i = tripsDetails.length - 1; i >= 0; i--) {
+                                if (values[0][i] && typeof values[0][i] === 'object' && values[0][i].display_name) {
+                                    tripsDetails[i].StartCustomAddress = values[0][i].display_name;
+                                }
+                                if (values[1][i] && typeof values[1][i] === 'object' && values[1][i].display_name) {
+                                    tripsDetails[i].EndCustomAddress = values[1][i].display_name;
+                                }
+                            }
+                            self.$setState({
+                                TripList: tripsDetails
+                            });
+                        }
+                    });
+                }
+
+                self.$setState({
+                    TripsLoaded: true,
+                    TripList: tripsDetails,
+                });
+
+
+
+            },
+            initSummaryList: function(totals={}, tripsDetails=[]){
+                let self = this;
+
+                let list = [
+                    {
+                        Icon: 'icon-live-date',
+                        Name: LANGUAGE.ASSET_PLAYBACK_MSG13,
+                        Value: moment(self.$route.query.from, window.COM_TIMEFORMAT2).add(self.$app.data.UTCOFFSET,'minutes').format(window.COM_TIMEFORMAT),
+                    },
+                    {
+                        Icon: 'icon-live-date',
+                        Name: LANGUAGE.ASSET_PLAYBACK_MSG14,
+                        Value: moment(self.$route.query.to, window.COM_TIMEFORMAT2).add(self.$app.data.UTCOFFSET,'minutes').format(window.COM_TIMEFORMAT),
+                    },
+                    {
+                        Icon: 'icon-live-duration',
+                        Name: LANGUAGE.ASSET_PLAYBACK_MSG15,
+                        Value: totals.Duration ? totals.Duration : LANGUAGE.COM_MSG083,
+                    },
+                    {
+                        Icon: 'icon-live-distance',
+                        Name: LANGUAGE.ASSET_PLAYBACK_MSG16,
+                        Value: totals.Distance ? totals.Distance +' '+ LANGUAGE.COM_MSG080 : LANGUAGE.COM_MSG083,
+                    },
+                ];
+                if (tripsDetails && tripsDetails.length){
+                    let MaxSpeed = 0;
+                    let AvgSpeed = 0;
+                    for (let trip of tripsDetails) {
+                        AvgSpeed += parseFloat(trip.AvgSpeed);
+                        if(MaxSpeed < parseFloat(trip.MaxSpeed)){
+                            MaxSpeed = parseFloat(trip.MaxSpeed);
+                        }
+                    }
+                    if(MaxSpeed){
+                        list.push({
+                            Icon: 'icon-live-speed',
+                            Name: LANGUAGE.COM_MSG085,
+                            Value: parseFloat(MaxSpeed).toFixed(1) + ' ' + LANGUAGE.COM_MSG081,
+                        })
+                    }
+                    if(AvgSpeed){
+                        AvgSpeed = AvgSpeed / tripsDetails.length;
+                        list.push({
+                            Icon: 'icon-live-speed',
+                            Name: LANGUAGE.COM_MSG084,
+                            Value: parseFloat(AvgSpeed).toFixed(1) + ' ' + LANGUAGE.COM_MSG081,
+                        })
+                    }
+                }
+                list.push(
+                    {
+                        Icon: 'icon-live-fuel',
+                        Name: LANGUAGE.ASSET_PLAYBACK_MSG17,
+                        Value: totals.Fuel ? totals.Fuel +' '+ LANGUAGE.COM_MSG082 : LANGUAGE.COM_MSG083,
+                    },
+                    {
+                        Icon: 'icon-live-model',
+                        Name: LANGUAGE.ASSET_EDIT_MSG04,
+                        Value: self.Registration ? self.Registration : LANGUAGE.COM_MSG083,
+                    },
+                    {
+                        Icon: 'icon-live-model',
+                        Name: LANGUAGE.ASSET_EDIT_MSG05,
+                        Value: self.Make ? self.Make : LANGUAGE.COM_MSG083,
+                    },
+                    {
+                        Icon: 'icon-live-model',
+                        Name: LANGUAGE.ASSET_EDIT_MSG06,
+                        Value: self.Model ? self.Model : LANGUAGE.COM_MSG083,
+                    },
+                    {
+                        Icon: 'icon-live-color',
+                        Name: LANGUAGE.ASSET_EDIT_MSG07,
+                        Value: self.Color ? self.Color : LANGUAGE.COM_MSG083,
+                    },
+                    {
+                        Icon: 'icon-live-date',
+                        Name: LANGUAGE.ASSET_EDIT_MSG08,
+                        Value: self.Year ? self.Year : LANGUAGE.COM_MSG083,
+                    },
+                );
+
+                self.$setState({
+                    SummaryLoaded: true,
+                    SummaryList: list
+                });
+
+            },
+            showSendOnEmailModal: function(){
+                var self = this;
+                if (self.DynamicSendOnEmailPopup && !self.DynamicSendOnEmailPopup.destroyed) {
+                    self.DynamicSendOnEmailPopup.close();
+                }
+                let content = `    <div class="popup popup-send-on-email" >
+									<div class="view">
+										<div class="page">
+											<div class="navbar">
+											    <div class="navbar-bg"></div>
+												<div class="navbar-inner">
+													<div class="left">
+													    <a href="#" class="link popup-close" data-popup=".popup-send-on-email">
+															<i class="f7-icons">close</i>
+														</a>
+                                                    </div>
+													<div class="title">${ LANGUAGE.COM_MSG078 }</div>
+													<div class="right">
+														<label for="submit-form-send-on-email" class="link icon-only">
+															<i class="f7-icons icon-header-apply"></i>
+														</label>
+													</div>
+												</div>
+											</div>
+											<form name="FormSendOnEmail" class="page-content bg-color-white " >
+												<input type="submit" id="submit-form-send-on-email" class="display-none" />
+												<div class="block">
+													<p>${ LANGUAGE.PROMPT_MSG073 }</p>
+												</div>
+												<div class="list no-hairlines">
+													<ul>
+													    <li class="item-divider">${ LANGUAGE.PROMPT_MSG102 }</li>
+														<li >
+															<a class="item-link smart-select custom-smart-select smartSelectContactList" >
+																<select name="ContactList" multiple required validate>`;
+                if(self.ContactList && self.ContactList.length){
+                    for (let i = 0; i < self.ContactList.length; i++) {
+                        if(self.ContactList[i].EMail){
+                            content += 	`<option value="${ self.ContactList[i].Code }" data-display-as="${ self.ContactList[i].EMail }" >${ self.ContactList[i].FullName }(${ self.ContactList[i].EMail })</option>`;
+                        }
+                    }
+                }
+                content +=										`</select>
+																<div class="item-content  item-input">
+																	<div class="item-media text-color-lightgray">
+																		<i class="f7-icons icon-live-email"></i>
+																	</div>
+																	<div class="item-inner">
+																		<div class="item-title item-label">${ LANGUAGE.COM_MSG077 }</div>
+																	</div>
+																</div>
+															</a>
+														</li>
+														<li class="item-divider">${ LANGUAGE.PROMPT_MSG103 }</li>
+                                                        <li class="item-content item-input ">
+                                                            <div class="item-media text-color-lightgray"><i class="f7-icons icon-live-email "></i></div>
+                                                            <div class="item-inner">
+                                                                <div class="item-title item-floating-label item-label">${ LANGUAGE.COM_MSG101 }</div>
+                                                                <div class="item-input-wrap ">
+                                                                    <input type="email" name="CustomEmail" value="" maxlength="200" validate >
+                                                                </div>
+                                                            </div>
+                                                        </li>
+													</ul>
+												</div>
+											</form>
+										</div>
+									</div>
+								</div>
+				`;
+                setTimeout(function(){
+                    self.DynamicSendOnEmailPopup = self.$app.popup.create({
+                        closeByBackdropClick: false,
+                        //animate: false,
+                        content: content,
+                        on: {
+                            open: function (popup) {
+                                let SmartSelectEl = popup.$el.find('.smartSelectContactList');
+                                let formEl = popup.$el.find('[name="FormSendOnEmail"]');
+                                let contactListEl = popup.$el.find('[name="ContactList"]');
+
+                                self.SmartSelectContactList = self.$app.smartSelect.create({
+                                    el: SmartSelectEl,
+                                    view: mainView,
+                                    openIn: 'popup',
+                                    formColorTheme: 'green',
+                                    searchbar: true,
+                                    searchbarPlaceholder: LANGUAGE.COM_MSG002,
+                                    appendSearchbarNotFound: LANGUAGE.PROMPT_MSG000,
+                                    pageTitle: LANGUAGE.COM_MSG077
+                                });
+
+                                popup.$el.on('input', 'input[name="CustomEmail"]', function () {
+                                    console.log('here');
+                                    self.$setState({
+                                        CustomEmail: !!this.value
+                                    },()=>{
+                                        let $this = $$(this);
+                                        if(!!this.value){
+                                            $this.attr('required', true);
+                                            contactListEl.removeAttr('required');
+                                        }else{
+                                            $this.removeAttr('required');
+                                            contactListEl.attr('required', true);
+                                        }
+                                        $this.change();
+                                        contactListEl.change();
+                                    });
+                                });
+
+                                formEl.on('submit', function (e) {
+                                    e.preventDefault();
+                                    let userInfo = self.$app.methods.getFromStorage('userInfo');
+                                    let contactCodes = contactListEl.val();
+                                    let recipients = [];
+                                    if(contactCodes.length && self.ContactList){
+                                        for (var i = contactCodes.length - 1; i >= 0; i--) {
+                                            recipients.push(self.ContactList.find(x => x.Code === contactCodes[i]).EMail);
+                                        }
+                                    }
+                                    if(self.CustomEmail){
+                                        recipients.push(popup.$el.find('input[name="CustomEmail"]').val());
+                                    }
+                                    /*let offsetZZformat = self.$app.methods.convertTimZoneValToZZformat(userInfo.TimeZone);
+                                    let data = {
+                                        Assets: [
+                                            {
+                                                Name: self.Name,
+                                                IMEI: self.IMEI,
+                                                Id: self.Id,
+                                                Make: self.Describe1,
+                                                Model: self.Describe2,
+                                                Color: self.Describe3,
+                                                Year: self.Describe4,
+                                                Registration: self.Registration,
+                                                EngineCapacity: self.EngineCapacity,
+                                            },
+                                        ],
+                                        DateFrom: self.PlaybackFrom, // UTC!
+                                        DateTo: self.PlaybackTo, // UTC!
+                                        extension: "pdf", // pdf, xlsx, json, html
+                                        Logo: self.$app.data.logoExternal,
+                                        MajorToken: self.$root.MajorToken,
+                                        MinorToken: self.$root.MinorToken,
+                                        Recipients: recipients,
+                                        displayTimeZone: self.$app.methods.findTimeZoneNameByOffset(offsetZZformat),
+                                    };
+
+                                    self.$app.methods.sendReportPlaybackOnEmail(data, function(){
+                                        //success
+                                        self.DynamicSendOnEmailPopup.close();
+                                        self.$app.methods.customNotification({text: LANGUAGE.PROMPT_MSG067});
+                                    });*/
+                                    let templateData = {
+                                        MinorToken: self.$root.MinorToken,
+                                        MajorToken: self.$root.MajorToken,
+                                        TimeZone: userInfo.TimeZone,
+                                        Code: self.Id,
+                                        From: self.PlaybackFrom,
+                                        To: self.PlaybackTo,
+                                        IMEI: self.IMEI,
+                                        Logo: self.$app.data.logoExternal,
+                                    };
+                                    let data = {
+                                        PaperKind: 9,
+                                        Orientation: 1,
+                                        Url: API_URL.REPORT_PLAYBACK_URL_TEMPLATE + '?' + self.$app.utils.serializeObject(templateData),
+
+                                        recipients: recipients
+                                    };
+
+                                    self.$app.preloader.show();
+                                    self.$app.methods.sendReportPlaybackOnEmail(data, function(downloadLink){
+                                        self.$app.preloader.hide();
+                                        //success
+                                        //self.$app.methods.customNotification({text: LANGUAGE.PROMPT_MSG067});
+                                        self.DynamicSendOnEmailPopup.close();
+                                        self.$app.methods.customDialog({
+                                            text: LANGUAGE.PROMPT_MSG131,
+                                            buttons: [
+                                                {
+                                                    text: LANGUAGE.COM_MSG086,
+                                                },
+                                                {
+                                                    text: LANGUAGE.COM_MSG090,
+                                                    onClick: function () {
+                                                        self.$app.methods.openExternal(downloadLink)
+                                                    }
+                                                }
+                                            ]
+                                        });
+                                    }, function () {
+                                        self.$app.preloader.hide();
+                                        //err
+                                    });
+
+                                    return false;
+                                });
+                            },
+                            closed: function(popup){
+                                if (self.SmartSelectContactList) {
+                                    self.SmartSelectContactList.destroy();
+                                }
+                                popup.$el.remove();
+                                popup.destroy();
+                            },
+                        }
+                    }).open();
+                }, 200);
+            },
+
+            getPlaybackMapPinDetails: function(point={}){
+                let ret = {
+                    Icon: Protocol.MarkerIcon[6],
+                    CustomFilterType: '5'
+                };
+                switch (point.eventClass){
+                    case 1:
+                        switch (point.eventType){
+                            case 8:
+                                ret = {
+                                    Icon: Protocol.MarkerIcon[10],
+                                    CustomFilterType: '3'
+                                };
+                                break;
+                            case 16:
+                                ret = {
+                                    Icon: Protocol.MarkerIcon[11],
+                                    CustomFilterType: '4'
+                                };
+                                break;
+                            default:
+                                ret = {
+                                    Icon: Protocol.MarkerIcon[6],
+                                    CustomFilterType: '5'
+                                }
+                        }
+                        break;
+                    case 2:
+                        ret = {
+                            Icon: Protocol.MarkerIcon[5],
+                            CustomFilterType: '1'
+                        };
+                        break;
+                    case 4:
+                        ret = {
+                            Icon: Protocol.MarkerIcon[7],
+                            CustomFilterType: '2'
+                        };
+                        break;
+                }
+                return ret;
+            },
+            getAddresses: function(arr, resolve, reject){
+                let self = this;
+                let data = {
+                    coordinates: arr
+                };
+                self.$app.request.postJSON('https://ss.sinopacific.com.ua/geocode/reverse/v1/', data, function (result, xhr, status) {
+                        resolve(result)
+                    },
+                    function (xhr, status) {
+                        reject(xhr);
+                        console.log(xhr, status);
+                    },
+                    'json');
+            }
+        },
+
+        on: {
+            pageInit: function (e, page) {
+                let self = this;
+
+                self.StreetViewService = new google.maps.StreetViewService();
+                self.Map = Protocol.Helper.createMap({ target: self.MapId, latLng: [0,0], zoom: 2 });
+                self.showPlaybackRoute();
+
+                self.$app.methods.getGeofenceList(self.initMapSettings);
+                self.getTrips();
+
+                let asset = POSINFOASSETLIST[self.IMEI];
+
+                let tabs = page.$pageEl.find('.tab');
+                let rangeSliderPlaybackEl = page.$el.find('.range-slider-playback');
+                let rangeSliderSpeedEl = page.$el.find('.range-slider-speed');
+
+                self.getOptimizedRoute(self.HistoryArray);
+                let lastQueryPosinfo={};
+                self.RangeSliderPlayback = self.$app.range.create({
+                    el: rangeSliderPlaybackEl,
+                    on: {
+                        change: function (e, val) {
+                            self.PlaybackMarker
+                                .setLatLng([self.HistoryArray[val].lat, self.HistoryArray[val].lng])
+                                .setPopupContent(self.$app.methods.getMarkerDataTablePB(asset, self.HistoryArray[val]));
+                            self.Map.setView([self.HistoryArray[val].lat, self.HistoryArray[val].lng]);
+                            self.$setState({
+                                Lat: self.HistoryArray[val].lat,
+                                Lng: self.HistoryArray[val].lng,
+                            });
+                            self.PanoButtonUpdate([self.HistoryArray[val].lat, self.HistoryArray[val].lng]);
+
+                            if(lastQueryPosinfo && Math.floor(self.HistoryArray[val].lat * 10000) / 10000 === lastQueryPosinfo.lat && Math.floor(self.HistoryArray[val].lng * 10000) / 10000 === lastQueryPosinfo.lng ){
+                                self.HistoryArray[val].customAddress = lastQueryPosinfo.address;
+                                self.PlaybackMarker.setPopupContent(self.$app.methods.getMarkerDataTablePB(asset, self.HistoryArray[val]));
+                            }else{
+                                if(self.PlaybackMarker.isPopupOpen()){
+                                    Protocol.Helper.getAddressByGeocoder({lat: self.HistoryArray[val].lat, lng: self.HistoryArray[val].lng},function(address){
+                                        lastQueryPosinfo = {lat : Math.floor(self.HistoryArray[val].lat * 10000) / 10000, lng : Math.floor(self.HistoryArray[val].lng * 10000) / 10000, address: address };
+                                        self.HistoryArray[val].customAddress = address;
+                                        self.PlaybackMarker.setPopupContent(self.$app.methods.getMarkerDataTablePB(asset, self.HistoryArray[val]));
+                                        if (self.HistoryArray[val+1]) {
+                                            self.HistoryArray[val+1].customAddress = address;
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    }
+                });
+                self.RangeSliderSpeed = self.$app.range.create({
+                    el: rangeSliderSpeedEl,
+                    label: true,
+                    formatLabel: function (value) {
+                        return 'x'+parseFloat(value);
+                    }
+                });
+
+
+
+                tabs.on('tab:show', function(){
+                    if (this.id !== 'map-container') {
+                        self.stopPlaybackPlayer();
+                    }
+                    self.$setState({
+                        CurrentActiveTab: this.id
+                    });
+                });
+
+
+            },
+
+            pageBeforeRemove: function () {
+                if (this.RangeSliderPlayback){
+                    this.RangeSliderPlayback.destroy();
+                }
+                if (this.RangeSliderSpeed){
+                    this.RangeSliderSpeed.destroy();
+                }
+                if (this.PlaybackEventsLayerGroup){
+                    this.PlaybackEventsLayerGroup.clearLayers();
+                }
+                if (this.Map){
+                    this.Map.remove()
+                }
+
+                this.$app.sheet.close();
+                this.$app.popover.close();
+
+
+
+            }
+
+        }
+    };
+</script>

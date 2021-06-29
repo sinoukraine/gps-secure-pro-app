@@ -1,0 +1,1314 @@
+<!--suppress JSAnnotator -->
+<template>
+    <!-- Page, data-name contains page name which can be used in callbacks -->
+    <div class="page " data-name="asset-alarm"> <!-- page-with-subnavbar -->
+        <!-- Top Navbar -->
+        <div class="navbar">
+            <div class="navbar-bg"></div>
+            <div class="navbar-inner">
+                <div class="left">
+                    {{#if Tabs}}
+                    <a href="/panel-left/" class="link icon-only " >
+                        <i class="if-not-ios f7-icons icon-header-menu"></i>
+                        <i class="if-ios icon material-icons">menu</i>
+                    </a>
+                    {{else}}
+                    <a href="#" class="link icon-only back">
+                        <i class="if-not-ios f7-icons icon-header-arrow-back"></i>
+                        <i class="if-ios icon icon-back"></i>
+                    </a>
+                    {{/if}}
+                </div>
+                <div class="title sliding">{{Name}}</div>
+                <div class="right">
+                    <label for="submit-form-alarm" class="link icon-only">
+                        <i class="f7-icons icon-header-apply"></i>
+                    </label>
+                </div>
+
+            </div>
+        </div>
+        {{#if Tabs}}
+        <div class="toolbar tabbar toolbar-top">
+            <div class="toolbar-inner">
+                <a href="/asset-status/?imei={{IMEI}}&tabs=true" class="tab-link ">{{@global.LANGUAGE.ASSET_STATUS_LIVE_MSG00}}</a>
+                <a href="#" class="tab-link tab-link-active">{{@global.LANGUAGE.ASSET_ALARM_MSG00}}</a>
+                <a href="/asset-playback/?imei={{IMEI}}" class="tab-link">{{@global.LANGUAGE.ASSET_PLAYBACK_MSG00}}</a>
+                <a href="/asset-track/?imei={{IMEI}}&tabs=true" class="tab-link">{{@global.LANGUAGE.ASSET_TRACK_MSG00}}</a>
+            </div>
+        </div>
+        {{/if}}
+
+        <!-- Scrollable page content-->
+        <form name="AssetAlarmForm" class="page-content">
+            <input type="submit" id="submit-form-alarm" class="display-none" />
+            {{#if ProtectAsset}}
+            <div class="block-title tooltip-init text-transform-uppercase text-color-red" data-tooltip="{{@global.LANGUAGE.PROMPT_MSG108}}">{{@global.LANGUAGE.PROMPT_MSG109}} <span class="badge color-lightblue">?</span></div>
+            {{/if}}
+
+            {{#if ShowIgnoreBetweenBlock}}
+            <div key="IgnoreBetween" class="list no-hairline-bottom no-hairline-top no-margin-top">
+                <ul>
+                    <li class="item-content">
+                        <div class="item-inner">
+                            <div class="item-title text-transform-uppercase tooltip-init" data-tooltip="{{@global.LANGUAGE.PROMPT_MSG036}}">{{@global.LANGUAGE.COM_MSG051}} <span class="badge color-lightblue">?</span></div>
+                            <div class="item-after">
+                                <label class="toggle toggle-ignore-between color-green">
+                                    <input type="checkbox" name="IgnoreBetweenState" {{#if IgnoreBetweenState}}checked="checked"{{/if}}>
+                                    <span class="toggle-icon"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content item-input {{#unless IgnoreBetweenState}} disabled {{/unless}}">
+                            <div class="item-media text-color-lightgray">
+                                <i class="f7-icons icon-live-engine-hours"></i>
+                            </div>
+                            <div class="item-inner">
+                                <div class="row width-100">
+                                    <div class="col">
+                                        <div class="item-title item-label ">{{@global.LANGUAGE.COM_MSG053}}</div>
+                                        <div class="item-input-wrap">
+                                            <input type="text" name="PickerStart" readonly="readonly" />
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="item-title item-label ">{{@global.LANGUAGE.COM_MSG054}}</div>
+                                        <div class="item-input-wrap">
+                                            <input type="text" name="PickerEnd" readonly="readonly" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li>
+                        <a class="item-link smart-select smart-select-days-of-week {{#unless IgnoreBetweenState}} disabled {{/unless}}" >
+                            <select name="IgnoreDays" multiple>
+                                {{#each DaysOfWeek}}
+                                <option value="{{val}}" data-display-as="{{displayAs}}" {{#if selected}} selected {{/if}}>{{name}}</option>
+                                {{/each}}
+                            </select>
+                            <div class="item-content">
+                                <div class="item-media text-color-lightgray">
+                                    <i class="f7-icons icon-live-date"></i>
+                                </div>
+                                <div class="item-inner">
+                                    <div class="item-title">{{@global.LANGUAGE.COM_MSG052}}</div>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            {{/if}}
+
+            {{#if ShowAlarmList}}
+                <div key="AlarmList" class="list no-hairline-bottom no-margin-top">
+                    <ul>
+                        <li class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title text-transform-uppercase">{{TurnOnAll.title}}</div>
+                                <div class="item-after">
+                                    <label class="toggle toggle-all-alarm color-green">
+                                        <input type="checkbox" name="checkbox-alarm-all" {{#if TurnOnAll.state}}checked="checked"{{/if}}>
+                                        <span class="toggle-icon"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </li>
+
+                        {{#each Alarms}}
+                        <li>
+                            <label class="item-checkbox item-content color-green">
+                                <input type="checkbox" name="checkbox-alarm" value="{{this.val}}" {{#if this.state}}checked="checked"{{/if}}/>
+                                <i class="icon icon-checkbox"></i>
+                                <div class="item-inner">
+                                    <div class="item-title">{{this.title}}</div>
+                                </div>
+                            </label>
+                        </li>
+                        {{/each}}
+                    </ul>
+                </div>
+
+                {{#if ShowAdditionalBlocks}}
+
+                <div key="Offline" class="list no-hairline-bottom ">
+                    <ul>
+                        <li class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title text-transform-uppercase tooltip-init" data-tooltip="{{@global.LANGUAGE.PROMPT_MSG033}}">{{@global.LANGUAGE.ASSET_ALARM_MSG32}} <span class="badge color-lightblue">?</span></div>
+                                <div class="item-after">
+                                    <label class="toggle color-green">
+                                        <input type="checkbox" name="checkbox-alarm" class="disablingController" value="67108864" {{#if OfflineState}}checked="checked"{{/if}}>
+                                        <span class="toggle-icon"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </li>
+                        {{#OfflineOptions}}
+                        <li>
+                            <label class="item-checkbox item-content color-green {{#unless ../OfflineState}}disabled{{/unless}}">
+                                <input type="checkbox" name="offline-option" value="{{Value}}" {{#if State}}checked="checked"{{/if}}/>
+                                <i class="icon icon-checkbox"></i>
+                                <div class="item-inner">
+                                    <div class="item-title">{{Name}}</div>
+                                </div>
+                            </label>
+                        </li>
+                        {{/OfflineOptions}}
+                    </ul>
+                </div>
+
+                <div key="Overspeed" class="list no-hairline-bottom">
+                    <ul>
+                        <li class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title text-transform-uppercase tooltip-init " data-tooltip="{{@global.LANGUAGE.PROMPT_MSG034}}<br>{{@global.LANGUAGE.PROMPT_MSG035}}">{{@global.LANGUAGE.ASSET_ALARM_MSG23}} <span class="badge color-lightblue">?</span></div>
+                                <div class="item-after">
+                                    <label class="toggle color-green">
+                                        <input type="checkbox" name="checkbox-alarm" class="disablingController" value="32" {{#if OverspeedState}}checked="checked"{{/if}}>
+                                        <span class="toggle-icon"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <label class="item-radio item-content color-green disablingObj {{#unless OverspeedState}}disabled{{/unless}}">
+                                <input type="radio" name="overspeed-type" value="1" {{#js_if ' !this.SpeedingMode || this.SpeedingMode == 1 '}} checked{{/js_if}}/>
+                                <i class="icon icon-radio"></i>
+                                <div class="item-inner">
+                                    <div class="item-title">{{@global.LANGUAGE.ASSET_ALARM_MSG31}}</div>
+                                </div>
+                            </label>
+                        </li>
+
+                        <li>
+                            <label class="item-radio item-content color-green disablingObj {{#unless OverspeedState}}disabled{{/unless}}">
+                                <input type="radio" name="overspeed-type" value="2" {{#js_if ' this.SpeedingMode == 2 '}} checked{{/js_if}} />
+                                <i class="icon icon-radio"></i>
+                                <div class="item-inner">
+                                    <div class="item-title">{{@global.LANGUAGE.ASSET_ALARM_MSG30}}</div>
+                                </div>
+                            </label>
+                        </li>
+                    </ul>
+                </div>
+                {{/if}}
+            {{else}}
+            <!--<div key="AlarmListPreloader" class="block block-strong text-align-center">
+                <div class="preloader color-red"></div>
+            </div>-->
+            <div key="skeleton-ignore-between" class="list no-hairline-bottom no-hairline-top no-margin-top">
+                <ul>
+                    <li class="item-content skeleton-text skeleton-effect-blink">
+                        <div class="item-inner">
+                            <div class="item-title text-transform-uppercase ">title ignore between</div>
+                            <div class="item-after">
+                                toggle
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content item-input skeleton-text skeleton-effect-blink">
+                            <div class="item-media text-color-lightgray">
+                                <div class="skeleton-block" style="width: 32px; height: 32px;"></div>
+                            </div>
+                            <div class="item-inner">
+                                <div class="row width-100">
+                                    <div class="col">
+                                        <div class="item-title item-label ">from</div>
+                                        <div class="item-input-wrap">
+                                            item input
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="item-title item-label ">from</div>
+                                        <div class="item-input-wrap">
+                                            item input
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-link skeleton-text skeleton-effect-blink" >
+                            <div class="item-content">
+                                <div class="item-media text-color-lightgray">
+                                    <div class="skeleton-block" style="width: 32px; height: 32px;"></div>
+                                </div>
+                                <div class="item-inner">
+                                    <div class="item-title">selected days</div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div key="skeleton-alarm-list" class="list no-hairline-bottom no-margin-top">
+                <ul>
+                    <li class="item-content skeleton-text skeleton-effect-blink">
+                        <div class="item-inner">
+                            <div class="item-title text-transform-uppercase">turn all title here</div>
+                            <div class="item-after">
+                                toggle
+                            </div>
+                        </div>
+                    </li>
+                    {{#each '12345'}}
+                    <li class="item-content skeleton-text skeleton-effect-blink">
+                        <div class="item-media text-color-lightgray">
+                            <div class="skeleton-block" style="width: 32px; height: 32px;"></div>
+                        </div>
+                        <div class="item-inner">
+                            <div class="item-title">alarm name</div>
+                        </div>
+                    </li>
+                    {{/each}}
+                </ul>
+            </div>
+            {{/if}}
+
+        </form>
+    </div>
+</template>
+
+
+<script>
+    // script must return component object
+    return {
+        data: function () {
+            let self = this;
+
+            let assetList = self.$app.methods.getFromStorage('assetList');
+            let IMEI = decodeURIComponent(self.$route.query.imei);
+            let index = IMEI.indexOf(',');
+            let tabsFlag = self.$route.query.tabs;
+
+            let asset = index === -1 ? assetList[IMEI] : assetList[IMEI.split(',')[0]];
+
+            let maxSpeedUnit = asset.Unit;
+            let maxSpeed = index === -1 ? asset.MaxSpeed : 80; //index === -1 ? Protocol.Helper.getSpeedValue(maxSpeedUnit, asset.MaxSpeed);
+
+
+            let ret = {
+                Tabs: !!tabsFlag,
+                AlarmListType: 3,
+                ShowAlarmList: false,
+                Alarms: [],
+                ToggleAllAlarms: false,
+                TurnOnAll: {
+                    state: false,
+                    title: LANGUAGE.ASSET_ALARM_MSG26,
+                },
+                IMEI: IMEI,
+                Name: index === -1 ? assetList[IMEI].Name : LANGUAGE.ASSET_ALARM_MSG00,
+                MaxSpeedUnit: maxSpeedUnit,
+                MaxSpeed: Protocol.Helper.getSpeedValue(maxSpeedUnit, maxSpeed),
+                isPositiveInputSupported: (parseInt(asset._FIELD_INT2) & Protocol.FeaturesEnum.PositiveInput) > 0,
+                SolutionType: asset.SolutionType ? asset.SolutionType.toLowerCase() : '',
+
+                ShowAdditionalBlocks: false,
+                IgnoreBetweenState: false,
+                TimePickerStart: false,
+                TimePickerEnd: false,
+                DaysOfWeek: [],
+                DaysOfWeekSelect: false,
+            };
+            //console.log(ret);
+            return ret;
+        },
+        methods: {
+            getAlarmOptions: function(){
+                let self = this;
+
+                if (!self.$route.query || !self.$route.query.imei ) {
+                    console.log('There is no params or imei param');
+                    return;
+                }
+
+                let imeiArr = self.IMEI.split(',');
+                let assetList = self.$app.methods.getFromStorage('assetList');
+
+                if (imeiArr.length > 1) {
+                    let AlarmListType = 3;
+                    switch (self.$route.query.solution){
+                        case 'track':
+                        case 'watch':
+                        case 'boat_watch':
+                        case 'wititrack':
+                            AlarmListType = 2;
+                            break;
+
+                        case 'protect':
+                        case 'qprotect':
+                        case 'witiprotect':
+                        case 'witiqprotect':
+                            AlarmListType = 1;
+                            break;
+                    }
+
+                    self.loadAlarmList({
+                        AlarmListType: AlarmListType,
+                        AssetType: assetList[imeiArr[0]] ? assetList[imeiArr[0]].AssetType : '',
+                        SolutionType : assetList[imeiArr[0]] ? assetList[imeiArr[0]].SolutionType : '',
+                        AlarmOptions: 0,
+                    });
+                }else{
+
+                    let asset = assetList[self.$route.query.imei];
+
+                    if (asset) {
+                        if (asset.SolutionType && asset.SolutionType.toLowerCase() === 'track' ||
+                            asset.SolutionType && asset.SolutionType.toLowerCase() === 'watch' ||
+                            asset.SolutionType && asset.SolutionType.toLowerCase() === 'boat_watch' ||
+                            asset.SolutionType && asset.SolutionType.toLowerCase() === 'wititrack')
+                        {
+                            let data = {
+                                MajorToken: self.$app.data.MajorToken,
+                                MinorToken: self.$app.data.MinorToken,
+                                IMEI: self.$route.query.imei
+                            };
+                            self.$app.request.promise.post(API_URL.GET_ALERT_CONFIG, data, 'json')
+                                .then(function (result) {
+                                    if (result.data && result.data.MajorCode === '000') {
+                                        self.loadAlarmList({
+                                            AlarmListType: 2, //live
+                                            AssetType: asset.AssetType,
+                                            SolutionType: asset.SolutionType,
+                                            AlarmOptions: result.data.Data.AlertTypes,
+
+                                            LiveAssetSettings: result.data.Data,
+                                        });
+                                    } else {
+                                        self.loadAlarmList({
+                                            AlarmListType: 2,    //live
+                                            AssetType: asset.AssetType,
+                                            SolutionType: asset.SolutionType,
+                                            AlarmOptions: asset.AlarmOptions,
+                                        });
+                                    }
+                                })
+                                .catch(function (err) {
+                                    console.log(err);
+                                    if (err && err.status === 404){
+                                        self.$app.dialog.alert(LANGUAGE.PROMPT_MSG002);
+                                    }else{
+                                        self.$app.dialog.alert(LANGUAGE.PROMPT_MSG003);
+                                    }
+                                });
+
+
+                        }else if(asset.SolutionType && asset.SolutionType.toLowerCase() === 'loc8'){
+                            self.loadAlarmList({
+                                AlarmListType: 3,
+                                AssetType: asset.AssetType,
+                                SolutionType: asset.SolutionType,
+                                AlarmOptions: asset.AlarmOptions,
+
+                            });
+                        }else{
+                            self.loadAlarmList({
+                                AlarmListType: 1,     //protect
+                                AssetType: asset.AssetType,
+                                SolutionType: asset.SolutionType,
+                                AlarmOptions: asset.AlarmOptions,
+                            });
+                        }
+                    }
+                }
+
+
+            },
+            loadAlarmList: function(data){
+                let self = this;
+
+                if (data && data.AlarmListType) {
+                    let alarmList = self.getAlarmListByType(data.AlarmListType, data.AssetType, data.SolutionType);
+
+                    for (let i = alarmList.length - 1; i >= 0; i--) {
+                        if (data.AlarmOptions & alarmList[i].val) {
+                            alarmList[i].state = false;
+                        }
+                    }
+
+                    self.$setState({
+                        AlarmListType: data.AlarmListType,
+                        ShowAlarmList: true,
+                        Alarms: alarmList,
+                        IgnoreBetweenState: !!(data && data.LiveAssetSettings && data.LiveAssetSettings.IsIgnore === 1),
+                        SpeedingMode: data && data.LiveAssetSettings && data.LiveAssetSettings.SpeedingMode ? data.LiveAssetSettings.SpeedingMode : 1,
+                        ProtectAsset: data.AlarmListType === 1
+                    });
+
+                    if (data.AlarmListType === 2) {
+                        let offlineOptions = {};
+                        if (data && data.LiveAssetSettings && data.LiveAssetSettings.OfflineHours) {
+                            offlineOptions = Protocol.Helper.getOfflineAlarmOptions(data.LiveAssetSettings.OfflineHours);
+                        }else{
+                            offlineOptions = Protocol.Helper.getOfflineAlarmOptions();
+                        }
+
+                        self.$setState({
+                            ShowAdditionalBlocks: !data.AssetType || data.AssetType && data.AssetType.toLowerCase() !== 'boat' && data.AssetType.toLowerCase() !== 'jetski',
+                            ShowIgnoreBetweenBlock: true,
+                            OverspeedState: !(data.AlarmOptions & 32),
+                            OfflineState: !(data.AlarmOptions & 67108864),
+                        });
+                        self.$app.utils.nextFrame(() => {
+                            self.$setState({
+                                OfflineOptions: offlineOptions,
+                            });
+                            self.initIgnoreBetweenBlock(data.LiveAssetSettings);
+                        });
+
+
+                    }
+                    self.$app.utils.nextFrame(() => {
+                        self.initToggleAllAlarms(data.AlarmOptions);
+                    });
+                }
+            },
+            initIgnoreBetweenBlock: function(params = {}){
+                let self = this;
+
+                if (params.BeginTime) {
+                    params.BeginTime = moment(params.BeginTime,'HH:mm').add(self.$app.data.UTCOFFSET,'minutes').format('HH:mm');
+                }
+                if (params.EndTime) {
+                    params.EndTime = moment(params.EndTime,'HH:mm').add(self.$app.data.UTCOFFSET,'minutes').format('HH:mm');
+                }
+
+                let StartTimeValArray = params.BeginTime ? params.BeginTime.split(':') : [];
+                let EndTimeInputArray = params.EndTime ? params.EndTime.split(':') : [];
+                let ignoreBetweenStateEl = self.$el.find('[name="IgnoreBetweenState"]');
+                let daysOfWeekEl = self.$el.find('.smart-select-days-of-week');
+                let daysOfWeekArray = Protocol.Helper.getDaysOffWeekArray();
+
+                if (!StartTimeValArray || !StartTimeValArray.length) {
+                    StartTimeValArray = ['07', '00'];
+                }
+                if (!EndTimeInputArray || !EndTimeInputArray.length) {
+                    EndTimeInputArray = ['18', '00'];
+                }
+
+                ignoreBetweenStateEl.on('change', function(){
+                    self.$setState({
+                        IgnoreBetweenState: this.checked
+                    });
+                });
+
+                self.TimePickerStart = self.$app.picker.create({
+                    inputEl: self.$el.find('[name="PickerStart"]'),
+                    rotateEffect: true,
+                    sheetPush: true,
+                    value: StartTimeValArray,
+                    cols: [
+                        {
+                            textAlign: 'center',
+                            values: (function() {
+                                let arr = [];
+                                for (let i = 0; i <= 23; i++) { arr.push(i < 10 ? '0' + i : i); }
+                                return arr;
+                            })(),
+                        },
+                        // Divider
+                        {
+                            divider: true,
+                            content: ':'
+                        },
+                        // Minutes
+                        {
+                            textAlign: 'center',
+                            values: (function() {
+                                let arr = [];
+                                for (let i = 0; i <= 59; i++) { arr.push(i < 10 ? '0' + i : i); }
+                                return arr;
+                            })(),
+                        }
+                    ],
+                    /*renderToolbar: function () {
+                        return '';
+                    },*/
+                    formatValue: function(values, displayValues) {
+                        return values[0] + ':' + values[1];
+                    },
+                });
+
+                self.TimePickerEnd = self.$app.picker.create({
+                    inputEl: self.$el.find('[name="PickerEnd"]'),
+                    rotateEffect: true,
+                    sheetPush: true,
+                    value: EndTimeInputArray,
+                    cols: [
+                        {
+                            textAlign: 'center',
+                            values: (function() {
+                                let arr = [];
+                                for (let i = 0; i <= 23; i++) { arr.push(i < 10 ? '0' + i : i); }
+                                return arr;
+                            })(),
+                        },
+                        // Divider
+                        {
+                            divider: true,
+                            content: ':'
+                        },
+                        // Minutes
+                        {
+                            textAlign: 'center',
+                            values: (function() {
+                                let arr = [];
+                                for (let i = 0; i <= 59; i++) { arr.push(i < 10 ? '0' + i : i); }
+                                return arr;
+                            })(),
+                        }
+                    ],
+                    /*renderToolbar: function () {
+                        return '';
+                    },*/
+                    formatValue: function(values, displayValues) {
+                        return values[0] + ':' + values[1];
+                    },
+                });
+
+                if (params.Weeks) {
+                    let selectedDays = params.Weeks.split(',');
+                    if (selectedDays && selectedDays.length) {
+                        for (let i = selectedDays.length - 1; i >= 0; i--) {
+                            let dayIndex = daysOfWeekArray.findIndex(x => x.val === parseInt(selectedDays[i],10));
+                            if (dayIndex !== -1) {
+                                daysOfWeekArray[dayIndex].selected = true;
+                            }
+                        }
+                    }
+                }
+
+                self.$setState({
+                    DaysOfWeek: daysOfWeekArray,
+                });
+
+                self.$app.utils.nextFrame(()=>{
+                    self.DaysOfWeekSelect = self.$app.smartSelect.create({
+                        el: daysOfWeekEl,
+                        openIn: 'sheet',
+                        formColorTheme: 'green',
+                        sheetPush: 'true'
+                    });
+                });
+
+            },
+            initToggleAllAlarms: function(alarmOptions = 0){
+                let self = this;
+                let checkboxes = self.$el.find('[name = "checkbox-alarm"]');
+
+                self.ToggleAllAlarms = self.$app.toggle.create({
+                    el: self.$el.find('.toggle-all-alarm'),
+                    on: {
+                        change: function () {
+                            for (let i = checkboxes.length - 1; i >= 0; i--) {
+                                checkboxes[i].checked = this.checked;
+                                if (checkboxes[i].value === '32' || checkboxes[i].value === '67108864') {
+                                    $$(checkboxes[i]).change();
+                                }
+                            }
+
+                        }
+                    }
+                });
+                alarmOptions = parseInt(alarmOptions,10);
+                if (alarmOptions === 0) {
+                    if (!self.ToggleAllAlarms.checked) {
+                        self.ToggleAllAlarms.toggle();
+                    }
+                }
+            },
+            getAlarmListByType: function(type, assetType, solutionType){
+                let self = this;
+                let ret = [];
+                //console.log(type, assetType, solutionType)
+                if (type) {
+                    type = parseInt(type, 10);
+                    assetType ? assetType = assetType.toLowerCase() : '';
+                    solutionType ? solutionType = solutionType.toLowerCase() : '';
+                    switch (type){
+                        case 2:     //live
+                            if(assetType === 'boat' || assetType === 'jetski'){
+                                ret = [
+                                    {
+                                        state: true,
+                                        val: 131072,
+                                        title: LANGUAGE.ASSET_ALARM_MSG02, //customAlarm
+                                    },
+                                    {
+                                        state: true,
+                                        val: 512,
+                                        title: LANGUAGE.ASSET_ALARM_MSG17, //lowBattery
+                                    },
+                                    /*{
+                                        state: true,
+                                        val: 65536,
+                                        title: LANGUAGE.ASSET_ALARM_MSG10, //accOff
+                                    },
+                                    {
+                                        state: true,
+                                        val: 32768,
+                                        title: LANGUAGE.ASSET_ALARM_MSG11, //accOn
+                                    },*/
+                                    {
+                                        state: true,
+                                        val: 1048576,
+                                        title: LANGUAGE.ASSET_ALARM_MSG03, //Shore Power Disconnect
+                                    },
+                                    {
+                                        state: true,
+                                        val: 524288,
+                                        title: LANGUAGE.ASSET_ALARM_MSG37, //Outboard Engine Removal
+                                    },
+                                    {
+                                        state: true,
+                                        val: 1024,
+                                        title: LANGUAGE.ASSET_ALARM_MSG05, //geolock
+                                    },
+                                    {
+                                        state: true,
+                                        val: 8,
+                                        title: LANGUAGE.ASSET_ALARM_MSG12, //geofenceIn
+                                    },
+                                    {
+                                        state: true,
+                                        val: 16,
+                                        title: LANGUAGE.ASSET_ALARM_MSG13, //geofenceOut
+                                    },
+                                    {
+                                        state: true,
+                                        val: 4,
+                                        title: LANGUAGE.ASSET_ALARM_MSG09, //power
+                                    },
+                                ]
+                            }else if(solutionType && solutionType.toLowerCase() === 'wititrack'){
+                                ret = [
+                                    {
+                                        state: true,
+                                        val: 131072,
+                                        title: LANGUAGE.ASSET_ALARM_MSG39, //customAlarm, negative input,  witi alarm
+                                    },
+                                    {
+                                        state: true,
+                                        val: 1024,
+                                        title: LANGUAGE.ASSET_ALARM_MSG05, //geolock
+                                    },
+                                    {
+                                        state: true,
+                                        val: 8,
+                                        title: LANGUAGE.ASSET_ALARM_MSG12, //geofenceIn
+                                    },
+                                    {
+                                        state: true,
+                                        val: 16,
+                                        title: LANGUAGE.ASSET_ALARM_MSG13, //geofenceOut
+                                    },
+                                    {
+                                        state: true,
+                                        val: 512,
+                                        title: LANGUAGE.ASSET_ALARM_MSG17, //lowBattery
+                                    },
+                                    {
+                                        state: true,
+                                        val: 4,
+                                        title: LANGUAGE.ASSET_ALARM_MSG18, //mainBatteryFail
+                                    },
+                                ]
+                            }else{
+                                ret = [
+                                    {
+                                        state: true,
+                                        val: 65536,
+                                        title: LANGUAGE.ASSET_ALARM_MSG10, //accOff
+                                    },
+                                    {
+                                        state: true,
+                                        val: 32768,
+                                        title: LANGUAGE.ASSET_ALARM_MSG11, //accOn
+                                    },
+                                    {
+                                        state: true,
+                                        val: 1048576,
+                                        title: LANGUAGE.ASSET_ALARM_MSG20, //custom2LowAlarm
+                                    },
+                                    {
+                                        state: true,
+                                        val: 131072,
+                                        title: LANGUAGE.ASSET_ALARM_MSG22, //customAlarm
+                                    },
+                                    {
+                                        state: true,
+                                        val: 1024,
+                                        title: LANGUAGE.ASSET_ALARM_MSG05, //geolock
+                                    },
+                                    {
+                                        state: true,
+                                        val: 8,
+                                        title: LANGUAGE.ASSET_ALARM_MSG12, //geofenceIn
+                                    },
+                                    {
+                                        state: true,
+                                        val: 16,
+                                        title: LANGUAGE.ASSET_ALARM_MSG13, //geofenceOut
+                                    },
+                                    {
+                                        state: true,
+                                        val: 128,
+                                        title: LANGUAGE.ASSET_ALARM_MSG27, //illegalIgnition
+                                    },
+                                    {
+                                        state: true,
+                                        val: 512,
+                                        title: LANGUAGE.ASSET_ALARM_MSG17, //lowBattery
+                                    },
+                                    {
+                                        state: true,
+                                        val: 4,
+                                        title: LANGUAGE.ASSET_ALARM_MSG18, //mainBatteryFail
+                                    },
+                                    {
+                                        state: true,
+                                        val: 2,
+                                        title: LANGUAGE.ASSET_ALARM_MSG19, //sosAlarm
+                                    },
+                                    {
+                                        state: true,
+                                        val: 256,
+                                        title: LANGUAGE.ASSET_ALARM_MSG07, //tilt
+                                    },
+                                    {
+                                        state: true,
+                                        val: 33554432,
+                                        title: LANGUAGE.ASSET_ALARM_MSG28, //harshAcc
+                                    },
+                                    {
+                                        state: true,
+                                        val: 2097152,
+                                        title: LANGUAGE.ASSET_ALARM_MSG29, //harshBrk
+                                    },
+                                    {
+                                        state: true,
+                                        val: 16777216,
+                                        title: LANGUAGE.ASSET_ALARM_MSG44, //FatigueDriving
+                                    },
+                                ];
+                            }
+
+                            break;
+
+                        case 3:     // loc8
+                            if(assetType === 'boat' || assetType === 'jetski'){
+                                ret = [
+                                    {
+                                        state: true,
+                                        val: 131072,
+                                        title: LANGUAGE.ASSET_ALARM_MSG02, //customAlarm
+                                    },
+                                    {
+                                        state: true,
+                                        val: 32768,
+                                        title: LANGUAGE.ASSET_ALARM_MSG11, //accOn
+                                    },
+                                    {
+                                      state: true,
+                                      val: 65536,
+                                      title: LANGUAGE.ASSET_ALARM_MSG10, //accOff
+                                    },
+                                    {
+                                        state: true,
+                                        val: 1048576,
+                                        title: LANGUAGE.ASSET_ALARM_MSG03, //Shore Power Disconnect
+                                    },
+                                    {
+                                        state: true,
+                                        val: 1024,
+                                        title: LANGUAGE.ASSET_ALARM_MSG05, //geolock
+                                    },
+                                    {
+                                        state: true,
+                                        val: 4,
+                                        title: LANGUAGE.ASSET_ALARM_MSG09, //power
+                                    },
+                                    {
+                                      state: true,
+                                      val: 512,
+                                      title: LANGUAGE.ASSET_ALARM_MSG17, //lowBattery
+                                    },
+                                ]
+                            }else{
+                                ret = [
+                                    {
+                                        state: true,
+                                        val: 131072,
+                                        title: LANGUAGE.ASSET_ALARM_MSG25, //input
+                                    },
+                                    {
+                                        state: true,
+                                        val: 1024,
+                                        title: LANGUAGE.ASSET_ALARM_MSG05, //geolock
+                                    },
+                                    {
+                                        state: true,
+                                        val: 256,
+                                        title: LANGUAGE.ASSET_ALARM_MSG07, //tilt
+                                    },
+                                    {
+                                        state: true,
+                                        val: 65536,
+                                        title: LANGUAGE.ASSET_ALARM_MSG10, //accOff
+                                    },
+                                    {
+                                        state: true,
+                                        val: 32768,
+                                        title: LANGUAGE.ASSET_ALARM_MSG11, //accOn
+                                    },
+                                    {
+                                        state: true,
+                                        val: 16384,
+                                        title: LANGUAGE.ASSET_ALARM_MSG08, //impact
+                                    },
+                                    {
+                                        state: true,
+                                        val: 512,
+                                        title: LANGUAGE.ASSET_ALARM_MSG17, //lowBattery
+                                    },
+                                    {
+                                        state: true,
+                                        val: 4,
+                                        title: LANGUAGE.ASSET_ALARM_MSG09, //power
+                                    },
+                                    {
+                                        state: true,
+                                        val: 262144,
+                                        title: LANGUAGE.ASSET_ALARM_MSG34, //positive input on
+                                    },
+                                    {
+                                        state: true,
+                                        val: 1048576,
+                                        title: LANGUAGE.ASSET_ALARM_MSG35, //positive input off
+                                    },
+                                ];
+                            }
+
+                            break;
+
+                        default:    //protect
+                            if(assetType === 'boat' || assetType === 'jetski'){
+                                ret = [
+                                    {
+                                        state: true,
+                                        val: 131072,
+                                        title: LANGUAGE.ASSET_ALARM_MSG02, //customAlarm
+                                    },
+                                    {
+                                        state: true,
+                                        val: 32768,
+                                        title: LANGUAGE.ASSET_ALARM_MSG11, //accOn
+                                    },
+                                    {
+                                      state: true,
+                                      val: 65536,
+                                      title: LANGUAGE.ASSET_ALARM_MSG10, //accOff
+                                    },
+                                    {
+                                        state: true,
+                                        val: 1048576,
+                                        title: LANGUAGE.ASSET_ALARM_MSG03, //Shore Power Disconnect
+                                    },
+                                    {
+                                        state: true,
+                                        val: 1024,
+                                        title: LANGUAGE.ASSET_ALARM_MSG05, //geolock
+                                    },
+                                    {
+                                        state: true,
+                                        val: 4,
+                                        title: LANGUAGE.ASSET_ALARM_MSG09, //power
+                                    },
+                                    {
+                                      state: true,
+                                      val: 512,
+                                      title: LANGUAGE.ASSET_ALARM_MSG17, //lowBattery
+                                    },
+                                ]
+                            }else if(solutionType && solutionType.toLowerCase() === 'witiprotect' ||
+                                    solutionType && solutionType.toLowerCase() === 'witiqprotect'){
+                                ret = [
+                                    {
+                                        state: true,
+                                        val: 131072,
+                                        title: LANGUAGE.ASSET_ALARM_MSG39, //negative input,  witi alarm
+                                    },
+                                    {
+                                        state: true,
+                                        val: 1024,
+                                        title: LANGUAGE.ASSET_ALARM_MSG05, //geolock
+                                    },
+                                    /*{
+                                        state: true,
+                                        val: 16384,
+                                        title: LANGUAGE.ASSET_ALARM_MSG08, //impact
+                                    },*/
+                                    {
+                                        state: true,
+                                        val: 512,
+                                        title: LANGUAGE.ASSET_ALARM_MSG17, //lowBattery
+                                    },
+                                    {
+                                        state: true,
+                                        val: 4,
+                                        title: LANGUAGE.ASSET_ALARM_MSG09, //power
+                                    },
+                                ];
+                            }else{
+                                ret = [
+                                    {
+                                        state: true,
+                                        val: 131072,
+                                        title: LANGUAGE.ASSET_ALARM_MSG25, //input
+                                    },
+                                    {
+                                        state: true,
+                                        val: 1024,
+                                        title: LANGUAGE.ASSET_ALARM_MSG05, //geolock
+                                    },
+                                    {
+                                        state: true,
+                                        val: 256,
+                                        title: LANGUAGE.ASSET_ALARM_MSG07, //tilt
+                                    },
+                                    {
+                                        state: true,
+                                        val: 65536,
+                                        title: LANGUAGE.ASSET_ALARM_MSG10, //accOff
+                                    },
+                                    {
+                                        state: true,
+                                        val: 32768,
+                                        title: LANGUAGE.ASSET_ALARM_MSG11, //accOn
+                                    },
+                                    {
+                                        state: true,
+                                        val: 16384,
+                                        title: LANGUAGE.ASSET_ALARM_MSG08, //impact
+                                    },
+                                    {
+                                        state: true,
+                                        val: 512,
+                                        title: LANGUAGE.ASSET_ALARM_MSG17, //lowBattery
+                                    },
+                                    {
+                                        state: true,
+                                        val: 4,
+                                        title: LANGUAGE.ASSET_ALARM_MSG09, //power
+                                    },
+                                ];
+                            }
+
+                    }
+                }
+                if (ret.length) {
+                    if(solutionType && solutionType.toLowerCase() === 'witiprotect' ||
+                      solutionType && solutionType.toLowerCase() === 'wititrack' ||
+                      solutionType && solutionType.toLowerCase() === 'witiqprotect'){
+                        if(this.isPositiveInputSupported){
+                            ret.push({
+                                state: true,
+                                val: 1048576,
+                                title: LANGUAGE.ASSET_ALARM_MSG43, //witi disarmed
+                            },{
+                                state: true,
+                                val: 262144,
+                                title: LANGUAGE.ASSET_ALARM_MSG42, //witi armed
+                            })
+                        }
+                    }
+
+                    ret.sort(function(a,b){
+                        if(a.title < b.title) return -1;
+                        if(a.title > b.title) return 1;
+                        return 0;
+                    });
+                }
+                return ret;
+            },
+            saveAlarmOptions: function(data, url){
+                let self = this;
+
+                self.$app.dialog.progress(LANGUAGE.COM_MSG004,'red');
+                self.$app.request.promise.post(url, data, 'json')
+                    .then(function (result) {
+                        //console.log(result);
+                        if (result.data && result.data.MajorCode === '000') {
+
+                            if (result.data.MinorCode === '1006') {
+                                self.$app.methods.customDialogNoCredit();
+                            }else{
+                                self.updateAlarmOptions(data);
+                                self.$app.methods.checkBalance();
+
+                                if (mainView.router.history && mainView.router.history.length && mainView.router.history[mainView.router.history.length-2].indexOf('asset-select/?type=multiple&nextPage=asset-alarm') !== -1) {
+                                    mainView.router.back('/', {force:true});
+                                }else{
+                                    mainView.router.back();
+                                }
+                            }
+
+                        }else if(result.data.MajorCode === '100' && result.data.MinorCode === '1006'){
+                            self.$app.methods.customDialogNoCredit();
+                        }else if(result.data.MajorCode === '100' && result.data.MinorCode === '1003'){
+                            self.$app.methods.customDialog({title: LANGUAGE.PROMPT_MSG039, text: LANGUAGE.PROMPT_MSG040});
+                        }else{
+                            self.$app.dialog.alert(LANGUAGE.PROMPT_MSG023 + `<br>MajorCode: ${result.data.MajorCode}<br>MinorCode: ${result.data.MinorCode}<br>${result.data.Data}`);
+                            self.$app.methods.checkBalance();
+                        }
+                        self.$app.utils.nextFrame(() => {
+                            self.$app.dialog.close();
+                        });
+                    })
+                    .catch(function (err) {
+                        console.log(err);
+                        self.$app.utils.nextFrame(() => {
+                            self.$app.dialog.close();
+                            if (err && err.status === 404){
+                                self.$app.dialog.alert(LANGUAGE.PROMPT_MSG002);
+                            }else{
+                                self.$app.dialog.alert(LANGUAGE.PROMPT_MSG003);
+                            }
+                        });
+                    });
+            },
+            updateAlarmOptions: function(params){
+                let self = this;
+                let IMEIList = params.imeis.split(',');
+                let assetList = self.$app.methods.getFromStorage('assetList');
+
+                if (IMEIList.length) {
+                    $.each(IMEIList, function(index, value){
+                        assetList[value].AlarmOptions = params.alarmOptions;
+                        if (params.SpeedingMode === 2) {
+                            assetList[value].MaxSpeed = params.MaxSpeed;
+                        }
+                    });
+                }
+
+                self.$app.methods.setAssetList({objects: assetList});
+            },
+            showPromptSetOverspeedVal: function(OverspeedTypesEl){
+                let self = this;
+
+                let text = `
+					<div class="custom-modal-text">${ LANGUAGE.PROMPT_MSG032 }(${Protocol.Helper.getSpeedUnit(self.MaxSpeedUnit)}):</div>
+					<div class="dialog-input-field item-input">
+						<div class="item-input-wrap">
+							<input type="text" class="dialog-input" name="MaxSpeed" value="${ self.MaxSpeed }">
+						</div>
+					</div>
+				`;
+
+                self.$app.dialog.create({
+                    title: '<div class="custom-modal-logo-wrapper"><img class="custom-modal-logo" src="'+ self.$app.data.logoBlack +'" alt=""/></div>',
+                    text: text,
+                    buttons: [
+                        {
+                            text: LANGUAGE.COM_MSG001,
+                            cssClass: 'color-black',
+                            onClick: function(dialog){
+                                if (OverspeedTypesEl) {
+                                    for (let i = OverspeedTypesEl.length - 1; i >= 0; i--) {
+                                        if (OverspeedTypesEl[i].value === '1') {
+                                            OverspeedTypesEl[i].checked = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            text: LANGUAGE.COM_MSG055,
+                            cssClass: 'color-red',
+                            onClick: function(dialog){
+                                let MaxSpeed = dialog.$el.find('input[name="MaxSpeed"]').val();
+
+                                self.$setState({
+                                    MaxSpeed: MaxSpeed ? MaxSpeed : 1
+                                })
+
+                            }
+                        },
+                    ],
+                }).open();
+            }
+
+        },
+
+        on: {
+            pageInit: function (e, page) {
+                let self = this;
+                let form = page.$el.find('[name = "AssetAlarmForm"]');
+
+                self.getAlarmOptions();
+
+                form.on('change', '.disablingController',function(e){
+                    let parent = this.closest('.list');
+                    let elements = $$(parent).find('.disablingObj');
+
+                    for (let i = elements.length - 1; i >= 0; i--) {
+                        if(this.checked){
+                            $$(elements[i]).removeClass('disabled');
+                        }else{
+                            $$(elements[i]).addClass('disabled');
+                        }
+                    }
+                });
+
+                form.on('change', 'input[name="overspeed-type"]', function(e){
+                    if (e.target.value == 2) {
+                        self.showPromptSetOverspeedVal(form.find('input[name="overspeed-type"]'));
+                    }
+                });
+
+                form.on('change', 'input[name="checkbox-alarm"][value="67108864"]', function(e){
+                    let offlineOptionsEl = page.$el.find('input[name="offline-option"]');
+                    for (let i = offlineOptionsEl.length - 1; i >= 0; i--) {
+                        offlineOptionsEl[i].checked = this.checked;
+                    }
+                    self.$setState({
+                        OfflineState: this.checked
+                    })
+                });
+
+                form.on('change', 'input[name="offline-option"]', function(e){
+                    let offlineOptionsEl = page.$el.find('input[name="offline-option"]');
+                    let oneSelected = false;
+                    for (let i = offlineOptionsEl.length - 1; i >= 0; i--) {
+                        if (offlineOptionsEl[i].checked) {
+                            oneSelected = true;
+                        }
+                    }
+                    if (!oneSelected) {
+                        this.checked = true;
+                        self.$app.methods.customNotification({title: LANGUAGE.ASSET_ALARM_MSG32, text: LANGUAGE.PROMPT_MSG031});
+                    }
+                });
+                console.log(self.SolutionType)
+                form.on('submit', function(e){
+                    e.preventDefault();
+                    //let userInfo = self.$app.methods.getFromStorage('userInfo');
+                    let checkboxes = page.$el.find('[name = "checkbox-alarm"]');
+                    let offlineOptions = page.$el.find('[name = "offline-option"]');
+                    let url = API_URL.SET_ALARM_LOC8;
+                    //console.log(offlineOptions);
+
+                    let data = {
+                        MinorToken: self.$app.data.MinorToken,
+                        MajorToken: self.$app.data.MajorToken,
+                        imeis: self.IMEI,
+                        alarmOptions: 0,
+                    };
+
+                    if (self.SolutionType === 'wititrack'
+                      || self.SolutionType === 'witiprotect'
+                      || self.SolutionType === 'witiqprotect'
+                    ){
+                        data.alarmOptions = 37060994
+                        /*
+                        this alarms are turned off always for witi products
+                        65536
+                        32768
+                        1048576
+                        128
+                        2
+                        256
+                        33554432
+                        2097152
+                        262144*/
+                    }
+
+
+
+                    for (let i = checkboxes.length - 1; i >= 0; i--) {
+                        if (!checkboxes[i].checked) {
+                            data.alarmOptions += parseInt(checkboxes[i].value, 10);
+                        }
+                    }
+
+                    self.AlarmListType = parseInt(self.AlarmListType,10);
+                    switch (self.AlarmListType){
+                        case 1:
+                            url = API_URL.SET_ALARM_PROTECT;
+                            break;
+
+                        case 2:
+                            url = API_URL.SET_ALERT_CONFIG;
+
+                            data.AlertTypes = data.alarmOptions;
+                            data.IsIgnore = self.IgnoreBetweenState ? 1 : 0;
+                            data.Weeks = self.DaysOfWeekSelect.$selectEl.val().toString();
+                            data.DateFrom = moment(page.$el.find('[name="PickerStart"]').val(), 'HH:mm').utc().format('HH:mm');
+                            data.DateTo = moment(page.$el.find('[name="PickerEnd"]').val(), 'HH:mm').utc().format('HH:mm');
+
+                            if (!(data.AlertTypes & 32) && page.$el.find('input[name="overspeed-type"]:checked').val()) {
+                                data.SpeedingMode = parseInt(page.$el.find('input[name="overspeed-type"]:checked').val(),10);
+                                if (data.SpeedingMode === 2) {
+                                    data.MaxSpeed = Protocol.Helper.getSpeedValueInKM(self.MaxSpeedUnit, self.MaxSpeed);// self.MaxSpeed;
+                                }
+                            }
+
+                            if (!(data.AlertTypes & 67108864)) {
+                                data.OfflineHours = '';
+                                for (let i = offlineOptions.length - 1; i >= 0; i--) {
+                                    if (offlineOptions[i].checked) {
+                                        data.OfflineHours += offlineOptions[i].value + ',';
+                                    }
+                                }
+                                if (data.OfflineHours) {
+                                    data.OfflineHours = data.OfflineHours.slice(0,-1);
+                                }
+                            }
+
+                            break;
+                    }
+
+
+                    console.log(data, url);
+                    self.saveAlarmOptions(data, url);
+
+                    return false;
+                });
+
+
+            },
+            pageBeforeRemove: function () {
+                let self = this;
+
+                if (self.ToggleAllAlarms) {
+                    self.$app.toggle.destroy(self.ToggleAllAlarms);
+                }
+
+                if (self.DaysOfWeekSelect) {
+                    self.DaysOfWeekSelect.destroy();
+                }
+
+                if (self.TimePickerStart) {
+                    self.TimePickerStart.destroy();
+                }
+
+                if (self.TimePickerEnd) {
+                    self.TimePickerEnd.destroy();
+                }
+
+            },
+
+        }
+    };
+</script>

@@ -1,0 +1,409 @@
+<!--suppress JSAnnotator -->
+<template>
+    <div class="page " data-name="asset-playback"> <!-- page-with-subnavbar -->
+        <!-- Top Navbar -->
+        <div class="navbar">
+            <div class="navbar-bg"></div>
+            <div class="navbar-inner">
+                <div class="left">
+                    <!--<a href="#" class="link icon-only back" >
+                        <i class="if-not-ios f7-icons icon-header-arrow-back"></i>
+                        <i class="if-ios icon icon-back"></i>
+                    </a>-->
+                    <a href="/panel-left/" class="link icon-only " >
+                        <i class="if-not-ios f7-icons icon-header-menu"></i>
+                        <i class="if-ios icon material-icons">menu</i>
+                    </a>
+                </div>
+                <div class="title sliding">
+                    {{Name}}
+                </div>
+                <div class="right">
+                    <label for="submit-form-playback" class="link icon-only">
+                        <i class="f7-icons icon-header-apply"></i>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="toolbar tabbar toolbar-top">
+            <div class="toolbar-inner">
+                <a href="/asset-status/?imei={{IMEI}}&tabs=true" class="tab-link ">{{@global.LANGUAGE.ASSET_STATUS_LIVE_MSG00}}</a>
+                <a href="/asset-alarm/?imei={{IMEI}}&tabs=true" class="tab-link">{{@global.LANGUAGE.ASSET_ALARM_MSG00}}</a>
+                <a href="#" class="tab-link tab-link-active">{{@global.LANGUAGE.ASSET_PLAYBACK_MSG00}}</a>
+                <a href="/asset-track/?imei={{IMEI}}&tabs=true" class="tab-link">{{@global.LANGUAGE.ASSET_TRACK_MSG00}}</a>
+            </div>
+        </div>
+
+
+        <form name="form" class="page-content">
+            <input type="submit" id="submit-form-playback" class="display-none" />
+            <div class="list no-margin-top no-hairlines">
+                <ul>
+                    <li>
+                        <div class="item-content item-input">
+                            <div class="item-media text-color-lightgray">
+                                <i class="f7-icons icon-live-date"></i>
+                            </div>
+                            <div class="item-inner">
+                                <div class="item-title item-floating-label item-label">{{@global.LANGUAGE.ASSET_PLAYBACK_MSG03}}</div>
+                                <div class="item-input-wrap">
+                                    <input type="text" placeholder="Select date and time" readonly="readonly" name="StartDateTime" />
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content item-input">
+                            <div class="item-media text-color-lightgray">
+                                <i class="f7-icons icon-live-date"></i>
+                            </div>
+                            <div class="item-inner">
+                                <div class="item-title item-floating-label item-label">{{@global.LANGUAGE.ASSET_PLAYBACK_MSG04}}</div>
+                                <div class="item-input-wrap">
+                                    <input type="text" placeholder="Select date and time" readonly="readonly" name="EndDateTime" />
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <a class="item-link smart-select smart-select-init custom-smart-select" data-open-in="sheet" data-close-on-select="true" data-form-color-theme="green" data-sheet-push="true">
+                            <select name="Events" multiple>
+                                {{#PlaybackFilterEventsList}}
+                                <option value="{{Value}}" data-option-icon="{{Icon}}" selected>{{Name}}</option>
+                                {{/PlaybackFilterEventsList}}
+                            </select>
+                            <div class="item-content item-input">
+                                <div class="item-media text-color-lightgray">
+                                    <i class="f7-icons icon-header-alarm"></i>
+                                </div>
+                                <div class="item-inner ">
+                                    <div class="item-title item-label">{{@global.LANGUAGE.ASSET_PLAYBACK_MSG02}}</div>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <label class="item-checkbox item-content color-green">
+                            <input type="checkbox" name="checkbox-optimized" checked/>
+
+                            <div class="item-media text-color-lightgray">
+                                <i class="f7-icons icon-live-trip"></i>
+                            </div>
+                            <div class="item-inner">
+                                <div class="item-title">{{@global.LANGUAGE.ASSET_PLAYBACK_MSG01}}</div>
+                                <div class="item-after"><i class="icon icon-checkbox"></i></div>
+                            </div>
+                        </label>
+                    </li>
+                    <li>
+                        <label class="item-checkbox item-content color-green">
+                            <input type="checkbox" name="SendByEmail" />
+                            <div class="item-media text-color-lightgray">
+                                <i class="f7-icons icon-live-email"></i>
+                            </div>
+                            <div class="item-inner">
+                                <div class="item-title">{{@global.LANGUAGE.COM_MSG078}}</div>
+                                <div class="item-after">
+                                    <i class="icon icon-checkbox"></i>
+                                </div>
+                            </div>
+                        </label>
+                    </li>
+                    {{#if ContactListShow}}
+                    <li class="item-divider">{{@global.LANGUAGE.PROMPT_MSG102}}</li>
+                    <li key="NotificationTo">
+                        <a class="item-link smart-select smart-select-init custom-smart-select custom-smart-select-contact-list {{#unless ContactList}}disabled{{/unless}}" data-open-in="popup" data-searchbar="true" data-searchbar-placeholder="{{@global.LANGUAGE.COM_MSG002}}" data-append-searchbar-not-found="{{@global.LANGUAGE.PROMPT_MSG000}}" data-page-title = "{{@global.LANGUAGE.COM_MSG077}}" data-form-color-theme="green">
+                            <select name="ContactList" multiple validate {{#unless CustomEmail}}required{{/unless}}>
+                                {{#ContactList}}
+                                {{#if EMail}}
+                                <option value="{{Code}}" data-display-as="{{EMail}}">{{FullName}}({{EMail}})</option>
+                                {{/if}}
+                                {{/ContactList}}
+                            </select>
+                            <div class="item-content item-input">
+                                <div class="item-media text-color-lightgray">
+                                    <i class="f7-icons icon-live-email"></i>
+                                </div>
+                                <div class="item-inner">
+                                    <div class="item-title  item-label">{{@global.LANGUAGE.COM_MSG077}}</div>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                    {{#unless ContactList}}
+                        <li class="text-color-red block-footer">{{@global.LANGUAGE.PROMPT_MSG068}}</li>
+                    {{/unless}}
+                    <li class="item-divider">{{@global.LANGUAGE.PROMPT_MSG103}}</li>
+                    <li class="item-content item-input ">
+                        <div class="item-media text-color-lightgray"><i class="f7-icons icon-live-email "></i></div>
+                        <div class="item-inner">
+                            <div class="item-title item-floating-label item-label">{{@global.LANGUAGE.COM_MSG101}}</div>
+                            <div class="item-input-wrap ">
+                                <input type="email" name="CustomEmail" value="" maxlength="200" validate {{#if CustomEmail}}required{{/if}}>
+                            </div>
+                        </div>
+                    </li>
+                    {{/if}}
+
+                </ul>
+                {{#if ContactListShow}}
+                <div class="block-footer">
+                    <p>{{@global.LANGUAGE.PROMPT_MSG065}}</p>
+                </div>
+                {{/if}}
+            </div>
+
+        </form>
+    </div>
+</template>
+
+
+<script>
+    // script must return component object
+    return {
+        data: function () {
+            let self = this;
+            let imei = decodeURIComponent(self.$route.query.imei);
+            let asset = self.$app.methods.getFromStorage('assetList')[imei];
+            let playbackFilterEventsList = self.$app.methods.getPlaybackFilterEventsList();
+            let userInfo = self.$app.methods.getFromStorage('userInfo');
+            let contactList = self.$app.methods.getFromStorage('contactList');
+            contactList.push({
+                EMail: userInfo.Email,
+                FirstName: userInfo.FirstName,
+                SubName: userInfo.SurName,
+                Code: self.$app.data.MajorToken,
+                CustomerCode: self.$app.data.MinorToken,
+            });
+            contactList = self.$app.methods.sortContactList(contactList);
+
+            let ret = {
+                Name: asset.Name,
+                IMEI: asset.IMEI,
+                Id: asset.Id,
+                SolutionType: asset.SolutionType,
+                Registration: asset.Registration,
+                Describe1: asset.Describe1,
+                Describe2: asset.Describe2,
+                Describe3: asset.Describe3,
+                Describe4: asset.Describe4,
+                EngineCapacity: asset.EngineCapacity,
+
+                PlaybackFilterEventsList: playbackFilterEventsList,
+                ContactList: contactList,
+            };
+
+            return ret;
+        },
+        methods: {
+            getPlaybackData: function(data, optimizedState, events) {
+                var self = this;
+                //console.log(data);
+
+                self.$app.preloader.show();
+                self.$app.request.promise.post(API_URL.GET_PLAYBACK_ARR, data, 'json')
+                    .then(function (result) {
+                        if(result.data.MajorCode === '000' && result.data.Data) {
+                            let hisArray = result.data.Data.HisArry;
+                            if (!hisArray.length) {
+                                self.$app.dialog.alert(LANGUAGE.COM_MSG076, LANGUAGE.ASSET_PLAYBACK_MSG00, function() { self.$app.dialog.close(); });
+                            } else {
+                                self.$app.methods.setInStorage({
+                                    name: 'historyArray',
+                                    data: hisArray,
+                                });
+                                self.$app.methods.setInStorage({
+                                    name: 'historyEvents',
+                                    data: result.data.Data.HisEvents && result.data.Data.HisEvents.length ? result.data.Data.HisEvents : []
+                                });
+
+                                mainView.router.navigate({
+                                        name: 'asset-playback-show',
+                                        query: {
+                                            imei: self.IMEI,
+                                            optimisedState: optimizedState,
+                                            events: events.toString(),
+                                            from: data.From,
+                                            to: data.To,
+                                        },
+                                    });
+
+                            }
+                        }else if (result.data.MajorCode === '100' && result.data.MinorCode === '1002') {
+                            self.$app.dialog.alert(LANGUAGE.PROMPT_MSG064, LANGUAGE.ASSET_PLAYBACK_MSG00, function() { self.$app.dialog.close(); });
+                        }else{
+                            self.$app.dialog.alert(LANGUAGE.PROMPT_MSG023 + `<br>MajorCode: ${result.data.MajorCode}<br>MinorCode: ${result.data.MinorCode}<br>${result.data.Data}`);
+                        }
+                    })
+                    .finally(function () {
+                        self.$app.preloader.hide();
+                    })
+                    .catch(function (err) {
+                        console.log(err);
+                        if (err && err.status === 404){
+                            self.$app.dialog.alert(LANGUAGE.PROMPT_MSG002);
+                        }else{
+                            self.$app.dialog.alert(LANGUAGE.PROMPT_MSG003);
+                        }
+                    });
+            },
+        },
+
+        on: {
+            pageInit: function (e, page) {
+                let self = this;
+
+                let startDateTimeEl = page.$el.find('[name="StartDateTime"]');
+                let endDateTimeEl = page.$el.find('[name="EndDateTime"]');
+                let form = page.$el.find('[name="form"]');
+                let optimizedSwitcher = page.$el.find('input[name="checkbox-optimized"]');
+                let sendByEmailEl = page.$el.find('[name="SendByEmail"]');
+
+                self.CalendarStartDateTime = self.$app.calendar.create({
+                    inputEl: startDateTimeEl,
+                    timePicker: true,
+                    dateFormat: 'MM dd yyyy, HH::mm',
+                    value: [moment().subtract(1, 'days').format('MMMM DD YYYY, HH:mm')],
+                    maxDate: new Date(),
+                });
+                self.CalendarEndDateTime = self.$app.calendar.create({
+                    inputEl: endDateTimeEl,
+                    timePicker: true,
+                    dateFormat: 'MM dd yyyy, HH::mm',
+                    value: [moment().format('MMMM DD YYYY, HH:mm')],
+                    maxDate: new Date(),
+                });
+
+                sendByEmailEl.on('change', function () {
+                    self.$setState({
+                        ContactListShow: this.checked,
+                    });
+                });
+
+                page.$el.on('input', 'input[name="CustomEmail"]', function () {
+                    self.$setState({
+                        CustomEmail: !!this.value
+                    },()=>{
+                        $$(this).change();
+                        page.$el.find('[name="ContactList"]').change();
+                    });
+                });
+
+                form.on('submit', function(e) {
+                    e.preventDefault();
+                    let contactListEl = page.$el.find('[name="ContactList"]');
+                    let eventsEl = page.$el.find('[name="Events"]');
+
+                    if (sendByEmailEl.is(':checked')){
+                        let contactCodes = contactListEl.val();
+                        let userInfo = self.$app.methods.getFromStorage('userInfo');
+                        let recipients = [];
+                        if(contactCodes.length && self.ContactList){
+                            for (let i = contactCodes.length - 1; i >= 0; i--) {
+                                recipients.push(self.ContactList.find(x => x.Code === contactCodes[i]).EMail);
+                            }
+                        }
+                        if(self.CustomEmail){
+                            recipients.push(page.$el.find('input[name="CustomEmail"]').val());
+                        }
+
+                        /*let offsetZZformat = self.$app.methods.convertTimZoneValToZZformat(userInfo.TimeZone);
+                        let data = {
+                            Assets: [
+                                {
+                                    Name: self.Name,
+                                    IMEI: self.IMEI,
+                                    Id: self.Id,
+                                    Make: self.Describe1,
+                                    Model: self.Describe2,
+                                    Color: self.Describe3,
+                                    Year: self.Describe4,
+                                    Registration: self.Registration,
+                                    EngineCapacity: self.EngineCapacity,
+                                },
+                            ],
+                            DateFrom: moment.utc(self.CalendarStartDateTime.getValue()[0]).format(window.COM_TIMEFORMAT2),
+                            DateTo: moment.utc(self.CalendarEndDateTime.getValue()[0]).format(window.COM_TIMEFORMAT2),
+                            extension: "pdf", // pdf, xlsx, json, html
+                            Logo: self.$app.data.logoExternal,
+                            MajorToken: self.$root.MajorToken,
+                            MinorToken: self.$root.MinorToken,
+                            Recipients: recipients,
+                            displayTimeZone: self.$app.methods.findTimeZoneNameByOffset(offsetZZformat),
+                        };*/
+
+                        let templateData = {
+                            MinorToken: self.$root.MinorToken,
+                            MajorToken: self.$root.MajorToken,
+                            TimeZone: userInfo.TimeZone,
+                            Code: self.Id,
+                            From: moment.utc(self.CalendarStartDateTime.getValue()[0]).format(window.COM_TIMEFORMAT2),
+                            To: moment.utc(self.CalendarEndDateTime.getValue()[0]).format(window.COM_TIMEFORMAT2),
+                            IMEI: self.IMEI,
+                            Logo: self.$app.data.logoExternal,
+                        };
+                        let data = {
+                            PaperKind: 9,
+                            Orientation: 1,
+                            Url: API_URL.REPORT_PLAYBACK_URL_TEMPLATE + '?' + self.$app.utils.serializeObject(templateData),
+
+                            recipients: recipients
+                        };
+
+                        self.$app.preloader.show();
+                        self.$app.methods.sendReportPlaybackOnEmail(data, function(downloadLink){
+                            self.$app.preloader.hide();
+                            //success
+                            //self.$app.methods.customNotification({text: LANGUAGE.PROMPT_MSG067});
+                            self.$app.methods.customDialog({
+                                text: LANGUAGE.PROMPT_MSG131,
+                                buttons: [
+                                    {
+                                        text: LANGUAGE.COM_MSG086,
+                                    },
+                                    {
+                                        text: LANGUAGE.COM_MSG090,
+                                        onClick: function () {
+                                            self.$app.methods.openExternal(downloadLink)
+                                        }
+                                    }
+                                ]
+                            });
+                        }, function () {
+                            self.$app.preloader.hide();
+                            //err
+                        });
+                    }else{
+                        let data = {
+                            MinorToken: self.$root.MinorToken,
+                            //MajorToken: userInfo.MajorToken,
+                            Code: self.Id,
+                            From: moment.utc(self.CalendarStartDateTime.getValue()[0]).format(window.COM_TIMEFORMAT2),
+                            To: moment.utc(self.CalendarEndDateTime.getValue()[0]).format(window.COM_TIMEFORMAT2),
+                        };
+                        self.$app.progressbar.show('custom');
+                        self.$app.methods.getGeofenceList(function () {
+                            self.$app.progressbar.hide();
+                            self.getPlaybackData(data, optimizedSwitcher.is(':checked'), eventsEl.val());
+                        })
+
+                    }
+
+                    return false;
+                });
+            },
+
+            pageBeforeRemove: function () {
+                let self = this;
+                if (self.CalendarStartDateTime) {
+                    self.CalendarStartDateTime.destroy();
+                }
+                if (self.CalendarEndDateTime) {
+                    self.CalendarEndDateTime.destroy();
+                }
+            }
+
+        }
+    };
+</script>

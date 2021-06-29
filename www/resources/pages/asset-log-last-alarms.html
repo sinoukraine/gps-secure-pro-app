@@ -1,0 +1,187 @@
+<!--suppress JSAnnotator -->
+<template>
+<!-- Page, data-name contains page name which can be used in callbacks -->
+        <div class="page " data-name="notifications"> <!-- page-with-subnavbar -->
+        <!-- Top Navbar -->
+            <div class="navbar">
+                <div class="navbar-bg"></div>
+                <div class="navbar-inner">
+                    <div class="left">
+                        <a href="#" class="link icon-only back" >
+                            <i class="if-not-ios f7-icons icon-header-arrow-back"></i>
+                            <i class="if-ios icon icon-back"></i>
+                        </a>
+                    </div>
+                    <div class="title sliding">{{@global.LANGUAGE.ASSET_LATEST_ALARMS_MSG000}}</div>
+                    <div class="right">
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scrollable page content-->
+            <div class="page-content">
+                {{#if isLoading}}
+                <div key="skeleton-loading-key" class="list no-hairline-bottom no-hairline-top no-margin-top skeleton-text skeleton-effect-blink">
+                    <ul>
+                        {{#each '12345'}}
+                        <li class=""  >
+                            <a href="#" class="item-link item-content ">
+                                <div class="item-inner">
+                                    <div class="item-title-row">
+                                        <div class="item-title size-14">item.AlertName</div>
+                                        <div class="item-after">item.PositionTimeLocal</div>
+                                    </div>
+                                    <div class="item-subtitle size-16">item.AssetName</div>
+                                </div>
+                            </a>
+                        </li>
+                        {{/each}}
+                    </ul>
+                </div>
+                {{/if}}
+
+                {{#if isNoData}}
+                <div key="no-data-key" class="block">{{ @global.LANGUAGE.ASSET_LATEST_ALARMS_MSG001 }}</div>
+                {{/if}}
+
+                <div class="list media-list virtual-list no-hairlines no-margin no-chevron  alarmList">
+                </div>
+            </div>
+        </div>
+</template>
+
+
+<script>
+  // script must return component object
+    return {
+        data: function () {
+            let self = this;
+            let ret = {
+                isLoading: true,
+                isNoData: false,
+                AlarmsArray: [],
+                Asset: POSINFOASSETLIST[self.$route.query.imei] ? POSINFOASSETLIST[self.$route.query.imei] : {}
+            };
+
+            //let MinorToken = self.$app.methods.getFromStorage('userInfo').MinorToken;
+
+
+            return ret;
+        },
+        methods: {
+            getData: function(id){
+                let self = this;
+                self.$app.request.get(API_URL.GET_ASSET_LAST_ALARMS, { MinorToken: self.$app.data.MinorToken, asId: id }, function (result, xhr, status) {
+                      self.$setState({
+                          isLoading: false,
+                          //isNoData: true
+                      })
+                      console.log(result);
+                      if(result && result.MajorCode === '000' && result.Data.length){
+                          self.AlarmsArray = self.formatAlarmsArray(result.Data);
+                          self.VirtualList.replaceAllItems(self.AlarmsArray)
+
+                      }else{
+                          self.$setState({
+                              isNoData: true
+                          })
+                      }
+                  },
+                  function (xhr, status) {
+                      self.$setState({
+                          isLoading: false
+                      })
+                      self.$app.dialog.alert(LANGUAGE.PROMPT_MSG0121);
+                  },
+                  'json');
+            },
+            formatAlarmsArray(array){
+                if(!array || !array.length){
+                    return []
+                }
+                for (let i = 0; i < array.length; i++) {
+                    array[i].PositionTimeLocal = moment(array[i].AlarmTime,window.COM_TIMEFORMAT).add(this.$app.data.UTCOFFSET,'minutes').format(window.COM_TIMEFORMAT3);
+                    array[i].PositionTimeUnix = moment(array[i].AlarmTime,window.COM_TIMEFORMAT).unix();
+                    array[i].AssetName = this.Asset ? this.Asset.Name : '';
+                    array[i].AlertName = Protocol.Helper.getAletTypeName(array[i].AlarmType);
+                    /*if (this.Asset && array[i].Speed) {
+                        array[i].Speed = Protocol.Helper.getSpeedValue(this.Asset.Unit, array[i].Speed) + ' ' + Protocol.Helper.getSpeedUnit(this.Asset.Unit);
+                    }else if (this.Asset && typeof(array[i].Speed) != 'undefined' ) {
+                        array[i].Speed = array[i].Speed + ' ' + Protocol.Helper.getSpeedUnit(this.Asset.Unit);
+                    }*/
+                    array[i].Id = this.$app.utils.id();
+                    array[i].IMEI = this.Asset ? this.Asset.IMEI : '';
+                }
+                return array
+            },
+        },
+        on: {
+            pageInit: function (e, page) {
+                let self = this;
+
+                let listEl = page.$el.find('.alarmList');
+
+                let notificationsList = [];
+
+                self.VirtualList = self.$app.virtualList.create({
+                    el: listEl,
+                    // search item by item
+                    searchAll: function (query, items) {
+                        let found = [];
+                        for (let i = 0; i < items.length; i++) {
+                            query = query.toLowerCase();
+                            if (items[i].alarm && items[i].alarm.toLowerCase().indexOf(query) >= 0
+                                || items[i].AssetName && items[i].AssetName.toLowerCase().indexOf(query) >= 0
+                                || items[i].name && items[i].name.toLowerCase().indexOf(query) >= 0
+                                || query.trim() === '')
+                            {
+                                found.push(i);
+                            }
+                        }
+                        return found; //return array with mathced indexes
+                      },
+                    //List of array items
+                    items: notificationsList,
+                    height: function (){
+                        return self.$theme.ios ? 64 : 70
+                    },
+                    //emptyTemplate: `<div class="block">${LANGUAGE.PROMPT_MSG090}</div>`,
+                    // Display the each item using Template7 template parameter
+                    renderItem: function (item, index) {
+                        let ret = '';
+                        if (typeof item == 'object') {
+                            ret = `<li class="alertLink" data-id="${ item.Id }" data-alarm="${ item.AlertName }" data-lat="${ item.Lat }" data-lng="${ item.Lng }" >
+                                    <a href="#" class="item-link item-content ">
+                                        <div class="item-inner">
+                                            <div class="item-title-row">
+                                                <div class="item-title text-color-red size-14">${ item.AlertName }</div>
+                                                <div class="item-after text-color-gray">${ item.PositionTimeLocal }</div>
+                                            </div>
+                                            <div class="item-subtitle text-color-black size-16">${ item.AssetName }</div>
+                                        </div>
+                                    </a>
+                                </li>`;
+                        }
+                        return ret;
+                    },
+                });
+
+                listEl.on('click', '.alertLink', function(){
+                    let id = $$(this).data('id');
+                    mainView.router.navigate('/notification/',{context: { AlertData: self.AlarmsArray.find(c => c.Id === id) } });
+                });
+
+                if (self.Asset && self.Asset.Id){
+                    self.getData(self.Asset.Id)
+                }else{
+                    self.$setState({
+                        isLoading: false
+                    })
+                }
+
+            },
+
+        }
+    };
+</script>

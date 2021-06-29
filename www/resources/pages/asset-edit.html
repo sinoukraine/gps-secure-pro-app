@@ -1,0 +1,832 @@
+<!--suppress JSAnnotator -->
+<template>
+    <div class="page " data-name="asset-edit"> <!-- page-with-subnavbar -->
+        <!-- Top Navbar -->
+        <div class="navbar">
+            <div class="navbar-bg"></div>
+            <div class="navbar-inner">
+                <div class="left">
+                    <a href="#" class="link icon-only back" >
+                        <i class="if-not-ios f7-icons icon-header-arrow-back"></i>
+                        <i class="if-ios icon icon-back"></i>
+                    </a>
+                </div>
+                <div class="title sliding">
+                    {{@global.LANGUAGE.ASSET_EDIT_MSG00}}
+                </div>
+                <div class="right">
+                    <label for="submit-form-asset-edit" class="link icon-only">
+                        <i class="f7-icons icon-header-apply"></i>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <form class="page-content" name="AssetEditForm">
+            <input type="submit" id="submit-form-asset-edit" class="display-none" />
+            <input type="file" hidden name="AssetImageInput" id="AssetImageInput" accept="image/*">
+            <div class="block asset-image-big-wrapper text-align-center">
+                <a @click="showUploadPhotoOptions" href="#" class="link">
+                    {{AssetImg}}
+                </a>
+            </div>
+            <div class="list list-custom margin-top-0">
+                <ul>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-media text-color-lightgray">
+                                <i class="f7-icons icon-status-imei" ></i>
+                            </div>
+                            <div class="item-inner">
+                                <div class="item-title">{{@global.LANGUAGE.ASSET_EDIT_MSG01}}</div>
+                                <div class="item-after">{{IMEI}}</div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-media text-color-lightgray">
+                                <!-- <i class="f7-icons icon-imei"></i> -->
+                            </div>
+                            <div class="item-inner">
+                                <div class="item-title">{{@global.LANGUAGE.ASSET_EDIT_MSG02}}</div>
+                                <div class="item-after">{{PRDTName}}</div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-media text-color-lightgray">
+                                <i class="f7-icons {{SolutionTypeIcon}}"></i>
+                            </div>
+                            <div class="item-inner">
+                                <div class="item-title">{{@global.LANGUAGE.ASSET_EDIT_MSG15}}</div>
+                                <div class="item-after">{{#if SolutionTypeCustomName}}{{SolutionTypeCustomName}}{{else}}{{SolutionType}}{{/if}}</div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="block-title">{{@global.LANGUAGE.ASSET_EDIT_MSG12}}</div>
+            <div class="list no-hairline-bottom">
+                <ul>
+                    <li>
+                        <div class="item-content item-input">
+                            <div class="item-media text-color-lightgray">
+                                <i class="f7-icons icon-asset-name"></i>
+                            </div>
+                            <div class="item-inner">
+                                <div class="item-title item-floating-label item-label">{{@global.LANGUAGE.ASSET_EDIT_MSG03}}</div>
+                                <div class="item-input-wrap">
+                                    <input type="text" name="Name" placeholder="Asset name" value="{{Name}}" maxlength="200" required validate>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content item-input">
+                            <div class="item-media text-color-lightgray">
+
+                            </div>
+                            <div class="item-inner">
+                                <div class="item-title item-floating-label item-label">{{@global.LANGUAGE.ASSET_EDIT_MSG04}}</div>
+                                <div class="item-input-wrap">
+                                    <input type="text" name="Registration" placeholder="{{@global.LANGUAGE.ASSET_EDIT_MSG04}}" value="{{Registration}}" maxlength="200"  >
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content item-input">
+                            <div class="item-media text-color-lightgray">
+                                 <i class="f7-icons icon-live-model"></i>
+                            </div>
+                            <div class="item-inner">
+                                <div class="item-title item-floating-label item-label">{{@global.LANGUAGE.ASSET_EDIT_MSG05}}</div>
+                                <div class="item-input-wrap">
+                                    <input type="text" name="Describe1" placeholder="{{@global.LANGUAGE.ASSET_EDIT_MSG05}}" value="{{Describe1}}" maxlength="200"  >
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content item-input">
+                            <div class="item-media text-color-lightgray">
+                                 <i class="f7-icons icon-live-model"></i>
+                            </div>
+                            <div class="item-inner">
+                                <div class="item-title item-floating-label item-label">{{@global.LANGUAGE.ASSET_EDIT_MSG06}}</div>
+                                <div class="item-input-wrap">
+                                    <input type="text" name="Describe2" placeholder="{{@global.LANGUAGE.ASSET_EDIT_MSG06}}" value="{{Describe2}}" maxlength="200"  >
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content item-input">
+                            <div class="item-media text-color-lightgray">
+                                 <i class="f7-icons icon-live-color"></i>
+                            </div>
+                            <div class="item-inner">
+                                <div class="item-title item-floating-label item-label">{{@global.LANGUAGE.ASSET_EDIT_MSG07}}</div>
+                                <div class="item-input-wrap">
+                                    <input type="text" name="Describe3" placeholder="{{@global.LANGUAGE.ASSET_EDIT_MSG07}}" value="{{Describe3}}" maxlength="200"  >
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content item-input">
+                            <div class="item-media text-color-lightgray">
+                                 <i class="f7-icons icon-live-date"></i>
+                            </div>
+                            <div class="item-inner">
+                                <div class="item-title item-floating-label item-label">{{@global.LANGUAGE.ASSET_EDIT_MSG08}}</div>
+                                <div class="item-input-wrap">
+                                    <input type="tel" name="Describe4" placeholder="{{@global.LANGUAGE.ASSET_EDIT_MSG08}}" value="{{Describe4}}" maxlength="4" pattern="[0-9]*" data-error-message="{{@global.LANGUAGE.PROMPT_MSG022}}"  >
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <a class="item-link smart-select smart-select-init" data-open-in="sheet" data-close-on-select="true" data-form-color-theme="green" data-sheet-push="true">
+                            <select name="AssetType" >
+                                {{#AssetTypes}}
+                                <option value="{{this}}" {{#js_if "this == ../AssetType "}} selected {{/js_if}}>{{this}}</option>
+                                {{/AssetTypes}}
+                            </select>
+                            <div class="item-content">
+                                <div class="item-media text-color-lightgray">
+                                    <!-- <i class="f7-icons icon-speed"></i>-->
+                                </div>
+                                <div class="item-inner">
+                                    <div class="item-title">{{@global.LANGUAGE.ASSET_EDIT_MSG23}}</div>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="item-link smart-select smart-select-init" data-open-in="sheet" data-close-on-select="true" data-form-color-theme="green" data-sheet-push="true">
+                            <select name="Unit" >
+                                <option value="KPH" {{#js_if "this.Unit == 'KPH' "}} selected {{/js_if}}>km/h</option>
+                                <option value="MPH" {{#js_if "this.Unit == 'MPH' "}} selected {{/js_if}}>mile/h</option>
+                                <option value="MPS" {{#js_if "this.Unit == 'MPS' "}} selected {{/js_if}}>m/s</option>
+                                <option value="KT" {{#js_if "this.Unit == 'KT' "}} selected {{/js_if}}>kt</option>
+                            </select>
+                            <div class="item-content">
+                                <div class="item-media text-color-lightgray">
+                                    <i class="f7-icons icon-live-speed"></i>
+                                </div>
+                                <div class="item-inner">
+                                    <div class="item-title ">{{@global.LANGUAGE.ASSET_EDIT_MSG09}}</div>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+
+                    <li>
+                        <div class="item-content item-input">
+                            <div class="item-media text-color-lightgray">
+                                 <i class="f7-icons icon-status-speed"></i>
+                            </div>
+                            <div class="item-inner">
+                                <div class="item-title item-floating-label item-label">{{@global.LANGUAGE.ASSET_EDIT_MSG22}}</div>
+                                <div class="item-input-wrap">
+                                    <input type="tel" name="MaxSpeed" placeholder="{{@global.LANGUAGE.ASSET_EDIT_MSG22}}" value="{{MaxSpeed}}" maxlength="6" pattern="[0-9.]*" data-error-message="{{@global.LANGUAGE.PROMPT_MSG022}}"  validate >
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="{{#if NoContacts}} tooltip-init {{/if}}" data-tooltip="{{@global.LANGUAGE.PROMPT_MSG128}}<br>{{@global.LANGUAGE.PROMPT_MSG129}}">
+                        <a class="item-link smart-select smart-select-init custom-smart-select {{#if NoContacts}} disabled  {{/if}}" data-open-in="popup" data-searchbar="true" data-close-on-select="true" data-form-color-theme="green" >
+                            <select name="DriverCode" >
+                                {{#ContactList}}
+                                <option
+                                  value="{{Code}}"
+                                  data-display-as="{{FirstName}} {{SubName}}"
+                                  {{#if Selected}} selected {{/if}}
+                                >{{FirstName}} {{SubName}}{{#if Number}}({{Number}}){{/if}}</option>
+                                {{/ContactList}}
+
+                            </select>
+                            <div class="item-content item-input">
+                                <div class="item-media text-color-lightgray">
+                                    <i class="f7-icons icon-live-id"></i>
+                                </div>
+                                <div class="item-inner">
+                                    <div class="item-title item-label">{{@global.LANGUAGE.ASSET_EDIT_MSG24}}</div>
+
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+
+
+
+                </ul>
+            </div>
+
+            <div class="block-title">{{@global.LANGUAGE.ASSET_EDIT_MSG13}}</div>
+            <div class="list no-hairline-bottom">
+                <ul>
+                    <li>
+                        <div class="item-content item-input">
+                            <div class="item-media text-color-lightgray">
+                                <i class="f7-icons icon-live-initial"></i>
+                            </div>
+                            <div class="item-inner">
+                                <div class="item-title item-floating-label">{{@global.LANGUAGE.ASSET_EDIT_MSG10}}</div>
+                                <div class="item-input-wrap">
+                                    <input type="text" name="Mileage" placeholder="{{@global.LANGUAGE.ASSET_EDIT_MSG10}}" value="{{InitMileage}}" maxlength="200" pattern="[-0-9]*" data-error-message="{{@global.LANGUAGE.PROMPT_MSG022}}" validate >
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content item-input">
+                            <div class="item-media text-color-lightgray">
+                                <!-- <i class="f7-icons icon-name"></i> -->
+                            </div>
+                            <div class="item-inner">
+                                <div class="item-title item-floating-label">{{@global.LANGUAGE.ASSET_EDIT_MSG11}}</div>
+                                <div class="item-input-wrap">
+                                    <input type="text" name="Runtime" placeholder="{{@global.LANGUAGE.ASSET_EDIT_MSG11}}" value="{{InitAcconHours}}" maxlength="200" pattern="[-0-9]*" data-error-message="{{@global.LANGUAGE.PROMPT_MSG022}}"  validate>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+        </form>
+
+
+    </div>
+</template>
+
+
+<script>
+    // script must return component object
+    return {
+        data: function () {
+            let self = this;
+            let imei = decodeURIComponent(self.$route.query.imei);
+            let asset = self.$app.methods.getFromStorage('assetList')[imei];
+            let assetImg = self.$app.methods.getAssetImg(asset, {'assetEdit':true});
+            let solutiontypeIcon = Protocol.Helper.getSolutionTypeIcon(asset.SolutionType);
+            let assetTypes = self.$app.methods.getFromStorage('assetTypes');
+            let solutionTypes = self.$app.methods.getFromStorage('solutions');
+            let solutionTypeCustom = null;
+            var contactList = self.$app.methods.getFromStorage('contactList');
+            contactList = self.$app.methods.sortContactList(contactList);
+            contactList.unshift({
+                Code: '000000',
+                Number: LANGUAGE.COM_MSG117,
+                FirstName: LANGUAGE.HOME_MSG01
+            })
+            if(asset.MaxSpeed){
+                asset.MaxSpeed = Protocol.Helper.getSpeedValue(asset.Unit, asset.MaxSpeed);
+            }
+            if(!asset.DriverCode){
+                asset.DriverCode = '000000'
+                contactList[0].selected = true
+            }else{
+                let index = contactList.findIndex((item) =>  item.Code === asset.DriverCode)
+                contactList[ index === -1 ? 0 : index ].Selected = true
+            }
+            if (asset.SolutionType){
+                solutionTypeCustom = solutionTypes.find(itm=> itm.Code === asset.SolutionType)
+            }
+
+            return {
+                ...asset,
+                AssetImg: assetImg,
+                SolutionTypeIcon: solutiontypeIcon,
+                AssetTypes: assetTypes,
+                ContactList: contactList,
+                NoContacts: contactList.length <= 1,
+                SolutionTypeCustomName: solutionTypeCustom ? solutionTypeCustom.Name : ''
+            };
+
+        },
+        methods: {
+            saveAssetDetails: function(data){
+                let self = this;
+
+                self.$app.preloader.show();
+                self.$app.request.promise.post(API_URL.EDIT_DEVICE, data, 'json')
+                    .then(function (result) {
+                        if(result.data.MajorCode === '000') {
+                            let device = self.$app.methods.setAssetList({device: data});
+
+                             mainView.router.back({force: true, ignoreCache: true});
+                        }else if(result.data.MajorCode === '100' && result.data.MinorCode === '1003'){
+                            self.$app.methods.customDialog({title: LANGUAGE.PROMPT_MSG039, text: LANGUAGE.PROMPT_MSG040});
+                        }else{
+                            self.$app.dialog.alert(LANGUAGE.PROMPT_MSG023 + `<br>MajorCode: ${result.data.MajorCode}<br>MinorCode: ${result.data.MinorCode}<br>${result.data.Data}`);
+                        }
+                    })
+                    .finally(function () {
+                        self.$app.preloader.hide();
+                    })
+                    .catch(function (err) {
+                        console.log(err);
+                        if (err && err.status === 404){
+                            self.$app.dialog.alert(LANGUAGE.PROMPT_MSG002);
+                        }else{
+                            self.$app.dialog.alert(LANGUAGE.PROMPT_MSG003);
+                        }
+                });
+            },
+            showUploadPhotoOptions: function(){
+                let self = this;
+                self.$app.actions.create({
+                    buttons: [
+                        {
+                            //text: LANGUAGE.COM_MSG074,
+                            text: `<div class="action_button_wrapper">
+                                    <div class="action_button_block action_button_media text-color-lightgray">
+                                        <i class="f7-icons icon-takep-hoto size-20"></i>
+                                    </div>
+                                    <div class="action_button_block action_button_text">
+                                        ${ LANGUAGE.COM_MSG074 }
+                                    </div>
+                                </div>`,
+                            onClick: function () {
+                                self.getImageFromDevice(1);
+                            }
+                        },
+                        {
+                            //text: LANGUAGE.PROMPT_MSG025,
+                            text: `<div class="action_button_wrapper">
+                                    <div class="action_button_block action_button_media text-color-lightgray">
+                                        <i class="f7-icons icon-upload-file size-20"></i>
+                                    </div>
+                                    <div class="action_button_block action_button_text">
+                                        ${ LANGUAGE.PROMPT_MSG025 }
+                                    </div>
+                                </div>`,
+                            onClick: function () {
+                                $$('#AssetImageInput').click();
+                            }
+                        },
+
+                        {
+                            //text: LANGUAGE.PROMPT_MSG026,
+                            text: `<div class="action_button_wrapper">
+                                    <div class="action_button_block action_button_media text-color-lightgray">
+                                        <i class="f7-icons icon-upload-icon size-20"></i>
+                                    </div>
+                                    <div class="action_button_block action_button_text">
+                                        ${ LANGUAGE.PROMPT_MSG026 }
+                                    </div>
+                                </div>`,
+                            onClick: function () {
+                                self.loadIconsModal();
+                                //app.dialog.alert('Button2 clicked');
+                            }
+                        },
+                        {
+                            //text: LANGUAGE.COM_MSG001,
+                            text: `<div class="action_button_wrapper">
+                                    <div class="action_button_block action_button_media text-color-red">
+                                        <i class="f7-icons icon-close size-16"></i>
+                                    </div>
+                                    <div class="action_button_block action_button_text">
+                                        ${ LANGUAGE.COM_MSG001 }
+                                    </div>
+                                </div>`,
+                            color: 'red',
+                        },
+                    ]
+                }).open();
+            },
+            getImageFromDevice: function(source=1){
+                let self = this;
+                if (!navigator.camera) {
+                    self.$app.methods.customDialog({title:LANGUAGE.PROMPT_MSG100, text: LANGUAGE.PROMPT_MSG099});
+                    return;
+                }
+                let options = {
+                    quality: 50,
+                    destinationType: Camera.DestinationType.DATA_URL,
+                    sourceType: source, // 0:Photo Library, 1=Camera, 2=Saved Album
+                    encodingType: 0 // 0=JPG 1=PNG
+                };
+
+                navigator.camera.getPicture(
+                    function(imgData) {
+                        self.loadEditImageModal("data:image/jpeg;base64," + imgData);
+                    },
+                    function() {
+                        self.$app.methods.customDialog({title:LANGUAGE.PROMPT_MSG100, text: LANGUAGE.PROMPT_MSG101});
+                        //alert('Error taking picture', 'Error');
+                    },
+                    options);
+            },
+
+            previewFile: function(file){
+                let self = this;
+                self.$app.progressbar.show('custom');
+
+                let reader  = new FileReader();
+
+                reader.onloadend = function () {
+                    // preview.src = reader.result;
+                    self.loadEditImageModal(reader.result);
+                };
+
+                if (file) {
+                    reader.readAsDataURL(file); //reads the data as a URL
+                } else{
+                    self.$app.dialog.close();
+                }
+            },
+            loadIconsModal: function(src){
+                let self = this;
+
+                let iconTemplate = '';
+                let iconNames = [
+                    {
+                        name: 'Backhoe',
+                        fontName: 'ic-backhoe',
+                        fileName: 'ic_backhoe.png',
+                    },
+                    {
+                        name: 'Backhoe2',
+                        fontName: 'ic-backhoe-2',
+                        fileName: 'ic_backhoe-2.png',
+                    },
+                    {
+                        name: 'Bike',
+                        fontName: 'ic-bike',
+                        fileName: 'ic_bike.png',
+                    },
+                    {
+                        name: 'Boat',
+                        fontName: 'ic-boat',
+                        fileName: 'ic_boat.png',
+                    },
+                    {
+                        name: 'Bulldozer',
+                        fontName: 'ic-bulldozer',
+                        fileName: 'ic_bulldozer.png',
+                    },
+                    {
+                        name: 'Bus',
+                        fontName: 'ic-bus',
+                        fileName: 'ic_bus.png',
+                    },
+                    {
+                        name: 'Car',
+                        fontName: 'ic-car',
+                        fileName: 'ic_car.png',
+                    },
+                    {
+                        name: 'Pet',
+                        fontName: 'ic-dog',
+                        fileName: 'ic_dog.png',
+                    },
+                    {
+                        name: 'Fleet',
+                        fontName: 'ic-fleet',
+                        fileName: 'ic_fleet.png',
+                    },
+                    {
+                        name: 'Helicopter',
+                        fontName: 'ic-helicopter',
+                        fileName: 'ic_helicopter.png',
+                    },
+                    {
+                        name: 'Personal',
+                        fontName: 'ic-man',
+                        fileName: 'ic_man.png',
+                    },
+                    {
+                        name: 'Phone',
+                        fontName: 'ic-phone',
+                        fileName: 'ic_phone.png',
+                    },
+                    {
+                        name: 'Skid Steer Loader',
+                        fontName: 'ic-skid-steer-loader',
+                        fileName: 'ic_skid-steer-loader.png',
+                    },
+                    {
+                        name: 'Tractor',
+                        fontName: 'ic-tractor',
+                        fileName: 'ic_tractor.png',
+                    },
+                    {
+                        name: 'Truck',
+                        fontName: 'ic-truck',
+                        fileName: 'ic_truck.png',
+                    },
+                    {
+                        name: 'Dump Truck',
+                        fontName: 'ic-dump-truck',
+                        fileName: 'ic_dump-truck.png',
+                    },
+                ];
+                let regex = /_/gi;
+                let regex2 = /\.[^/.]+$/; //remove extension (.png, .jpg etc)
+                let pattern2 = 'ic_';
+                let iconName = '';
+                if (this.Icon) {
+                    if(this.Icon.substring(0,3) == pattern2){
+                        iconName = this.Icon.replace(regex, '-').replace(regex2, '');
+                    }
+                }
+
+                $.each(iconNames, function(index, value){
+                    iconTemplate +=  '<li >'+
+                        '<label class="item-radio item-content color-green">';
+                    if (iconName && iconName == value.fontName) {
+                        iconTemplate +=         '<input type="radio" name="radio-icon" data-file-name="'+value.fileName+'" data-font-name="'+value.fontName+'" checked >'+
+                            '<div class="item-media"><i class="icon color-red size-25 asset-icon-'+value.fontName+'"></i></div>';
+                    }else{
+                        iconTemplate +=         '<input type="radio" name="radio-icon" data-file-name="'+value.fileName+'" data-font-name="'+value.fontName+'" >'+
+                            '<div class="item-media text-color-lightgray"><i class="icon size-25 asset-icon-'+value.fontName+'"></i></div>';
+                    }
+                    iconTemplate +=         '<div class="item-inner">'+
+                        '<div class="item-title-row">'+
+                        '<div class="item-title size-14 weight-500 text-color-darkgray">'+value.name+'</div>'+
+                        '<div class="item-after">'+
+                        '<i class="icon icon-radio"></i>' +
+                        '</div>'+
+                        '</div>'+
+                        '</div>'+
+                        '</label>'+
+                        '</li>';
+                });
+
+                self.$app.popup.create({
+                    closeByBackdropClick: false,
+                    content:
+                        `<div class="popup edit-image-popup">
+                            <div class="view">
+                                <div class="page">
+                                    <div class="navbar">
+                                        <div class="navbar-bg"></div>
+                                        <div class="navbar-inner">
+                                            <div class="left">
+                                                <a href="#" class="link icon-only popup-close">
+                                                    <i class="f7-icons">close</i>
+                                                </a>
+                                            </div>
+                                            <div class="title">` + LANGUAGE.PROMPT_MSG026 + `</div>
+                                            <div class="right">
+                                                <a href="#" class="link icon-only saveNewIcon" >
+                                                    <i class="f7-icons">check</i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="page-content">
+                                        <div class="list media-list icons-list">
+                                            <ul>`+ iconTemplate + `</ul>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`,
+                    on: {
+                        opened: function (popup) {
+                            let radioWrapper = popup.$el.find('.item-radio .item-media i');
+
+                            popup.$el.find('input[type="radio"]').on('change', function(){
+                                let parent = $$(this).closest('.item-radio');
+
+                                radioWrapper.removeClass('color-green');
+                                parent.find('.item-media i').addClass('color-green');
+                            });
+
+                            popup.$el.find('.saveNewIcon').on('click', function(){
+                                let radioInputElSelected = popup.$el.find('input[type="radio"]:checked');
+                                if (radioInputElSelected.length < 1) {
+                                    self.$app.methods.customDialog({text: LANGUAGE.PROMPT_MSG024});
+                                }else{
+                                    self.saveIcon({fontName: radioInputElSelected.data('font-name'), fileName: radioInputElSelected.data('file-name')});
+                                }
+
+                            });
+
+                        },
+                    }
+                }).open();
+
+            },
+            loadEditImageModal: function(src){
+                let self = this;
+                self.$app.progressbar.hide();
+                let dynamicPopup = app.popup.create({
+                    closeByBackdropClick: false,
+                    content:
+                        `<div class="popup edit-image-popup">
+                            <div class="view">
+                                <div class="page">
+                                    <div class="navbar">
+                                        <div class="navbar-bg"></div>
+                                        <div class="navbar-inner">
+                                            <div class="left">
+                                                <a href="#" class="link popup-close icon-only">
+                                                    <i class="f7-icons">close</i>
+                                                </a>
+                                            </div>
+                                            <div class="title">` + LANGUAGE.PROMPT_MSG027 + `</div>
+                                            <div class="right">
+                                                <a href="#" class="link saveEditedImage" >
+                                                    <i class="f7-icons">check</i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="page-content">
+                                        <div class="asset_img_before_crop" style="">
+                                            <img style="max-width: 980px; max-height: 980px; " id="image" src="` + src + `">
+                                        </div>
+                                        <button type="button" class="button button-fill redo"><span class="f7-icons">forward</span></button>
+                                        <button type="button" class="button button-fill undo"><span class="f7-icons">reply</span></button>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`,
+                    on: {
+                        opened: function (popup) {
+                            let cropper = self.initCropper();
+                            $$('.saveEditedImage').on('click', function(){
+                                self.saveImage(cropper);
+                            });
+                            $$('.redo').on('click', function(){
+                                cropper.rotate(90);
+                            });
+                            $$('.undo').on('click', function(){
+                                cropper.rotate(-90);
+                            });
+                        },
+                    }
+                });
+                dynamicPopup.open();
+
+            },
+            initCropper: function (){
+                let image = document.getElementById('image');
+                let cropper = new Cropper(image, {
+                    aspectRatio: 1/1,
+                    dragMode:'move',
+                    rotatable:true,
+                    minCropBoxWidth:200,
+                    minCropBoxHeight:200,
+                    minCanvasWidth:200,
+                    minCanvasHeight:200,
+                    minContainerWidth:200,
+                    minContainerHeight:200,
+                    crop: function(data) {
+                    }
+                });
+                return cropper;
+            },
+            saveImage: function(cropper){
+                let self = this;
+
+                let resImg =  cropper.getCroppedCanvas({
+                    width: 200,
+                    height: 200
+                }).toDataURL();
+
+                let assetImg = {
+                    data: resImg,
+                    id: 'IMEI_'+self.IMEI
+                };
+
+                self.$app.dialog.progress();
+                self.$app.request.promise.post(API_URL.PHOTO_UPLOAD, assetImg, 'json')
+                    .then(function (result) {
+                        self.$app.dialog.close();
+                        if(result.data.MajorCode === '000') {
+                            console.log(result.data);
+                            self.$app.data.NewImageTimestamp = new Date().getTime();
+                            self.$setState({
+                                AssetImg: `<img class="user-img" data-name="${result.data.Data}" src="${API_DOMIAN9}Attachment/images/${result.data.Data+'?'+ self.$app.data.NewImageTimestamp}" alt="">`
+                            });
+                        }else{
+                            self.$app.dialog.alert(LANGUAGE.PROMPT_MSG023 + `<br>MajorCode: ${result.data.MajorCode}<br>MinorCode: ${result.data.MinorCode}<br>${result.data.Data}`);
+                        }
+                        self.$app.popup.close();
+                    })
+                    .catch(function (err) {
+                        console.log(err);
+                        self.$app.dialog.close();
+                        if (err && err.status === 404){
+                            self.$app.dialog.alert(LANGUAGE.PROMPT_MSG026);
+                        }else{
+                            self.$app.dialog.alert(LANGUAGE.PROMPT_MSG003);
+                        }
+                    });
+            },
+            saveIcon: function(params){
+                let self = this;
+                let template = `<div class="user-img bg-custom display-flex justify-content-center align-items-center" data-name="${params.fileName}">
+                                    <div class="text-align-center vertical-center size-75 ">
+                                        <i class="icon text-color-white asset-icon-${params.fontName}"></i>
+                                    </div>
+                                </div>`;
+                self.$setState({
+                    AssetImg: template
+                });
+                self.$app.popup.close();
+            },
+        },
+
+        on: {
+            pageInit: function (e, page) {
+                let self = this;
+
+                let form = page.$el.find('[name = "AssetEditForm"]');
+
+                form.on('submit', function(e){
+                    e.preventDefault();
+
+                    let data = {
+                        MinorToken: self.$app.data.MinorToken,
+                        MajorToken: self.$app.data.MajorToken,
+                        Code: self.Id,
+                        IMEI: self.IMEI,
+                        name: page.$el.find('input[name="Name"]').val(),
+                        registration: page.$el.find('input[name="Registration"]').val(),
+
+                        speedUnit: page.$el.find('select[name="Unit"]').val(),
+                        initMileage: page.$el.find('input[name="Mileage"]').val(),
+                        initAccHours: page.$el.find('input[name="Runtime"]').val(),
+                        attr1: page.$el.find('input[name="Describe1"]').val(),
+                        attr2: page.$el.find('input[name="Describe2"]').val(),
+                        attr3: page.$el.find('input[name="Describe3"]').val(),
+                        attr4: page.$el.find('input[name="Describe4"]').val(),
+                        MaxSpeed: page.$el.find('input[name="MaxSpeed"]').val(),
+                        AssetType: page.$el.find('[name="AssetType"]').val(),
+                        DriverCode: page.$el.find('[name="DriverCode"]').val(),
+                    };
+
+                    if(data.MaxSpeed){
+                        data.MaxSpeed = Protocol.Helper.getSpeedValueInKM(data.speedUnit, data.MaxSpeed)
+                    }
+                    if(data.DriverCode === '000000'){
+                        data.DriverCode = ''
+                    }
+
+                    let assetImg = page.$el.find('.user-img');// $$('.top-asset-img .item_asset_img');
+                    if (assetImg.length && assetImg.data('name')) {
+                        data.icon = assetImg.data('name');
+                    }
+                     //console.log(data);
+                    self.saveAssetDetails(data);
+
+                    return false;
+                });
+
+
+                $$('#AssetImageInput').on('change', function(){
+                    let noError = 1;
+                    console.log(this)
+                    let file = this.files[0];
+                    let maxFileSize = 5; // in MB
+                    if (file) {
+                        //validate file extension(filetype)
+                        if (!/image/.test(file.type)) {
+                            noError = 0;
+                            self.$app.methods.customNotification({title:LANGUAGE.PROMPT_MSG028});
+                        }
+                        //validate file size
+                        if ( file.size > maxFileSize * 1024 * 1024 ) {
+                            console.log('here');
+                            noError = 0;
+                            self.$app.methods.customNotification({title:LANGUAGE.PROMPT_MSG029 + ' ' + maxFileSize + LANGUAGE.PROMPT_MSG030});
+                        }
+                        if (noError) {
+                            self.previewFile(file);
+                        }
+                    }
+                });
+
+                if(self.$route.query.openEditImage && self.$route.query.openEditImage === "true"){
+                    self.showUploadPhotoOptions();
+                }
+
+            },
+            pageAfterIn:function(){
+                let self = this;
+
+
+
+            },
+            pageAfterOut: function () {
+                // page has left the view
+            },
+
+        }
+    };
+</script>

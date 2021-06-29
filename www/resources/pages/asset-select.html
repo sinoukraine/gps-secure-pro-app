@@ -1,0 +1,312 @@
+<!--suppress JSAnnotator -->
+<template>
+<!-- Page, data-name contains page name which can be used in callbacks -->
+        <div class="page " data-name="asset-alarm"> <!-- page-with-subnavbar -->
+        <!-- Top Navbar -->
+            <div class="navbar">
+                <div class="navbar-bg"></div>
+                <div class="navbar-inner">
+                    <div class="left">
+                        <a href="/panel-left/" class="link icon-only " >
+                            <i class="if-not-ios f7-icons icon-header-menu"></i>
+                            <i class="if-ios icon material-icons">menu</i>
+                        </a>
+                    </div>
+                    <div class="title sliding">{{PageTitle}}</div>
+                    <div class="right">                        
+                       <!-- <a href="#" class="link icon-only filterMenuOpen" >
+                            <i class="f7-icons icon-filter size-18"></i>
+                        </a>    -->
+                        <label for="submit-form-asset-select" class="link icon-only">
+                            <i class="f7-icons icon-header-apply"></i>
+                        </label>
+                    </div>
+
+                    <!--<div class="subnavbar">
+
+                    </div>-->
+                    
+                </div>
+            </div>
+
+            <div class="toolbar tabbar toolbar-top">
+                <div class="toolbar-inner">
+                    <a @click="FilterAssetList" href="#asset-select-tab2" data-type="live" class="tab-link flex-direction-row tab-link-active">Live<span class="badge color-custom margin-left-quarter">{{AssetsCount.Live}}</span></a>
+                    <a @click="FilterAssetList" href="#asset-select-tab3" data-type="loc8" class="tab-link flex-direction-row">Loc8<span class="badge color-custom margin-left-quarter">{{AssetsCount.Loc8}}</span></a>
+                    <a @click="FilterAssetList" href="#asset-select-tab4" data-type="protect" class="tab-link flex-direction-row">Protect<span class="badge color-custom margin-left-quarter">{{AssetsCount.Protect}}</span></a>
+                </div>
+            </div>
+
+            <form data-search-container=".assetListSelect" data-search-item="li" data-search-in=".item-title" class="searchbar searchbar-init searchbar-asset-select">
+                <div class="searchbar-inner">
+                    <div class="searchbar-input-wrap">
+                        <input type="search" placeholder="{{@global.LANGUAGE.COM_MSG002}}">
+                        <i class="searchbar-icon"></i>
+                        <span class="input-clear-button"></span>
+                    </div>
+                    <span class="searchbar-disable-button">{{@global.LANGUAGE.COM_MSG001}}</span>
+                </div>
+            </form>
+
+            <form class="page-content" name="AssetSelectForm">
+                <!--fake tabs for tabbar correct working working-->
+                <div class="tabs">
+                    <div class="tab-active" id="asset-select-tab2"></div>
+                    <div id="asset-select-tab3"></div>
+                    <div id="asset-select-tab4"></div>
+                </div>
+                <input type="submit" id="submit-form-asset-select" class="display-none" />
+                <!-- Searchbar backdrop -->
+                <div class="searchbar-backdrop"></div>
+
+                <!-- Nothing found message -->
+                <div class="block searchbar-not-found">
+                    <div class="block-inner">{{@global.LANGUAGE.PROMPT_MSG000}}</div>
+                </div>
+                {{#js_if "this.Type === 'multiple'"}}
+                <div class="list no-margin searchbar-hide-on-search">
+                    <ul>                    
+                        <li class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title text-transform-uppercase">{{@global.LANGUAGE.COM_MSG093}}</div>
+                                <div class="item-after">
+                                    <label class="toggle toggle-all-assets color-green">
+                                        <input type="checkbox" name="checkbox-assets-all">
+                                        <span class="toggle-icon"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </li>   
+                    </ul> 
+                </div>                
+                {{/js_if}}
+                <div class="list virtual-list no-hairlines no-margin no-chevron searchbar-found assetListSelect " data-filter-type="live" data-sort-by="name" data-order-by="asc">
+                </div>                     
+                
+            </form>
+        </div>
+</template>
+
+
+<script>
+  // script must return component object
+    return {
+        data: function () {
+            let self = this;
+            
+            let ret = {
+                PageTitle: LANGUAGE.ASSET_SELECT_MSG01,
+                Type: self.$route.query.type,
+                NextPage: self.$route.query.nextPage,
+
+                VirtualAssetList: false,
+                ToggleAllAssets: false,
+
+                AssetsCount: {
+                    All: 0,
+                    Live: 0,
+                    Loc8: 0,
+                    Protect: 0,
+                }
+            };
+            if (self.$route.query.type === 'multiple') {
+                ret.PageTitle = LANGUAGE.ASSET_SELECT_MSG00;
+            }
+            
+            return ret;
+        },
+        methods: {
+            submitAssets: function(virtualAssetList){  
+                let self = this;
+                let assets = [];
+
+                for (let i = 0; i < virtualAssetList.items.length; i++) {
+                    if(virtualAssetList.items[i].Selected){
+                        assets.push(virtualAssetList.items[i].IMEI);
+                    }
+                }
+
+                if (assets.length > 0) {                    
+                    mainView.router.navigate({
+                        name: self.NextPage,
+                        query: {
+                            solution: virtualAssetList.items[virtualAssetList.items.findIndex(el => el.IMEI === assets[0])].SolutionType.toLowerCase(),
+                            imei: assets.toString()
+                        },
+                    });
+                }else{
+                    self.$app.methods.customNotification({title: LANGUAGE.PROMPT_MSG097});
+                }
+            },
+            FilterAssetList: function (e) {
+                let self = this;
+                let filterType = '';
+                if(typeof e === 'string'){
+                    filterType = e;
+                }else{
+                    filterType = $$(e.target).closest('.tab-link').data('type');
+                }
+
+                if(self.ToggleAllAssets && self.ToggleAllAssets.checked){
+                    self.ToggleAllAssets.toggle();
+                }else{
+                    for (let i = self.VirtualAssetList.items.length - 1; i >= 0; i--) {
+                        self.VirtualAssetList.items[i].Selected = false;
+                    }
+                    self.VirtualAssetList.update();
+                    self.VirtualAssetList.clearCache();
+                }
+
+                self.$app.methods.filterVirtualAssetList(self.VirtualAssetList, filterType);
+
+                //self.VirtualAssetList.clearCache();
+            },
+        },
+        on: {
+            pageInit: function (e, page) { 
+                let self = this;
+                let toggleAllEl = page.$el.find('.toggle-all-assets');
+                let assetListEl = page.$el.find('.assetListSelect');
+                let form = page.$el.find('[name="AssetSelectForm"]');
+
+                let assetList = self.$app.methods.getFromStorage('assetList');
+                let newAssetlist = [];
+                const keys = Object.keys(assetList);
+
+                for (const key of keys) {
+                    if (assetList[key].SolutionType) {
+                        newAssetlist.push(assetList[key]);
+                    }
+                }
+
+                newAssetlist.sort(function(a,b){
+                    if(a.Name < b.Name) return -1;
+                    if(a.Name > b.Name) return 1;
+                    return 0;
+                });
+
+                if (self.Type === 'multiple') {
+                    self.ToggleAllAssets = self.$app.toggle.create({
+                        el: toggleAllEl,
+                        on: {
+                            change: function () {
+                                let filterType = self.VirtualAssetList.$el.data('filter-type');
+                                let filteredListIndexes = self.$app.methods.filterAssetList(self.VirtualAssetList.items, filterType);
+                                for (let i = self.VirtualAssetList.items.length - 1; i >= 0; i--) {
+                                    if(this.checked){
+                                        if(filteredListIndexes.indexOf(i) !== -1){
+                                            self.VirtualAssetList.items[i].Selected = this.checked;
+                                        }
+                                    }else{
+                                        self.VirtualAssetList.items[i].Selected = this.checked;
+                                    }
+                                }
+                                //self.VirtualAssetList.update();
+                                //self.VirtualAssetList.clearCache();
+                                self.$app.methods.sortVirtualAssetList(self.VirtualAssetList)
+                            }
+                        }
+                    });
+                }
+
+                self.VirtualAssetList = self.$app.virtualList.create({
+                    el: assetListEl, 
+                    // search item by item
+                    searchAll: function (query, items) {
+                        let filterType = this.el.data('filter-type');
+                        let filteredListIndexes = self.$app.methods.filterAssetList(items, filterType);
+                        let found = [];
+
+                        for (let i = 0; i < filteredListIndexes.length; i++) {
+                            if (items[filteredListIndexes[i]].Name.toLowerCase().indexOf(query.toLowerCase()) >= 0 || query.trim() === '') found.push(filteredListIndexes[i]);
+                        }
+                        return found; //return array with mathced indexes
+                      },
+                    //List of array items
+                    items: newAssetlist,
+                    height: self.$app.theme === 'ios' ? 76 : 76,
+                    emptyTemplate: `<li class="item-content">${LANGUAGE.COM_MSG040}</li>`,
+                    // Display the each item using Template7 template parameter
+                    renderItem: function (item, index) {                  
+                        let ret = '';
+                        let assetImg = self.$app.methods.getAssetImg(item, {'assetList':true});
+
+                        if (self.Type === 'multiple') {
+                            ret =  `<li data-index="${ index }" title="${ item.Name }" >
+                                            <label class="item-checkbox item-content color-green ">
+                                                <input type="checkbox" name="checkbox-asset" value="" data-imei="${ item.IMEI }" ${ item.Selected ? 'checked="true"' : '' } >
+                                                <div class="item-media">${ assetImg }</div>
+                                                <div class="item-inner">
+
+                                                        <div class="item-title">${ item.Name }</div>
+                                                        <div class="item-after">
+                                                            <i class="icon icon-checkbox"></i>
+                                                        </div>
+
+                                                </div>
+                                            </label>
+                                        </li>`;
+                        }else{
+                            ret =  `<li data-index="${ index }" title="${ item.Name }" >
+                                        <label class="item-radio item-content color-green ">
+                                            <input type="radio" name="checkbox-asset" value="" data-imei="${ item.IMEI }"  />
+                                            <div class="item-media">${ assetImg }</div>
+                                            <div class="item-inner">
+
+                                                    <div class="item-title size-14 weight-500 text-color-darkgray">${ item.Name }</div>
+                                                    <div class="item-after">
+                                                        <i class="icon icon-radio"></i>
+                                                    </div>
+
+                                            </div>
+                                        </label>
+                                    </li>`;
+                        }
+
+                        return ret;
+                    },
+                });
+                self.FilterAssetList('live');
+                self.$setState({
+                    AssetsCount: self.$app.methods.countItemsBySolution(newAssetlist),
+                });
+
+                form.on('submit', function(e){
+                    e.preventDefault();
+                    self.submitAssets(self.VirtualAssetList);
+                    return false;
+                });
+                assetListEl.on('change', 'input[name="checkbox-asset"]', function(){
+                    let index = $$(this).closest('li').data('index');
+                    if (self.Type === 'multiple') {
+                        self.VirtualAssetList.items[index].Selected = !!this.checked;
+                    }else{                        
+                        for (let i = self.VirtualAssetList.items.length - 1; i >= 0; i--) {
+                            self.VirtualAssetList.items[i].Selected = false;  
+                        }
+                        self.VirtualAssetList.items[index].Selected = true;
+                    }
+                });
+                
+            },
+            pageAfterIn:function(){
+                let self = this;
+
+                let searchbar = self.$app.searchbar.get('.searchbar-asset-select');
+
+                searchbar.on('clear', function (searchbar, query, previousQuery) {
+                    self.$app.methods.filterVirtualAssetList(this.virtualList, this.virtualList.$el.data('filter-type'));
+                });
+
+
+            },
+            pageBeforeRemove: function () {
+                let self = this;
+               
+                if (self.ToggleAllAssets) {
+                    self.$app.toggle.destroy(self.ToggleAllAssets);
+                }
+            }
+        }
+    };
+</script>
